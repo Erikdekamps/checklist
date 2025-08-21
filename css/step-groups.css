@@ -1,0 +1,118 @@
+/**
+ * Step Groups & Group Headers
+ * ===========================
+ * 
+ * Styling for step group containers and their headers
+ */
+
+/**
+ * Step Group Container
+ * Main container for each group of steps with hover effects
+ */
+#group-container .step-group {
+    background: var(--c-bg-surface-1);
+    border-radius: var(--border-radius-xl);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: 0 8px 32px var(--c-shadow);
+    border: 1px solid var(--c-border);
+    transition: all 0.3s ease;
+}
+
+#group-container .step-group:hover {
+    box-shadow: 0 12px 48px var(--c-shadow-lg);
+    transform: translateY(-2px);
+}
+
+/**
+ * Group Header
+ * Clickable header with title and collapse icon
+ */
+#group-container .step-group .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    cursor: pointer;
+    user-select: none;
+    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
+    border-bottom: 1px solid var(--c-border);
+    position: relative;
+    overflow: hidden;
+}
+
+/**
+ * Group Header Accent Line
+ * Animated accent line that appears on hover
+ */
+#group-container .step-group .group-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+#group-container .step-group:hover .group-header::before {
+    transform: scaleY(1);
+}
+
+/**
+ * Group Title
+ * Main title for each step group
+ */
+#group-container .step-group .group-header .group-title { 
+    font-size: 1.3em; 
+    font-weight: 700;
+    color: var(--c-text-primary);
+    text-shadow: 0 1px 2px var(--c-shadow);
+}
+
+/**
+ * Collapse Icon
+ * Animated icon that rotates when group is collapsed
+ */
+#group-container .step-group .group-header .collapse-icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+    stroke: var(--c-text-secondary);
+    background: var(--c-bg-surface-1);
+    border-radius: 50%;
+    padding: 4px;
+    box-shadow: 0 2px 8px var(--c-shadow);
+}
+
+/**
+ * Group Body
+ * Container for step cards with collapse animation
+ */
+#group-container .step-group .group-body {
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg) var(--spacing-md);
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out, opacity 0.3s ease;
+    opacity: 1;
+    overflow: hidden;
+}
+
+/**
+ * Collapsed Group Body
+ * Hidden state for collapsed groups
+ */
+#group-container .step-group.is-collapsed .group-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+
+/**
+ * Collapsed Icon State
+ * Rotated icon for collapsed groups
+ */
+#group-container .step-group.is-collapsed .collapse-icon { 
+    transform: rotate(-90deg); 
+}

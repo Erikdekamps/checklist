@@ -1,0 +1,217 @@
+/**
+ * Individual Step Components
+ * =========================
+ * 
+ * Styling for individual step cards, headers, bodies, and footers
+ */
+
+/**
+ * Individual Step Card
+ * Main container for each step with hover effects and animations
+ */
+.step {
+    margin-bottom: var(--spacing-md);
+    border-radius: var(--border-radius-lg);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+    background: linear-gradient(135deg, var(--c-bg-surface-1), var(--c-bg-surface-2));
+    box-shadow: 0 4px 16px var(--c-shadow);
+    position: relative;
+}
+
+/**
+ * Step Hover Overlay
+ * Subtle gradient overlay on hover
+ */
+.step::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, color-mix(in srgb, var(--c-primary) 5%, transparent) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.step:hover::before {
+    opacity: 1;
+}
+
+.step:last-child { 
+    margin-bottom: 0; 
+}
+
+/**
+ * Step Hover Effects
+ * Elevation and border color changes on hover
+ */
+.step:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px var(--c-shadow-lg);
+    border-color: color-mix(in srgb, var(--c-primary) 30%, var(--c-border));
+}
+
+/**
+ * Step Header
+ * Contains checkbox, title, and time information
+ */
+.step .step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg, var(--c-bg-surface-1), var(--c-bg-surface-hover));
+    border-bottom: 1px solid var(--c-border);
+    position: relative;
+}
+
+/**
+ * Step Header Left Section
+ * Contains checkbox and title
+ */
+.step .step-header .step-header-left { 
+    display: flex; 
+    align-items: center; 
+    gap: var(--spacing-md); 
+}
+
+/**
+ * Step Checkbox
+ * Completion checkbox with custom styling
+ */
+.step .step-header input[type="checkbox"] { 
+    margin: 0; 
+    flex-shrink: 0; 
+    width: 20px;
+    height: 20px;
+    accent-color: var(--c-primary);
+    cursor: pointer;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px var(--c-shadow));
+}
+
+/**
+ * Step Title
+ * Main title for each step
+ */
+.step .step-header .step-title { 
+    font-weight: 700; 
+    font-size: 1.1em; 
+    color: var(--c-text-primary);
+    text-shadow: 0 1px 2px var(--c-shadow);
+    line-height: 1.4;
+}
+
+/**
+ * Step Time Badge
+ * Shows cumulative time with gradient background
+ */
+.step .step-header .step-time { 
+    font-size: 0.85em; 
+    font-weight: 600; 
+    color: var(--c-primary); 
+    background: linear-gradient(135deg, var(--c-primary-light), var(--c-primary));
+    color: white;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--c-primary) 25%, transparent);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    min-width: 50px;
+    text-align: center;
+}
+
+/**
+ * Step Body
+ * Contains instruction text and notes
+ */
+.step .step-body {
+    padding: var(--spacing-md);
+    background: var(--c-bg-surface-1);
+    position: relative;
+}
+
+/**
+ * Step Body Top Border
+ * Subtle gradient line at the top
+ */
+.step .step-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--c-border), transparent);
+}
+
+/**
+ * Step Instruction
+ * Main instruction text with styled background
+ */
+.step .step-body .step-instruction { 
+    margin-bottom: var(--spacing-md);
+    color: var(--c-text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    padding: var(--spacing-sm);
+    background: var(--c-bg-surface-2);
+    border-radius: var(--border-radius-md);
+    border-left: 3px solid var(--c-accent);
+    box-shadow: inset 0 1px 3px var(--c-shadow);
+}
+
+/**
+ * Step Footer
+ * Contains add note button and items list
+ */
+.step .step-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
+    font-size: 0.85em;
+    color: var(--c-text-secondary);
+    border-top: 1px solid var(--c-border);
+    position: relative;
+}
+
+/**
+ * Step Footer Top Border
+ * Subtle gradient line at the top
+ */
+.step .step-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--c-border), transparent);
+}
+
+/**
+ * Step Items List
+ * Shows required items/tools for the step
+ */
+.step .step-footer .step-items { 
+    text-align: right; 
+    font-weight: 500;
+    color: var(--c-text-primary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    justify-content: flex-end;
+    max-width: 60%;
+    font-size: 0.85em;
+}
+
+.step .step-footer .step-items::before {
+    content: '🔧 ';
+    margin-right: var(--spacing-xs);
+}

@@ -1,0 +1,102 @@
+/**
+ * Progress Tracking Footer
+ * ========================
+ * 
+ * Fixed bottom footer with progress bar and reset functionality
+ */
+
+/**
+ * Progress Footer
+ * Fixed bottom footer with progress bar and reset button
+ */
+#progress-footer {
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%;
+    background: linear-gradient(135deg, var(--c-bg-header), var(--c-bg-surface-2)); 
+    border-top: 1px solid var(--c-border);
+    padding: var(--spacing-md) var(--spacing-lg); 
+    box-shadow: 0 -8px 32px var(--c-shadow-lg);
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    gap: var(--spacing-lg);
+    z-index: 100; 
+    box-sizing: border-box;
+    backdrop-filter: blur(8px);
+}
+
+/**
+ * Progress Information Section
+ * Contains progress text and bar
+ */
+#progress-footer .progress-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+/**
+ * Progress Text
+ * Shows completion statistics
+ */
+#progress-footer #progress-text {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--c-text-primary);
+    margin-bottom: var(--spacing-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 2px var(--c-shadow);
+}
+
+/**
+ * Progress Bar Container
+ * Container for the progress bar
+ */
+#progress-footer .progress-bar-container {
+    height: 10px;
+    background-color: var(--c-bg-surface-2);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+    box-shadow: inset 0 2px 4px var(--c-shadow);
+}
+
+/**
+ * Progress Bar
+ * Animated progress bar with gradient
+ */
+#progress-footer #progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--c-primary), var(--c-primary-light), var(--c-accent));
+    border-radius: 6px;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--c-primary) 25%, transparent);
+}
+
+/**
+ * Reset Button
+ * Button to reset all progress
+ */
+#progress-footer .reset-btn {
+    background: linear-gradient(135deg, var(--c-danger), var(--c-danger-hover));
+    color: var(--c-primary-text);
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--border-radius-lg);
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--c-danger) 25%, transparent);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+#progress-footer .reset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px color-mix(in srgb, var(--c-danger) 35%, transparent);
+}

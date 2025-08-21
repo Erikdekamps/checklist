@@ -1,0 +1,76 @@
+/**
+ * Completed State Styling
+ * =======================
+ * 
+ * Visual changes for completed steps and groups
+ */
+
+/**
+ * Completed Step Styling
+ * Visual changes for completed steps
+ */
+.step.completed {
+    opacity: 0.85;
+    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
+    border-color: var(--c-success);
+    position: relative;
+}
+
+/**
+ * Completed Step Checkmark
+ * Success checkmark overlay for completed steps
+ */
+.step.completed::after {
+    content: '✓';
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--c-success), #2d7d32);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1em;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--c-success) 30%, transparent);
+    z-index: 10;
+}
+
+/**
+ * Completed Step Title
+ * Strikethrough effect for completed step titles
+ */
+.step.completed .step-title { 
+    text-decoration: line-through; 
+    color: var(--c-text-subtle); 
+}
+
+/**
+ * Completed Step Content
+ * Reduced opacity for completed step content
+ */
+.step.completed .step-body, 
+.step.completed .step-footer { 
+    opacity: 0.8; 
+}
+
+/**
+ * Completed Step Time Badge
+ * Success color for completed step time
+ */
+.step.completed .step-time {
+    background: linear-gradient(135deg, var(--c-success), #2d7d32);
+    color: white;
+}
+
+/**
+ * Completed Step Hover
+ * Reduced hover effects for completed steps
+ */
+.step.completed:hover {
+    transform: none;
+    box-shadow: 0 4px 16px var(--c-shadow);
+}
