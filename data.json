@@ -1,0 +1,667 @@
+[
+  {
+    "group_title": "Phase 1: Preparation",
+    "steps": [
+      {
+        "step_number": "1",
+        "step_title": "Initial Setup",
+        "step_instruction": "Prepare your workspace and gather all necessary tools.",
+        "money": "$50",
+        "items": ["Screwdriver", "Hammer", "Measuring Tape"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "2",
+        "step_title": "Gather Materials",
+        "step_instruction": "Collect all items required for assembly.",
+        "money": "$100",
+        "items": ["Wood Panels", "Screws", "Nails"],
+        "time_taken": 45,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "3",
+        "step_title": "Safety Check",
+        "step_instruction": "Ensure all safety equipment is available and in good condition.",
+        "money": "$10",
+        "items": ["Gloves", "Safety Glasses"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "4",
+        "step_title": "Workspace Inspection",
+        "step_instruction": "Inspect the workspace for any hazards or issues.",
+        "money": "$0",
+        "items": ["Inspection Checklist"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "5",
+        "step_title": "Tool Calibration",
+        "step_instruction": "Calibrate all necessary tools for accurate measurements.",
+        "money": "$0",
+        "items": ["Caliper", "Square"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "6",
+        "step_title": "Material Measurement",
+        "step_instruction": "Measure and mark all materials according to the blueprint.",
+        "money": "$0",
+        "items": ["Measuring Tape", "Marker"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "7",
+        "step_title": "Cutting Materials",
+        "step_instruction": "Cut the materials to size using the appropriate tools.",
+        "money": "$0",
+        "items": ["Saw", "Cutting Mat"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "8",
+        "step_title": "Drilling Pilot Holes",
+        "step_instruction": "Drill pilot holes in the materials to prevent splitting.",
+        "money": "$0",
+        "items": ["Drill", "Drill Bits"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "9",
+        "step_title": "Assembling Frame",
+        "step_instruction": "Assemble the frame of the structure using screws and wood panels.",
+        "money": "$0",
+        "items": ["Screwdriver", "Wood Glue"],
+        "time_taken": 45,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "10",
+        "step_title": "Installing Hardware",
+        "step_instruction": "Install any necessary hardware, such as hinges and brackets.",
+        "money": "$0",
+        "items": ["Hinges", "Brackets"],
+        "time_taken": 20,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "11",
+        "step_title": "Electrical Setup",
+        "step_instruction": "If applicable, set up any electrical components or wiring.",
+        "money": "$0",
+        "items": ["Wire Strippers", "Electrical Tape"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "12",
+        "step_title": "Plumbing Setup",
+        "step_instruction": "If applicable, set up any plumbing components or fixtures.",
+        "money": "$0",
+        "items": ["Pipe Wrench", "Plumber's Tape"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "13",
+        "step_title": "Insulation Installation",
+        "step_instruction": "Install insulation materials to regulate temperature.",
+        "money": "$0",
+        "items": ["Insulation Batts", "Staple Gun"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "14",
+        "step_title": "Drywall Installation",
+        "step_instruction": "Install drywall sheets to create walls and ceilings.",
+        "money": "$0",
+        "items": ["Drywall Sheets", "Drywall Screws"],
+        "time_taken": 60,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "15",
+        "step_title": "Taping and Mudding",
+        "step_instruction": "Apply tape and joint compound to drywall seams.",
+        "money": "$0",
+        "items": ["Drywall Tape", "Joint Compound"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "16",
+        "step_title": "Sanding",
+        "step_instruction": "Sand the dried joint compound for a smooth finish.",
+        "money": "$0",
+        "items": ["Sandpaper", "Sanding Block"],
+        "time_taken": 20,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "17",
+        "step_title": "Priming",
+        "step_instruction": "Apply primer to all surfaces to be painted.",
+        "money": "$0",
+        "items": ["Primer", "Roller"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "18",
+        "step_title": "Painting",
+        "step_instruction": "Apply the first coat of paint and let it dry.",
+        "money": "$30",
+        "items": ["Paint", "Brushes", "Drop Cloth"],
+        "time_taken": 60,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "19",
+        "step_title": "Second Coat of Paint",
+        "step_instruction": "Apply a second coat of paint for full coverage.",
+        "money": "$30",
+        "items": ["Paint", "Brushes"],
+        "time_taken": 60,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "20",
+        "step_title": "Final Preparation Review",
+        "step_instruction": "Double-check all preparation steps are complete.",
+        "money": "$0",
+        "items": ["Checklist"],
+        "time_taken": 5,
+        "completed": false,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "group_title": "Phase 2: Assembly & Finishing",
+    "steps": [
+      {
+        "step_number": "21",
+        "step_title": "Assembly",
+        "step_instruction": "Assemble the main structure according to the blueprint.",
+        "money": "$0",
+        "items": ["Blueprint", "Drill"],
+        "time_taken": 90,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "22",
+        "step_title": "Install Doors and Windows",
+        "step_instruction": "Install doors and windows as per the design.",
+        "money": "$0",
+        "items": ["Doors", "Windows", "Screws"],
+        "time_taken": 60,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "23",
+        "step_title": "Roof Installation",
+        "step_instruction": "Install the roof structure and covering.",
+        "money": "$0",
+        "items": ["Roofing Material", "Nails"],
+        "time_taken": 90,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "24",
+        "step_title": "Gutter Installation",
+        "step_instruction": "Install gutters and downspouts for water drainage.",
+        "money": "$0",
+        "items": ["Gutters", "Downspouts", "Brackets"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "25",
+        "step_title": "Exterior Painting",
+        "step_instruction": "Paint the exterior surfaces for protection and aesthetics.",
+        "money": "$30",
+        "items": ["Exterior Paint", "Brushes"],
+        "time_taken": 60,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "26",
+        "step_title": "Interior Finishing",
+        "step_instruction": "Finish the interior surfaces, including painting and trim work.",
+        "money": "$20",
+        "items": ["Interior Paint", "Trim", "Nails"],
+        "time_taken": 60,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "27",
+        "step_title": "Install Flooring",
+        "step_instruction": "Install the flooring material of choice.",
+        "money": "$0",
+        "items": ["Flooring Material", "Adhesive"],
+        "time_taken": 120,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "28",
+        "step_title": "Cabinet and Countertop Installation",
+        "step_instruction": "Install cabinets and countertops in the kitchen and bathrooms.",
+        "money": "$0",
+        "items": ["Cabinets", "Countertops", "Screws"],
+        "time_taken": 90,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "29",
+        "step_title": "Fixture Installation",
+        "step_instruction": "Install light fixtures, switches, and outlets.",
+        "money": "$0",
+        "items": ["Light Fixtures", "Electrical Box"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "30",
+        "step_title": "Appliance Installation",
+        "step_instruction": "Install appliances such as stove, refrigerator, and dishwasher.",
+        "money": "$0",
+        "items": ["Appliances", "Power Cord"],
+        "time_taken": 60,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "31",
+        "step_title": "Plumbing Fixtures Installation",
+        "step_instruction": "Install sinks, faucets, and other plumbing fixtures.",
+        "money": "$0",
+        "items": ["Sinks", "Faucets", "Plumber's Putty"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "32",
+        "step_title": "Final Assembly Inspection",
+        "step_instruction": "Inspect all assembly work for completeness and quality.",
+        "money": "$0",
+        "items": ["Inspection Checklist"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "33",
+        "step_title": "Touch-up Paint",
+        "step_instruction": "Touch up any areas needing additional paint.",
+        "money": "$0",
+        "items": ["Touch-up Paint", "Brush"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "34",
+        "step_title": "Final Cleaning",
+        "step_instruction": "Clean the entire structure, removing any dust or debris.",
+        "money": "$0",
+        "items": ["Broom", "Mop", "Cleaning Supplies"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "35",
+        "step_title": "Prepare for Delivery",
+        "step_instruction": "Ensure the structure is ready for transport.",
+        "money": "$0",
+        "items": ["Straps", "Blankets"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "36",
+        "step_title": "Delivery",
+        "step_instruction": "Transport the structure to the delivery location.",
+        "money": "$0",
+        "items": ["Delivery Vehicle"],
+        "time_taken": 60,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "37",
+        "step_title": "Unloading",
+        "step_instruction": "Carefully unload the structure at the delivery location.",
+        "money": "$0",
+        "items": ["Dolly", "Straps"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "38",
+        "step_title": "Placement",
+        "step_instruction": "Place the structure in the desired location.",
+        "money": "$0",
+        "items": ["Level", "Measuring Tape"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "39",
+        "step_title": "Final Assembly Review",
+        "step_instruction": "Inspect the assembled structure for stability.",
+        "money": "$0",
+        "items": ["Level", "Inspection Sheet"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "40",
+        "step_title": "Cleanup",
+        "step_instruction": "Clean the workspace and store leftover materials.",
+        "money": "$0",
+        "items": ["Trash Bags", "Broom"],
+        "time_taken": 20,
+        "completed": false,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "group_title": "Phase 3: Quality Assurance",
+    "steps": [
+      {
+        "step_number": "41",
+        "step_title": "Initial Inspection",
+        "step_instruction": "Check for any visible defects.",
+        "money": "$0",
+        "items": ["Inspection Sheet"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "42",
+        "step_title": "Dimensional Verification",
+        "step_instruction": "Verify all dimensions are according to specifications.",
+        "money": "$0",
+        "items": ["Caliper", "Tape Measure"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "43",
+        "step_title": "Structural Integrity Check",
+        "step_instruction": "Ensure the structure is stable and secure.",
+        "money": "$0",
+        "items": ["Level", "Inspection Sheet"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "44",
+        "step_title": "Finish Quality Check",
+        "step_instruction": "Inspect the quality of paint and finishes.",
+        "money": "$0",
+        "items": ["Magnifying Glass", "Inspection Sheet"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "45",
+        "step_title": "Functional Testing",
+        "step_instruction": "Test all functional aspects, like doors, windows, and fixtures.",
+        "money": "$0",
+        "items": ["Checklist"],
+        "time_taken": 20,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "46",
+        "step_title": "Safety Compliance Check",
+        "step_instruction": "Ensure the product meets all safety regulations.",
+        "money": "$0",
+        "items": ["Safety Standards Document"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "47",
+        "step_title": "Final QA Approval",
+        "step_instruction": "Sign off on quality assurance.",
+        "money": "$0",
+        "items": ["Approval Form"],
+        "time_taken": 5,
+        "completed": false,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "group_title": "Phase 4: Packaging & Delivery",
+    "steps": [
+      {
+        "step_number": "48",
+        "step_title": "Packaging",
+        "step_instruction": "Carefully package the product for delivery.",
+        "money": "$15",
+        "items": ["Boxes", "Packing Tape"],
+        "time_taken": 20,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "49",
+        "step_title": "Labeling",
+        "step_instruction": "Label all packages according to the shipping requirements.",
+        "money": "$0",
+        "items": ["Labels", "Marker"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "50",
+        "step_title": "Documentation",
+        "step_instruction": "Prepare and attach all necessary shipping documents.",
+        "money": "$0",
+        "items": ["Invoice", "Packing List"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "51",
+        "step_title": "Arrange Transportation",
+        "step_instruction": "Book and confirm transportation for delivery.",
+        "money": "$0",
+        "items": ["Transport Company Contact"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "52",
+        "step_title": "Loading",
+        "step_instruction": "Load the packaged product onto the transport vehicle.",
+        "money": "$0",
+        "items": ["Dolly", "Straps"],
+        "time_taken": 20,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "53",
+        "step_title": "In-Transit Inspection",
+        "step_instruction": "Inspect the product at various stages during transit.",
+        "money": "$0",
+        "items": ["Inspection Checklist"],
+        "time_taken": 30,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "54",
+        "step_title": "Delivery Confirmation",
+        "step_instruction": "Confirm delivery with the recipient.",
+        "money": "$0",
+        "items": ["Delivery Receipt"],
+        "time_taken": 5,
+        "completed": false,
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "group_title": "Phase 5: Post-Delivery Support",
+    "steps": [
+      {
+        "step_number": "55",
+        "step_title": "Customer Feedback",
+        "step_instruction": "Request feedback from the customer.",
+        "money": "$0",
+        "items": ["Feedback Form"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "56",
+        "step_title": "Issue Resolution",
+        "step_instruction": "Address any issues or concerns raised by the customer.",
+        "money": "$0",
+        "items": ["Issue Log"],
+        "time_taken": 20,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "57",
+        "step_title": "Follow-up",
+        "step_instruction": "Follow up with the customer to ensure satisfaction.",
+        "money": "$0",
+        "items": ["Follow-up Call Script"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "58",
+        "step_title": "Warranty Registration",
+        "step_instruction": "Register the product for warranty coverage.",
+        "money": "$0",
+        "items": ["Warranty Registration Form"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "59",
+        "step_title": "Maintenance Schedule",
+        "step_instruction": "Provide the customer with a maintenance schedule.",
+        "money": "$0",
+        "items": ["Maintenance Schedule"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "60",
+        "step_title": "Customer Support",
+        "step_instruction": "Offer ongoing customer support as needed.",
+        "money": "$0",
+        "items": ["Support Contact Information"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "61",
+        "step_title": "Feedback Analysis",
+        "step_instruction": "Analyze customer feedback for future improvements.",
+        "money": "$0",
+        "items": ["Feedback Analysis Report"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "62",
+        "step_title": "Continuous Improvement",
+        "step_instruction": "Implement improvements based on feedback and analysis.",
+        "money": "$0",
+        "items": ["Improvement Plan"],
+        "time_taken": 20,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "63",
+        "step_title": "Project Review",
+        "step_instruction": "Review the project for lessons learned and best practices.",
+        "money": "$0",
+        "items": ["Project Review Document"],
+        "time_taken": 15,
+        "completed": false,
+        "notes": ""
+      },
+      {
+        "step_number": "64",
+        "step_title": "Archive Project",
+        "step_instruction": "Archive all documents and close the project.",
+        "money": "$0",
+        "items": ["Archive Folder"],
+        "time_taken": 10,
+        "completed": false,
+        "notes": ""
+      }
+    ]
+  }
+]

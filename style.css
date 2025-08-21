@@ -1,0 +1,1293 @@
+/**
+ * Interactive Checklist Application - Stylesheet
+ * =============================================
+ * 
+ * A comprehensive CSS framework for a modern, responsive checklist application
+ * with support for dark/light themes, smooth animations, and mobile-first design.
+ * 
+ * Features:
+ * - CSS Custom Properties for theming
+ * - Dark/Light mode support
+ * - Responsive design with mobile-first approach
+ * - Smooth animations and transitions
+ * - Modern gradient effects and shadows
+ * - Accessible color contrast ratios
+ * - Component-based architecture
+ * 
+ * Structure:
+ * 1. CSS Variables & Theme System
+ * 2. Base Styles & Typography
+ * 3. Header & Navigation Components
+ * 4. Main Content Layout
+ * 5. Group Cards & Step Components
+ * 6. Interactive Elements & States
+ * 7. Progress Tracking Footer
+ * 8. Responsive Design & Media Queries
+ * 
+ * @author Interactive Checklist Team
+ * @version 2.0.0
+ * @created 2024
+ */
+
+/* ========================================
+   1. CSS VARIABLES & THEME SYSTEM
+   ======================================== */
+
+/**
+ * Root CSS Custom Properties
+ * Defines the complete design system including colors, typography, spacing, and sizing.
+ * These variables enable consistent theming and easy maintenance.
+ */
+:root {
+    /* Color Palette - Light Theme */
+    --c-text-primary: #1a202c;        /* Primary text color for headings and important content */
+    --c-text-secondary: #4a5568;      /* Secondary text color for body text */
+    --c-text-subtle: #718096;         /* Subtle text color for hints and disabled states */
+    --c-bg-body: #f7fafc;             /* Main background color */
+    --c-bg-header: #ffffff;           /* Header and card backgrounds */
+    --c-bg-surface-1: #ffffff;        /* Primary surface color for cards */
+    --c-bg-surface-2: #f7fafc;        /* Secondary surface color for inputs */
+    --c-bg-surface-hover: #edf2f7;    /* Hover state background color */
+    --c-border: #e2e8f0;              /* Primary border color */
+    --c-border-subtle: #cbd5e0;       /* Subtle border color for inputs */
+    --c-primary: #3182ce;             /* Primary brand color */
+    --c-primary-light: #63b3ed;       /* Light variant of primary color */
+    --c-primary-text: #ffffff;        /* Text color on primary backgrounds */
+    --c-success: #38a169;             /* Success state color */
+    --c-warning: #d69e2e;             /* Warning state color */
+    --c-danger: #e53e3e;              /* Danger/error state color */
+    --c-danger-hover: #c53030;        /* Danger hover state color */
+    --c-shadow: rgba(0, 0, 0, 0.1);   /* Base shadow color */
+    --c-shadow-lg: rgba(0, 0, 0, 0.15); /* Large shadow color */
+    --c-accent: #805ad5;              /* Accent color for highlights */
+    --c-accent-light: #b794f6;        /* Light variant of accent color */
+
+    /* Typography System */
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+
+    /* Spacing & Sizing Scale */
+    --border-radius-sm: 6px;          /* Small border radius */
+    --border-radius-md: 8px;          /* Medium border radius */
+    --border-radius-lg: 12px;         /* Large border radius */
+    --border-radius-xl: 16px;         /* Extra large border radius */
+    --spacing-xs: 4px;                /* Extra small spacing */
+    --spacing-sm: 8px;                /* Small spacing */
+    --spacing-md: 16px;               /* Medium spacing */
+    --spacing-lg: 24px;               /* Large spacing */
+    --spacing-xl: 32px;               /* Extra large spacing */
+}
+
+/**
+ * Dark Theme Color Overrides
+ * Applied when body has 'dark-mode' class.
+ * Provides accessible dark theme with proper contrast ratios.
+ */
+body.dark-mode {
+    --c-text-primary: #f7fafc;
+    --c-text-secondary: #cbd5e0;
+    --c-text-subtle: #a0aec0;
+    --c-bg-body: #0f1419;
+    --c-bg-header: #1a202c;
+    --c-bg-surface-1: #1a202c;
+    --c-bg-surface-2: #2d3748;
+    --c-bg-surface-hover: #4a5568;
+    --c-border: #2d3748;
+    --c-border-subtle: #4a5568;
+    --c-primary: #63b3ed;
+    --c-primary-light: #90cdf4;
+    --c-success: #68d391;
+    --c-warning: #f6e05e;
+    --c-danger: #fc8181;
+    --c-danger-hover: #f56565;
+    --c-shadow: rgba(0, 0, 0, 0.3);
+    --c-shadow-lg: rgba(0, 0, 0, 0.4);
+    --c-accent: #b794f6;
+    --c-accent-light: #d6bcfa;
+}
+
+/* ========================================
+   2. BASE STYLES & TYPOGRAPHY
+   ======================================== */
+
+/**
+ * HTML Base Setup
+ * Ensures consistent scroll behavior across browsers
+ */
+html {
+    overflow-y: scroll; /* Always show vertical scrollbar to prevent layout shift */
+}
+
+/**
+ * Body Base Styles
+ * Sets up the fundamental layout and typography for the entire application
+ */
+body {
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    margin: 0;
+    background-color: var(--c-bg-body);
+    color: var(--c-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    padding-bottom: 80px; /* Space for fixed footer */
+}
+
+/* ========================================
+   3. HEADER & NAVIGATION COMPONENTS
+   ======================================== */
+
+/**
+ * Main Header Container
+ * Sticky header with shadow and proper z-index for overlaying content
+ */
+header {
+    background: var(--c-bg-header);
+    border-bottom: 1px solid var(--c-border);
+    box-shadow: 0 2px 4px var(--c-shadow);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+/**
+ * Header Top Bar
+ * Contains branding and theme toggle
+ */
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--c-border);
+}
+
+/**
+ * Brand Section
+ * Logo and application title display
+ */
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+/**
+ * Brand Icon
+ * Gradient background icon with centered content
+ */
+.brand-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--c-primary), var(--c-primary-light));
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/**
+ * Header Title
+ * Main application title styling
+ */
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--c-text-primary);
+    letter-spacing: -0.025em;
+}
+
+/**
+ * Theme Toggle Component
+ * Interactive switch for dark/light mode toggle
+ */
+.theme-toggle {
+    cursor: pointer;
+    padding: var(--spacing-xs);
+}
+
+.theme-toggle-track {
+    width: 56px;
+    height: 28px;
+    background-color: var(--c-bg-surface-2);
+    border: 2px solid var(--c-border-subtle);
+    border-radius: 20px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle-thumb {
+    width: 24px;
+    height: 24px;
+    background-color: var(--c-bg-header);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px var(--c-shadow);
+}
+
+/* Theme Toggle Icon States */
+.theme-toggle .sun-icon {
+    display: block;
+    stroke: var(--c-warning);
+}
+
+.theme-toggle .moon-icon {
+    display: none;
+    stroke: var(--c-primary);
+}
+
+/* Dark Mode Theme Toggle States */
+body.dark-mode .theme-toggle-track {
+    background-color: var(--c-primary);
+    border-color: var(--c-primary);
+}
+
+body.dark-mode .theme-toggle-thumb {
+    left: 28px;
+}
+
+body.dark-mode .theme-toggle .sun-icon {
+    display: none;
+}
+
+body.dark-mode .theme-toggle .moon-icon {
+    display: block;
+}
+
+/**
+ * Header Controls Section
+ * Contains search, filters, and action buttons
+ */
+.header-controls {
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+/**
+ * Search Section
+ * Search input with icon and clear button
+ */
+.search-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: var(--spacing-md);
+    color: var(--c-text-subtle);
+    z-index: 1;
+}
+
+/**
+ * Search Input
+ * Main search input with focus states
+ */
+#searchInput {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    border: 2px solid var(--c-border-subtle);
+    border-radius: var(--border-radius-lg);
+    font-size: 0.95rem;
+    background-color: var(--c-bg-surface-2);
+    color: var(--c-text-primary);
+    transition: all 0.2s ease;
+    font-family: var(--font-sans);
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 15%, transparent);
+    background-color: var(--c-bg-header);
+}
+
+#searchInput::placeholder {
+    color: var(--c-text-subtle);
+}
+
+/**
+ * Search Clear Button
+ * Button to clear search input
+ */
+.search-clear {
+    position: absolute;
+    right: var(--spacing-md);
+    background: none;
+    border: none;
+    color: var(--c-text-subtle);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius-sm);
+    transition: all 0.2s ease;
+}
+
+.search-clear:hover {
+    color: var(--c-text-primary);
+    background-color: var(--c-bg-surface-hover);
+}
+
+/**
+ * Controls Section
+ * Container for filters and action buttons
+ */
+.controls-section {
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+/**
+ * Filter Group
+ * Filter buttons with counts
+ */
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.filter-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--c-text-secondary);
+    white-space: nowrap;
+}
+
+.filter-buttons {
+    display: flex;
+    background-color: var(--c-bg-surface-2);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-xs);
+    border: 1px solid var(--c-border);
+}
+
+/**
+ * Filter Button
+ * Individual filter button with active states
+ */
+.filter-btn {
+    background-color: transparent;
+    color: var(--c-text-secondary);
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: var(--font-sans);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    white-space: nowrap;
+}
+
+.filter-btn:hover {
+    background-color: var(--c-bg-surface-hover);
+    color: var(--c-text-primary);
+}
+
+.filter-btn.active {
+    background-color: var(--c-primary);
+    color: var(--c-primary-text);
+    box-shadow: 0 2px 4px color-mix(in srgb, var(--c-primary) 25%, transparent);
+}
+
+/**
+ * Filter Count Badge
+ * Shows count of items for each filter
+ */
+.filter-count {
+    background-color: color-mix(in srgb, currentColor 15%, transparent);
+    color: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/**
+ * Action Group
+ * Container for action buttons
+ */
+.action-group {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/**
+ * Action Button
+ * General action button styling with hover effects
+ */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background-color: var(--c-bg-surface-2);
+    color: var(--c-text-secondary);
+    padding: 10px 16px;
+    border-radius: var(--border-radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--c-border);
+    transition: all 0.2s ease;
+    font-family: var(--font-sans);
+    white-space: nowrap;
+}
+
+.action-btn:hover {
+    background-color: var(--c-bg-surface-hover);
+    color: var(--c-text-primary);
+    border-color: var(--c-border-subtle);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px var(--c-shadow);
+}
+
+.action-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.action-btn:hover svg {
+    transform: scale(1.1);
+}
+
+/**
+ * Collapse Button Special State
+ * Rotates icon when expanded
+ */
+#collapse-all-btn.expanded svg {
+    transform: rotate(180deg);
+}
+
+/**
+ * Header Stats Section
+ * Displays summary statistics
+ */
+.header-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: var(--c-bg-surface-2);
+    border-top: 1px solid var(--c-border);
+}
+
+/**
+ * Individual Stat Item
+ * Single statistic display with icon
+ */
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.9rem;
+}
+
+.stat-item svg {
+    color: var(--c-text-subtle);
+}
+
+.stat-label {
+    color: var(--c-text-secondary);
+    font-weight: 500;
+}
+
+.stat-value {
+    color: var(--c-text-primary);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* ========================================
+   4. RESPONSIVE HEADER DESIGN
+   ======================================== */
+
+/**
+ * Tablet Responsive Design (1024px and below)
+ */
+@media (max-width: 1024px) {
+    .header-controls {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .search-section {
+        min-width: unset;
+        width: 100%;
+    }
+    
+    .controls-section {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+/**
+ * Mobile Responsive Design (768px and below)
+ */
+@media (max-width: 768px) {
+    .header-top {
+        padding: var(--spacing-md);
+    }
+    
+    .header-controls {
+        padding: var(--spacing-md);
+    }
+    
+    .controls-section {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .filter-group,
+    .action-group {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .header-stats {
+        flex-wrap: wrap;
+        gap: var(--spacing-md);
+        justify-content: space-around;
+    }
+    
+    .action-btn span {
+        display: none;
+    }
+    
+    header h1 {
+        font-size: 1.25rem;
+    }
+}
+
+/**
+ * Small Mobile Responsive Design (480px and below)
+ */
+@media (max-width: 480px) {
+    .brand-section {
+        gap: var(--spacing-sm);
+    }
+    
+    .brand-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .header-stats {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+}
+
+/* ========================================
+   5. MAIN CONTENT LAYOUT
+   ======================================== */
+
+/**
+ * Main Content Container
+ * Centers content with maximum width and proper spacing
+ */
+#group-container {
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
+    max-width: 1000px;
+    margin: auto;
+}
+
+/* ========================================
+   6. GROUP CARDS & STEP COMPONENTS
+   ======================================== */
+
+/**
+ * Step Group Container
+ * Main container for each group of steps with hover effects
+ */
+#group-container .step-group {
+    background: var(--c-bg-surface-1);
+    border-radius: var(--border-radius-xl);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: 0 8px 32px var(--c-shadow);
+    border: 1px solid var(--c-border);
+    transition: all 0.3s ease;
+}
+
+#group-container .step-group:hover {
+    box-shadow: 0 12px 48px var(--c-shadow-lg);
+    transform: translateY(-2px);
+}
+
+/**
+ * Group Header
+ * Clickable header with title and collapse icon
+ */
+#group-container .step-group .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    cursor: pointer;
+    user-select: none;
+    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
+    border-bottom: 1px solid var(--c-border);
+    position: relative;
+    overflow: hidden;
+}
+
+/**
+ * Group Header Accent Line
+ * Animated accent line that appears on hover
+ */
+#group-container .step-group .group-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+#group-container .step-group:hover .group-header::before {
+    transform: scaleY(1);
+}
+
+/**
+ * Group Title
+ * Main title for each step group
+ */
+#group-container .step-group .group-header .group-title { 
+    font-size: 1.3em; 
+    font-weight: 700;
+    color: var(--c-text-primary);
+    text-shadow: 0 1px 2px var(--c-shadow);
+}
+
+/**
+ * Collapse Icon
+ * Animated icon that rotates when group is collapsed
+ */
+#group-container .step-group .group-header .collapse-icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+    stroke: var(--c-text-secondary);
+    background: var(--c-bg-surface-1);
+    border-radius: 50%;
+    padding: 4px;
+    box-shadow: 0 2px 8px var(--c-shadow);
+}
+
+/**
+ * Group Body
+ * Container for step cards with collapse animation
+ */
+#group-container .step-group .group-body {
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg) var(--spacing-md);
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out, opacity 0.3s ease;
+    opacity: 1;
+    overflow: hidden;
+}
+
+/**
+ * Collapsed Group Body
+ * Hidden state for collapsed groups
+ */
+#group-container .step-group.is-collapsed .group-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+
+/**
+ * Collapsed Icon State
+ * Rotated icon for collapsed groups
+ */
+#group-container .step-group.is-collapsed .collapse-icon { 
+    transform: rotate(-90deg); 
+}
+
+/**
+ * Individual Step Card
+ * Main container for each step with hover effects and animations
+ */
+.step {
+    margin-bottom: var(--spacing-md);
+    border-radius: var(--border-radius-lg);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+    background: linear-gradient(135deg, var(--c-bg-surface-1), var(--c-bg-surface-2));
+    box-shadow: 0 4px 16px var(--c-shadow);
+    position: relative;
+}
+
+/**
+ * Step Hover Overlay
+ * Subtle gradient overlay on hover
+ */
+.step::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, color-mix(in srgb, var(--c-primary) 5%, transparent) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.step:hover::before {
+    opacity: 1;
+}
+
+.step:last-child { 
+    margin-bottom: 0; 
+}
+
+/**
+ * Step Hover Effects
+ * Elevation and border color changes on hover
+ */
+.step:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px var(--c-shadow-lg);
+    border-color: color-mix(in srgb, var(--c-primary) 30%, var(--c-border));
+}
+
+/**
+ * Step Header
+ * Contains checkbox, title, and time information
+ */
+.step .step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg, var(--c-bg-surface-1), var(--c-bg-surface-hover));
+    border-bottom: 1px solid var(--c-border);
+    position: relative;
+}
+
+/**
+ * Step Header Left Section
+ * Contains checkbox and title
+ */
+.step .step-header .step-header-left { 
+    display: flex; 
+    align-items: center; 
+    gap: var(--spacing-md); 
+}
+
+/**
+ * Step Checkbox
+ * Completion checkbox with custom styling
+ */
+.step .step-header input[type="checkbox"] { 
+    margin: 0; 
+    flex-shrink: 0; 
+    width: 20px;
+    height: 20px;
+    accent-color: var(--c-primary);
+    cursor: pointer;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px var(--c-shadow));
+}
+
+/**
+ * Step Title
+ * Main title for each step
+ */
+.step .step-header .step-title { 
+    font-weight: 700; 
+    font-size: 1.1em; 
+    color: var(--c-text-primary);
+    text-shadow: 0 1px 2px var(--c-shadow);
+    line-height: 1.4;
+}
+
+/**
+ * Step Time Badge
+ * Shows cumulative time with gradient background
+ */
+.step .step-header .step-time { 
+    font-size: 0.85em; 
+    font-weight: 600; 
+    color: var(--c-primary); 
+    background: linear-gradient(135deg, var(--c-primary-light), var(--c-primary));
+    color: white;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--c-primary) 25%, transparent);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    min-width: 50px;
+    text-align: center;
+}
+
+/**
+ * Step Body
+ * Contains instruction text and notes
+ */
+.step .step-body {
+    padding: var(--spacing-md);
+    background: var(--c-bg-surface-1);
+    position: relative;
+}
+
+/**
+ * Step Body Top Border
+ * Subtle gradient line at the top
+ */
+.step .step-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--c-border), transparent);
+}
+
+/**
+ * Step Instruction
+ * Main instruction text with styled background
+ */
+.step .step-body .step-instruction { 
+    margin-bottom: var(--spacing-md);
+    color: var(--c-text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    padding: var(--spacing-sm);
+    background: var(--c-bg-surface-2);
+    border-radius: var(--border-radius-md);
+    border-left: 3px solid var(--c-accent);
+    box-shadow: inset 0 1px 3px var(--c-shadow);
+}
+
+/**
+ * Note Display
+ * Shows saved notes with gradient background
+ */
+.step .note-display {
+    background: linear-gradient(135deg, var(--c-accent-light), var(--c-accent));
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-lg);
+    font-style: italic;
+    cursor: text;
+    transition: all 0.3s ease;
+    white-space: pre-wrap;
+    margin-top: var(--spacing-md);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--c-accent) 25%, transparent);
+    position: relative;
+    overflow: hidden;
+    font-size: 0.9rem;
+}
+
+/**
+ * Note Display Icon
+ * Thought bubble emoji in corner
+ */
+.step .note-display::before {
+    content: '💭';
+    position: absolute;
+    top: var(--spacing-xs);
+    right: var(--spacing-sm);
+    font-size: 1em;
+    opacity: 0.7;
+}
+
+.step .note-display:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px color-mix(in srgb, var(--c-accent) 35%, transparent);
+}
+
+/**
+ * Note Textarea
+ * Hidden textarea for editing notes
+ */
+.step .step-notes {
+    display: none;
+    width: 100%; 
+    box-sizing: border-box; 
+    border: 2px solid var(--c-accent);
+    border-radius: var(--border-radius-lg); 
+    padding: var(--spacing-md); 
+    font-family: inherit;
+    font-size: 0.9em; 
+    line-height: 1.6; 
+    resize: vertical; 
+    min-height: 80px;
+    background: linear-gradient(135deg, var(--c-bg-header), var(--c-bg-surface-2)); 
+    color: var(--c-text-primary); 
+    cursor: text;
+    margin-top: var(--spacing-md);
+    box-shadow: inset 0 2px 8px var(--c-shadow);
+}
+
+.step .step-notes:focus {
+    outline: none; 
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-accent) 15%, transparent), inset 0 2px 8px var(--c-shadow);
+}
+
+/**
+ * Note Editing State
+ * Shows textarea when editing notes
+ */
+.step.is-editing-note .note-display { display: none; }
+.step.is-editing-note .step-notes { display: block; }
+
+/**
+ * Step Footer
+ * Contains add note button and items list
+ */
+.step .step-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
+    font-size: 0.85em;
+    color: var(--c-text-secondary);
+    border-top: 1px solid var(--c-border);
+    position: relative;
+}
+
+/**
+ * Step Footer Top Border
+ * Subtle gradient line at the top
+ */
+.step .step-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--c-border), transparent);
+}
+
+/**
+ * Step Items List
+ * Shows required items/tools for the step
+ */
+.step .step-footer .step-items { 
+    text-align: right; 
+    font-weight: 500;
+    color: var(--c-text-primary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    justify-content: flex-end;
+    max-width: 60%;
+    font-size: 0.85em;
+}
+
+.step .step-footer .step-items::before {
+    content: '🔧 ';
+    margin-right: var(--spacing-xs);
+}
+
+/**
+ * Add Note Button
+ * Button to add notes to steps
+ */
+.step .add-note-btn {
+    display: inline-flex; 
+    align-items: center; 
+    gap: var(--spacing-xs);
+    background: linear-gradient(135deg, var(--c-warning), #e69500);
+    color: white;
+    border: none;
+    padding: 6px 12px; 
+    border-radius: var(--border-radius-lg);
+    font-size: 0.8em; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 12px color-mix(in srgb, var(--c-warning) 25%, transparent);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.step .add-note-btn:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--c-warning) 35%, transparent);
+}
+
+.step .add-note-btn svg { 
+    width: 14px; 
+    height: 14px; 
+    stroke-width: 2.5px; 
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+
+/* ========================================
+   7. COMPLETED STATE STYLING
+   ======================================== */
+
+/**
+ * Completed Step Styling
+ * Visual changes for completed steps
+ */
+.step.completed {
+    opacity: 0.85;
+    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
+    border-color: var(--c-success);
+    position: relative;
+}
+
+/**
+ * Completed Step Checkmark
+ * Success checkmark overlay for completed steps
+ */
+.step.completed::after {
+    content: '✓';
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--c-success), #2d7d32);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1em;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--c-success) 30%, transparent);
+    z-index: 10;
+}
+
+/**
+ * Completed Step Title
+ * Strikethrough effect for completed step titles
+ */
+.step.completed .step-title { 
+    text-decoration: line-through; 
+    color: var(--c-text-subtle); 
+}
+
+/**
+ * Completed Step Content
+ * Reduced opacity for completed step content
+ */
+.step.completed .step-body, 
+.step.completed .step-footer { 
+    opacity: 0.8; 
+}
+
+/**
+ * Completed Step Time Badge
+ * Success color for completed step time
+ */
+.step.completed .step-time {
+    background: linear-gradient(135deg, var(--c-success), #2d7d32);
+    color: white;
+}
+
+/**
+ * Completed Step Hover
+ * Reduced hover effects for completed steps
+ */
+.step.completed:hover {
+    transform: none;
+    box-shadow: 0 4px 16px var(--c-shadow);
+}
+
+/* ========================================
+   8. PROGRESS TRACKING FOOTER
+   ======================================== */
+
+/**
+ * Progress Footer
+ * Fixed bottom footer with progress bar and reset button
+ */
+#progress-footer {
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%;
+    background: linear-gradient(135deg, var(--c-bg-header), var(--c-bg-surface-2)); 
+    border-top: 1px solid var(--c-border);
+    padding: var(--spacing-md) var(--spacing-lg); 
+    box-shadow: 0 -8px 32px var(--c-shadow-lg);
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    gap: var(--spacing-lg);
+    z-index: 100; 
+    box-sizing: border-box;
+    backdrop-filter: blur(8px);
+}
+
+/**
+ * Progress Information Section
+ * Contains progress text and bar
+ */
+#progress-footer .progress-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+/**
+ * Progress Text
+ * Shows completion statistics
+ */
+#progress-footer #progress-text {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--c-text-primary);
+    margin-bottom: var(--spacing-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 2px var(--c-shadow);
+}
+
+/**
+ * Progress Bar Container
+ * Container for the progress bar
+ */
+#progress-footer .progress-bar-container {
+    height: 10px;
+    background-color: var(--c-bg-surface-2);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+    box-shadow: inset 0 2px 4px var(--c-shadow);
+}
+
+/**
+ * Progress Bar
+ * Animated progress bar with gradient
+ */
+#progress-footer #progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--c-primary), var(--c-primary-light), var(--c-accent));
+    border-radius: 6px;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--c-primary) 25%, transparent);
+}
+
+/**
+ * Reset Button
+ * Button to reset all progress
+ */
+#progress-footer .reset-btn {
+    background: linear-gradient(135deg, var(--c-danger), var(--c-danger-hover));
+    color: var(--c-primary-text);
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--border-radius-lg);
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--c-danger) 25%, transparent);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+#progress-footer .reset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px color-mix(in srgb, var(--c-danger) 35%, transparent);
+}
+
+/* ========================================
+   9. RESPONSIVE DESIGN - MAIN CONTENT
+   ======================================== */
+
+/**
+ * Tablet Responsive Design (768px and below)
+ */
+@media (max-width: 768px) {
+    #group-container {
+        padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
+    }
+
+    .step .step-header {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .step .step-body {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .step .step-footer {
+        padding: var(--spacing-sm) var(--spacing-md);
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: flex-start;
+    }
+    
+    .step .step-footer .step-items {
+        max-width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .step .step-header .step-header-left {
+        gap: var(--spacing-sm);
+    }
+    
+    .step .step-title {
+        font-size: 1em;
+    }
+}
+
+/**
+ * Mobile Responsive Design (480px and below)
+ */
+@media (max-width: 480px) {
+    #group-container {
+        padding: var(--spacing-md);
+    }
+    
+    .step {
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .step .step-header .step-header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+    
+    .step .step-time {
+        align-self: flex-end;
+    }
+}
+
+/* ========================================
+   END OF STYLESHEET
+   ======================================== */

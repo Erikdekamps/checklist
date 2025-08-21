@@ -4,391 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Checklist</title>
-    <style>
-	/* --- CSS Variables --- */
-	:root {
-		/* Colors */
-		--c-text-primary: #212529;
-		--c-text-secondary: #6c757d;
-		--c-text-subtle: #adb5bd;
-		--c-bg-body: #f4f4f4;
-		--c-bg-header: #fff;
-		--c-bg-surface-1: #fff; /* Main card/group bg */
-		--c-bg-surface-2: #f8f9fa; /* Inner card header/footer */
-		--c-bg-surface-hover: #f1f3f5;
-		--c-border: #e9ecef;
-		--c-border-subtle: #dee2e6;
-		--c-primary: #007bff;
-		--c-primary-text: #fff;
-		--c-danger: #dc3545;
-		--c-danger-hover: #c82333;
-		--c-shadow: rgba(0,0,0,0.08);
-
-		/* Typography */
-		--font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-		
-		/* Sizing & Spacing */
-		--border-radius-md: 8px;
-		--spacing-xs: 4px;
-		--spacing-sm: 8px;
-		--spacing-md: 15px;
-		--spacing-lg: 20px;
-	}
-
-	body.dark-mode {
-		--c-text-primary: #e0e0e0;
-		--c-text-secondary: #aaa;
-		--c-text-subtle: #777;
-		--c-bg-body: #121212;
-		--c-bg-header: #1e1e1e;
-		--c-bg-surface-1: #1e1e1e;
-		--c-bg-surface-2: #2a2a2a;
-		--c-bg-surface-hover: #343a40;
-		--c-border: #333;
-		--c-border-subtle: #495057;
-		--c-primary: #0d6efd;
-		--c-danger: #e04455;
-		--c-danger-hover: #fa5365;
-		--c-shadow: rgba(0,0,0,0.2);
-	}
-
-
-	/* --- Base Styles --- */
-	html {
-		overflow-y: scroll;
-	}
-
-	body {
-		font-family: var(--font-sans);
-		line-height: 1.6;
-		margin: 0;
-		background-color: var(--c-bg-body);
-		color: var(--c-text-primary);
-		transition: background-color 0.3s ease, color 0.3s ease;
-		padding-bottom: 80px;
-	}
-
-
-	/* --- Layout & Components --- */
-	#theme-bar {
-		background-color: var(--c-bg-surface-2);
-		padding: var(--spacing-xs) 0;
-		cursor: pointer;
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-
-		svg {
-			width: 20px;
-			height: 20px;
-			margin-right: var(--spacing-lg);
-			stroke: var(--c-text-secondary);
-		}
-		.sun-icon { display: none; }
-		.moon-icon { display: inline-block; }
-		
-		body.dark-mode #theme-bar .sun-icon { display: inline-block; }
-		body.dark-mode #theme-bar .moon-icon { display: none; }
-	}
-
-	header {
-		background: var(--c-bg-header);
-		padding: 1rem 0;
-		text-align: center;
-		border-bottom: 1px solid var(--c-border);
-
-		.controls, .view-controls {
-			margin-top: var(--spacing-md);
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			gap: 10px;
-			flex-wrap: wrap;
-		}
-
-		#searchInput {
-			padding: var(--spacing-sm) 12px;
-			width: 250px;
-			border: 1px solid var(--c-border-subtle);
-			border-radius: 4px;
-			font-size: 1em;
-			background-color: var(--c-bg-header);
-			color: var(--c-text-primary);
-		}
-
-		#total-time-container {
-			margin-top: var(--spacing-md);
-			font-size: 1.1em;
-			font-weight: 600;
-		}
-
-		.button-group {
-			display: flex;
-			border-radius: 6px;
-			overflow: hidden;
-			border: 1px solid var(--c-border-subtle);
-			
-			.filter-btn {
-				background-color: var(--c-bg-header);
-				color: var(--c-text-secondary);
-				border: none;
-				padding: 7px 14px;
-				cursor: pointer;
-				transition: all 0.2s ease;
-				border-left: 1px solid var(--c-border-subtle);
-				font-size: 0.9em;
-
-				&:first-child { border-left: none; }
-				&.active {
-					background-color: var(--c-primary);
-					color: var(--c-primary-text);
-				}
-			}
-		}
-		
-		.view-btn {
-			background-color: var(--c-bg-surface-2);
-			color: var(--c-text-secondary);
-			padding: 6px 12px;
-			border-radius: 4px;
-			font-size: 0.9em;
-			cursor: pointer;
-			border: 1px solid var(--c-border-subtle);
-			transition: all 0.2s ease;
-			font-family: var(--font-sans);
-		}
-
-		.view-btn:hover {
-			background-color: var(--c-border-subtle);
-			color: var(--c-text-primary);
-		}
-	}
-
-	#group-container {
-		padding: var(--spacing-lg);
-		max-width: 800px;
-		margin: auto;
-
-		.step-group {
-			background: var(--c-bg-surface-1);
-			border-radius: var(--border-radius-md);
-			margin-bottom: var(--spacing-lg);
-			box-shadow: 0 4px 6px var(--c-shadow);
-			border: 1px solid var(--c-border);
-			overflow: hidden;
-
-			.group-header {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				padding: var(--spacing-md) var(--spacing-lg);
-				cursor: pointer;
-				user-select: none;
-
-				.group-title { font-size: 1.3em; font-weight: 600; }
-				.collapse-icon {
-					width: 24px;
-					height: 24px;
-					transition: transform 0.3s ease;
-					stroke: var(--c-text-secondary);
-				}
-			}
-			
-			.group-body {
-				padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
-				max-height: 2000px;
-				transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
-			}
-
-			&.is-collapsed {
-				.group-body {
-					max-height: 0;
-					padding-top: 0;
-					padding-bottom: 0;
-					overflow: hidden;
-				}
-				.collapse-icon { transform: rotate(-90deg); }
-			}
-		}
-	}
-
-	.step {
-		margin-bottom: var(--spacing-md);
-		border-radius: var(--border-radius-md);
-		cursor: pointer;
-		transition: all 0.2s ease-in-out;
-		overflow: hidden;
-		border: 1px solid var(--c-border);
-		background-color: var(--c-bg-surface-2);
-		box-shadow: none;
-
-		&:last-child { margin-bottom: 0; }
-		&:hover {
-			transform: translateY(-3px);
-			box-shadow: 0 6px 12px var(--c-shadow);
-		}
-
-		.step-header {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 12px var(--spacing-md);
-			background-color: transparent;
-
-			.step-header-left { display: flex; align-items: center; gap: var(--spacing-md); }
-			input[type="checkbox"] { margin: 0; flex-shrink: 0; transform: scale(1.5); pointer-events: none; }
-			.step-title { font-weight: 600; font-size: 1.15em; color: var(--c-text-primary); }
-			.step-time { font-size: 0.9em; font-weight: 500; color: var(--c-text-secondary); }
-		}
-		
-		.step-body {
-			padding: var(--spacing-lg);
-			border-top: 1px solid var(--c-border);
-			border-bottom: 1px solid var(--c-border);
-			.step-instruction { margin-bottom: var(--spacing-md); }
-		}
-
-		.note-display {
-			background-color: var(--c-bg-body);
-			border-left: 3px solid var(--c-border-subtle);
-			padding: var(--spacing-sm) var(--spacing-md);
-			border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
-			font-style: italic;
-			color: var(--c-text-secondary);
-			cursor: text;
-			transition: background-color 0.2s ease;
-			white-space: pre-wrap;
-			&:hover { background-color: var(--c-border); }
-		}
-		
-		.step-notes {
-			display: none;
-			width: 100%; box-sizing: border-box; border: 1px solid var(--c-border-subtle);
-			border-radius: 4px; padding: var(--spacing-sm); font-family: inherit;
-			font-size: 0.9em; line-height: 1.5; resize: vertical; min-height: 80px;
-			background-color: var(--c-bg-header); color: var(--c-text-primary); cursor: text;
-			&:focus {
-				outline: none; border-color: var(--c-primary);
-				box-shadow: 0 0 0 2px color-mix(in srgb, var(--c-primary) 25%, transparent);
-			}
-		}
-
-		&.is-editing-note {
-			.note-display { display: none; }
-			.step-notes { display: block; }
-		}
-		
-		.step-footer {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 10px var(--spacing-md);
-			background-color: transparent;
-			font-size: 0.85em;
-			color: var(--c-text-secondary);
-			.step-items { text-align: right; }
-		}
-		
-		.add-note-btn {
-			display: inline-flex; align-items: center; gap: 6px;
-			background-color: var(--c-bg-body); border: 1px solid var(--c-border-subtle);
-			color: var(--c-text-secondary); padding: 4px 10px; border-radius: 20px;
-			font-size: 0.8em; font-weight: 500; cursor: pointer; transition: all 0.2s ease;
-			&:hover { background-color: var(--c-border-subtle); }
-			svg { width: 14px; height: 14px; stroke-width: 2.5px; }
-		}
-		
-		&.completed {
-			box-shadow: none;
-			.step-title { text-decoration: line-through; color: var(--c-text-subtle); }
-			.step-body, .step-footer { opacity: 0.6; }
-		}
-	}
-
-	#progress-footer {
-		position: fixed; bottom: 0; left: 0; width: 100%;
-		background-color: var(--c-bg-header); border-top: 1px solid var(--c-border);
-		padding: var(--spacing-md) var(--spacing-lg); box-shadow: 0 -2px 10px var(--c-shadow);
-		display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-lg);
-		z-index: 100; box-sizing: border-box;
-
-		.progress-info {
-			flex-grow: 1;
-			min-width: 0; /* Prevents flex item from overflowing */
-		}
-
-		#progress-text {
-			font-size: 0.9em;
-			font-weight: 500;
-			color: var(--c-text-primary);
-			margin-bottom: var(--spacing-xs);
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-		
-		.progress-bar-container {
-			height: 12px;
-			background-color: var(--c-bg-body);
-			border-radius: 6px;
-			overflow: hidden;
-		}
-		
-		#progress-bar {
-			height: 100%;
-			width: 0%;
-			background-color: var(--c-primary);
-			border-radius: 6px;
-			transition: width 0.4s ease;
-		}
-
-		.reset-btn {
-			background-color: var(--c-danger);
-			color: var(--c-primary-text);
-			border: none;
-			padding: 8px 12px;
-			border-radius: 4px;
-			font-size: 0.9em;
-			font-weight: 500;
-			cursor: pointer;
-			transition: background-color 0.2s ease;
-			flex-shrink: 0; /* Prevents button from shrinking */
-		}
-
-		.reset-btn:hover {
-			background-color: var(--c-danger-hover);
-		}
-	}
-	</style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body> <!-- The 'dark-mode' class will be added here by JavaScript -->
 
-    <!-- Theme Toggle Bar -->
-    <div id="theme-bar">
-        <!-- Sun/Moon Icons -->
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sun-icon"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon-icon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-    </div>
-
     <header>
-        <h1>My Interactive Checklist</h1>
-        <div class="controls">
-            <input type="text" id="searchInput" placeholder="Search steps...">
-            <div id="filter-controls" class="button-group">
-                <button id="filter-all" class="filter-btn">All</button>
-                <button id="filter-incomplete" class="filter-btn">Incomplete</button>
-                <button id="filter-completed" class="filter-btn">Completed</button>
+        <!-- Top Bar with Theme Toggle and Title -->
+        <div class="header-top">
+            <div class="brand-section">
+                <div class="brand-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 11l3 3L22 4"></path>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                </div>
+                <h1>Interactive Checklist</h1>
+            </div>
+            
+            <div class="theme-toggle" id="theme-toggle">
+                <div class="theme-toggle-track">
+                    <div class="theme-toggle-thumb">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="view-controls">
-            <button id="toggle-expand-btn" class="view-btn">Expand All</button>
-            <button id="focus-incomplete-btn" class="view-btn">Focus Incomplete</button>
+
+        <!-- Controls Section -->
+        <div class="header-controls">
+            <!-- Search Bar -->
+            <div class="search-section">
+                <div class="search-container">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search steps, instructions, or items...">
+                    <button class="search-clear" id="search-clear" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter and Action Buttons -->
+            <div class="controls-section">
+                <div class="filter-group">
+                    <label class="filter-label">Show:</label>
+                    <div class="filter-buttons">
+                        <button id="filter-all" class="filter-btn active">
+                            <span class="filter-count" id="filter-all-count">0</span>
+                            All
+                        </button>
+                        <button id="filter-incomplete" class="filter-btn">
+                            <span class="filter-count" id="filter-incomplete-count">0</span>
+                            To Do
+                        </button>
+                        <button id="filter-completed" class="filter-btn">
+                            <span class="filter-count" id="filter-completed-count">0</span>
+                            Done
+                        </button>
+                    </div>
+                </div>
+
+                <div class="action-group">
+                    <button id="collapse-all-btn" class="action-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        <span>Collapse All</span>
+                    </button>
+                    <button id="focus-incomplete-btn" class="action-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <eye x="1" y="12" width="22" height="10" rx="5"></eye>
+                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <span>Focus Mode</span>
+                    </button>
+                </div>
+            </div>
         </div>
-        <div id="total-time-container">
-            Total Time: <span id="total-time">0m</span>
+
+        <!-- Stats Bar -->
+        <div class="header-stats">
+            <div class="stat-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span class="stat-label">Total Time:</span>
+                <span id="total-time" class="stat-value">0m</span>
+            </div>
+            <div class="stat-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 11l3 3L22 4"></path>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                <span class="stat-label">Progress:</span>
+                <span id="progress-stat" class="stat-value">0/0</span>
+            </div>
+            <div class="stat-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span class="stat-label">Budget:</span>
+                <span id="total-cost" class="stat-value">$0</span>
+            </div>
         </div>
     </header>
-    
+
     <main id="group-container"></main>
 
     <!-- Progress Footer -->
@@ -402,350 +143,6 @@
         <button id="reset-btn" class="reset-btn">Reset Progress</button>
     </div>
 
-    <script>
-	/**
-	 * @file Manages an interactive checklist application with collapsible groups.
-	 * @description This script handles loading checklist data, rendering groups and steps, managing state
-	 * (completion, theme, filters, notes, group collapse), and saving progress to localStorage.
-	 */
-
-	document.addEventListener('DOMContentLoaded', () => {
-
-		// -----------------
-		//  STATE & CONSTANTS
-		// -----------------
-
-		let dataWithComputedValues = [];
-		let currentFilter = 'all';
-		let groupCollapseState = {};
-
-		const defaultGroupData = [
-			{
-				group_title: "Phase 1: Preparation",
-				steps: [
-					{ "step_number": "1", "step_title": "Initial Setup", "step_instruction": "Prepare your workspace and gather all necessary tools.", "money": "$50", "items": ["Screwdriver", "Hammer", "Measuring Tape"], "time_taken": 15, "completed": false, "notes": "" },
-					{ "step_number": "2", "step_title": "Gather Materials", "step_instruction": "Collect all items required for assembly.", "money": "$100", "items": ["Wood Panels", "Screws", "Nails"], "time_taken": 45, "completed": false, "notes": "" }
-				]
-			},
-			{
-				group_title: "Phase 2: Assembly & Finishing",
-				steps: [
-					{ "step_number": "3", "step_title": "Painting", "step_instruction": "Apply a base coat of paint and let it dry.", "money": "$30", "items": ["Paint", "Brushes", "Drop Cloth"], "time_taken": 60, "completed": false, "notes": "" },
-					{ "step_number": "4", "step_title": "Final Touches", "step_instruction": "Add the finishing details and inspect the final product.", "money": "$20", "items": ["Handles", "Varnish"], "time_taken": 30, "completed": false, "notes": "" }
-				]
-			}
-		];
-
-		const groupContainer = document.getElementById('group-container');
-		const searchInput = document.getElementById('searchInput');
-		const totalTimeElement = document.getElementById('total-time');
-		const themeBar = document.getElementById('theme-bar');
-		const progressText = document.getElementById('progress-text');
-		const progressBar = document.getElementById('progress-bar');
-		const filterControls = {
-			all: document.getElementById('filter-all'),
-			incomplete: document.getElementById('filter-incomplete'),
-			completed: document.getElementById('filter-completed')
-		};
-		const toggleExpandBtn = document.getElementById('toggle-expand-btn');
-		const focusIncompleteBtn = document.getElementById('focus-incomplete-btn');
-		const resetBtn = document.getElementById('reset-btn');
-
-		// -----------------
-		//  HELPER FUNCTIONS
-		// -----------------
-		function formatTime(totalMinutes) {
-			if (totalMinutes < 0) return "0m";
-			const hours = Math.floor(totalMinutes / 60);
-			const minutes = totalMinutes % 60;
-			let timeString = "";
-			if (hours > 0) timeString += `${hours}h `;
-			if (minutes > 0 || hours === 0) timeString += `${minutes}m`;
-			return timeString.trim();
-		}
-
-
-		// -----------------
-		//  DATA MANAGEMENT
-		// -----------------
-		function saveProgress(dataToSave) { localStorage.setItem('checklistProgress', JSON.stringify(dataToSave)); }
-
-		function loadAndProcessData() {
-			const savedData = localStorage.getItem('checklistProgress');
-			let initialData = defaultGroupData;
-			try {
-				const parsedData = JSON.parse(savedData);
-				if (Array.isArray(parsedData) && parsedData.length > 0 && parsedData[0].group_title) {
-					initialData = parsedData;
-				}
-			} catch (error) { initialData = defaultGroupData; }
-			
-			let runningTotal = 0;
-			dataWithComputedValues = initialData.map(group => {
-				if (groupCollapseState[group.group_title] === undefined) {
-					groupCollapseState[group.group_title] = true;
-				}
-				const processedSteps = group.steps.map(step => {
-					const time = Number(step.time_taken) || 0;
-					runningTotal += time;
-					return { notes: "", ...step, cumulative_time: runningTotal };
-				});
-				return { ...group, steps: processedSteps };
-			});
-		}
-
-
-		// -----------------
-		//  UI STATE & THEME
-		// -----------------
-		function applyTheme(theme) {
-			document.body.classList.toggle('dark-mode', theme === 'dark');
-			localStorage.setItem('checklistTheme', theme);
-		}
-
-		function initializeUIState() {
-			const savedTheme = localStorage.getItem('checklistTheme');
-			const userPrefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-			if (savedTheme) applyTheme(savedTheme);
-			else if (userPrefersDark) applyTheme('dark');
-			else applyTheme('light');
-			
-			const savedFilter = localStorage.getItem('checklistFilter');
-			currentFilter = savedFilter || 'all';
-			updateActiveFilterButton();
-
-			// **FIX:** Load the saved collapse state from localStorage
-			const savedCollapseState = localStorage.getItem('checklistGroupState');
-			groupCollapseState = savedCollapseState ? JSON.parse(savedCollapseState) : {};
-		}
-
-		function updateActiveFilterButton() {
-			Object.values(filterControls).forEach(button => button.classList.remove('active'));
-			if (filterControls[currentFilter]) filterControls[currentFilter].classList.add('active');
-		}
-		
-
-		// -----------------
-		//  UI RENDERING
-		// -----------------
-		function updateTotalTimeDisplay() {
-			const allSteps = dataWithComputedValues.flatMap(group => group.steps);
-			const totalMinutes = allSteps.length > 0 ? allSteps[allSteps.length - 1].cumulative_time : 0;
-			if (totalTimeElement) totalTimeElement.textContent = formatTime(totalMinutes);
-		}
-
-		function updateProgressBar() {
-			const allSteps = dataWithComputedValues.flatMap(group => group.steps);
-			const totalSteps = allSteps.length;
-			if (totalSteps === 0) {
-				progressText.textContent = "No steps.";
-				progressBar.style.width = '0%';
-				return;
-			}
-			const completedSteps = allSteps.filter(step => step.completed).length;
-			const percentage = (completedSteps / totalSteps) * 100;
-			progressText.textContent = `Completed ${completedSteps} of ${totalSteps} (${Math.round(percentage)}%)`;
-			progressBar.style.width = `${percentage}%`;
-		}
-
-		function renderChecklist() {
-			const query = searchInput.value.toLowerCase();
-			groupContainer.innerHTML = '';
-
-			dataWithComputedValues.forEach(group => {
-				let stepsToRender = group.steps;
-				if (currentFilter === 'incomplete') stepsToRender = stepsToRender.filter(step => !step.completed);
-				else if (currentFilter === 'completed') stepsToRender = stepsToRender.filter(step => step.completed);
-				if (query) {
-					stepsToRender = stepsToRender.filter(step => 
-						step.step_title.toLowerCase().includes(query) ||
-						step.step_instruction.toLowerCase().includes(query) ||
-						step.items.some(item => item.toLowerCase().includes(query))
-					);
-				}
-
-				if (stepsToRender.length > 0 || !query) {
-					const groupElement = document.createElement('div');
-					groupElement.className = 'step-group';
-					groupElement.dataset.groupTitle = group.group_title;
-					if (groupCollapseState[group.group_title]) {
-						groupElement.classList.add('is-collapsed');
-					}
-
-					groupElement.innerHTML = `
-						<div class="group-header">
-							<span class="group-title">${group.group_title}</span>
-							<svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-						</div>
-						<div class="group-body"></div>
-					`;
-
-					const groupBody = groupElement.querySelector('.group-body');
-
-					stepsToRender.forEach(step => {
-						const stepElement = document.createElement('div');
-						stepElement.className = 'step';
-						stepElement.dataset.step = step.step_number;
-						stepElement.classList.toggle('completed', step.completed);
-						
-						const hasNote = step.notes && step.notes.trim() !== '';
-						const noteDisplayHTML = hasNote ? `<div class="note-display">${step.notes.replace(/\n/g, '<br>')}</div>` : '';
-						const addNoteButtonHTML = !hasNote 
-							? `<button class="add-note-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Add Note</span></button>`
-							: '';
-
-						stepElement.innerHTML = `
-							<div class="step-header">
-								<div class="step-header-left">
-									<input type="checkbox" ${step.completed ? 'checked' : ''} tabindex="-1">
-									<span class="step-title">${step.step_number}. ${step.step_title}</span>
-								</div>
-								<span class="step-time">${formatTime(step.cumulative_time)}</span>
-							</div>
-							<div class="step-body">
-								<p class="step-instruction">${step.step_instruction}</p>
-								${noteDisplayHTML}
-								<textarea class="step-notes" placeholder="Add a personal note...">${step.notes || ''}</textarea>
-							</div>
-							<div class="step-footer">
-							   ${addNoteButtonHTML}
-							   <span class="step-items">${step.items.join(', ')}</span>
-							</div>`;
-						groupBody.appendChild(stepElement);
-					});
-					
-					groupContainer.appendChild(groupElement);
-				}
-			});
-		}
-
-		// -----------------
-		// VIEW HANDLERS
-		// -----------------
-		
-		function handleToggleExpand() {
-			const shouldCollapse = toggleExpandBtn.textContent === 'Collapse All';
-			Object.keys(groupCollapseState).forEach(groupTitle => {
-				groupCollapseState[groupTitle] = shouldCollapse;
-			});
-			localStorage.setItem('checklistGroupState', JSON.stringify(groupCollapseState));
-			renderChecklist();
-			toggleExpandBtn.textContent = shouldCollapse ? 'Expand All' : 'Collapse All';
-		}
-		
-		function handleFocusIncomplete() {
-			dataWithComputedValues.forEach(group => {
-				const allStepsCompleted = group.steps.length > 0 && group.steps.every(step => step.completed);
-				groupCollapseState[group.group_title] = allStepsCompleted;
-			});
-			localStorage.setItem('checklistGroupState', JSON.stringify(groupCollapseState));
-			renderChecklist();
-			toggleExpandBtn.textContent = 'Collapse All';
-		}
-		
-		function handleResetProgress() {
-			const isConfirmed = window.confirm("Are you sure you want to reset all progress?\nThis will uncheck all steps and delete all notes.");
-			if (!isConfirmed) return;
-
-			localStorage.removeItem('checklistProgress');
-			localStorage.removeItem('checklistGroupState'); // Also clear the collapse state
-			groupCollapseState = {}; // Reset the state in memory
-			
-			loadAndProcessData();
-			renderChecklist();
-			updateProgressBar();
-		}
-
-		// -----------------
-		//  EVENT LISTENERS
-		// -----------------
-
-		function bindEventListeners() {
-			groupContainer.addEventListener('click', (e) => {
-				const groupElement = e.target.closest('.step-group');
-				const stepElement = e.target.closest('.step');
-
-				if (e.target.closest('.group-header')) {
-					const groupTitle = groupElement.dataset.groupTitle;
-					groupCollapseState[groupTitle] = !groupCollapseState[groupTitle];
-					localStorage.setItem('checklistGroupState', JSON.stringify(groupCollapseState)); // Save state on manual toggle
-					groupElement.classList.toggle('is-collapsed', groupCollapseState[groupTitle]);
-					return;
-				}
-
-				if (e.target.matches('.note-display') || e.target.closest('.add-note-btn')) {
-					stepElement.classList.add('is-editing-note');
-					stepElement.querySelector('.step-notes').focus();
-					return;
-				}
-
-				if (stepElement && !e.target.matches('.step-notes')) {
-					const stepNumber = stepElement.dataset.step;
-					dataWithComputedValues.forEach(group => {
-						const step = group.steps.find(s => s.step_number === stepNumber);
-						if (step) {
-							step.completed = !step.completed;
-							const dataToSave = dataWithComputedValues.map(g => ({ ...g, steps: g.steps.map(({ cumulative_time, ...rest }) => rest) }));
-							saveProgress(dataToSave);
-							renderChecklist();
-							updateProgressBar();
-						}
-					});
-				}
-			});
-
-			groupContainer.addEventListener('blur', (e) => {
-				if (!e.target.matches('.step-notes')) return;
-				const stepElement = e.target.closest('.step');
-				const stepNumber = stepElement.dataset.step;
-				
-				dataWithComputedValues.forEach(group => {
-					const step = group.steps.find(s => s.step_number === stepNumber);
-					if (step && step.notes !== e.target.value) {
-						step.notes = e.target.value;
-						const dataToSave = dataWithComputedValues.map(g => ({ ...g, steps: g.steps.map(({ cumulative_time, ...rest }) => rest) }));
-						saveProgress(dataToSave);
-						renderChecklist();
-					} else if (step) {
-						stepElement.classList.remove('is-editing-note');
-					}
-				});
-			}, true);
-
-			themeBar.addEventListener('click', () => {
-				const isDarkMode = document.body.classList.contains('dark-mode');
-				applyTheme(isDarkMode ? 'light' : 'dark');
-			});
-
-			searchInput.addEventListener('input', renderChecklist);
-			
-			Object.keys(filterControls).forEach(key => {
-				filterControls[key].addEventListener('click', () => {
-					currentFilter = key;
-					localStorage.setItem('checklistFilter', currentFilter);
-					updateActiveFilterButton();
-					renderChecklist();
-				});
-			});
-
-			toggleExpandBtn.addEventListener('click', handleToggleExpand);
-			focusIncompleteBtn.addEventListener('click', handleFocusIncomplete);
-			resetBtn.addEventListener('click', handleResetProgress);
-		}
-
-		/** @description Initializes the application. */
-		function init() {
-			initializeUIState();
-			loadAndProcessData();
-			updateTotalTimeDisplay();
-			renderChecklist();
-			updateProgressBar();
-			bindEventListeners();
-		}
-
-		// --- START THE APP ---
-		init();
-	});
-	</script>
+    <script src="script.js"></script>
 </body>
 </html>
