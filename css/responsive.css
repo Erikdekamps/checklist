@@ -1,0 +1,135 @@
+/**
+ * Responsive Design
+ * ================
+ * 
+ * Media queries for tablet, mobile, and small mobile devices
+ */
+
+/**
+ * Tablet Responsive Design (1024px and below)
+ */
+@media (max-width: 1024px) {
+    .header-controls {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .search-section {
+        min-width: unset;
+        width: 100%;
+    }
+    
+    .controls-section {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+/**
+ * Mobile Responsive Design (768px and below)
+ */
+@media (max-width: 768px) {
+    .header-top {
+        padding: var(--spacing-md);
+    }
+    
+    .header-controls {
+        padding: var(--spacing-md);
+    }
+    
+    .controls-section {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .filter-group,
+    .action-group {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .header-stats {
+        flex-wrap: wrap;
+        gap: var(--spacing-md);
+        justify-content: space-around;
+    }
+    
+    .action-btn span {
+        display: none;
+    }
+    
+    header h1 {
+        font-size: 1.25rem;
+    }
+
+    /* Main Content Responsive */
+    #group-container {
+        padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
+    }
+
+    .step .step-header {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .step .step-body {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .step .step-footer {
+        padding: var(--spacing-sm) var(--spacing-md);
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: flex-start;
+    }
+    
+    .step .step-footer .step-items {
+        max-width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .step .step-header .step-header-left {
+        gap: var(--spacing-sm);
+    }
+    
+    .step .step-title {
+        font-size: 1em;
+    }
+}
+
+/**
+ * Small Mobile Responsive Design (480px and below)
+ */
+@media (max-width: 480px) {
+    .brand-section {
+        gap: var(--spacing-sm);
+    }
+    
+    .brand-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .header-stats {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    /* Main Content Small Mobile */
+    #group-container {
+        padding: var(--spacing-md);
+    }
+    
+    .step {
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .step .step-header .step-header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+    
+    .step .step-time {
+        align-self: flex-end;
+    }
+}

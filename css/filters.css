@@ -1,0 +1,133 @@
+/**
+ * Filter Components
+ * ================
+ * 
+ * Filter buttons, controls, and action buttons
+ */
+
+/**
+ * Filter Group
+ * Filter buttons with counts
+ */
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.filter-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--c-text-secondary);
+    white-space: nowrap;
+}
+
+.filter-buttons {
+    display: flex;
+    background-color: var(--c-bg-surface-2);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-xs);
+    border: 1px solid var(--c-border);
+}
+
+/**
+ * Filter Button
+ * Individual filter button with active states
+ */
+.filter-btn {
+    background-color: transparent;
+    color: var(--c-text-secondary);
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: var(--font-sans);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    white-space: nowrap;
+}
+
+.filter-btn:hover {
+    background-color: var(--c-bg-surface-hover);
+    color: var(--c-text-primary);
+}
+
+.filter-btn.active {
+    background-color: var(--c-primary);
+    color: var(--c-primary-text);
+    box-shadow: 0 2px 4px color-mix(in srgb, var(--c-primary) 25%, transparent);
+}
+
+/**
+ * Filter Count Badge
+ * Shows count of items for each filter
+ */
+.filter-count {
+    background-color: color-mix(in srgb, currentColor 15%, transparent);
+    color: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/**
+ * Action Group
+ * Container for action buttons
+ */
+.action-group {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/**
+ * Action Button
+ * General action button styling with hover effects
+ */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background-color: var(--c-bg-surface-2);
+    color: var(--c-text-secondary);
+    padding: 10px 16px;
+    border-radius: var(--border-radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--c-border);
+    transition: all 0.2s ease;
+    font-family: var(--font-sans);
+    white-space: nowrap;
+}
+
+.action-btn:hover {
+    background-color: var(--c-bg-surface-hover);
+    color: var(--c-text-primary);
+    border-color: var(--c-border-subtle);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px var(--c-shadow);
+}
+
+.action-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.action-btn:hover svg {
+    transform: scale(1.1);
+}
+
+/**
+ * Collapse Button Special State
+ * Rotates icon when expanded
+ */
+#collapse-all-btn.expanded svg {
+    transform: rotate(180deg);
+}

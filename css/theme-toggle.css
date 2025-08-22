@@ -1,0 +1,70 @@
+/**
+ * Theme Toggle Component
+ * =====================
+ * 
+ * Interactive switch for dark/light mode toggle
+ */
+
+/**
+ * Theme Toggle Component
+ * Interactive switch for dark/light mode toggle
+ */
+.theme-toggle {
+    cursor: pointer;
+    padding: var(--spacing-xs);
+}
+
+.theme-toggle-track {
+    width: 56px;
+    height: 28px;
+    background-color: var(--c-bg-surface-2);
+    border: 2px solid var(--c-border-subtle);
+    border-radius: 20px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle-thumb {
+    width: 24px;
+    height: 24px;
+    background-color: var(--c-bg-header);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px var(--c-shadow);
+}
+
+/* Theme Toggle Icon States */
+.theme-toggle .sun-icon {
+    display: block;
+    stroke: var(--c-warning);
+}
+
+.theme-toggle .moon-icon {
+    display: none;
+    stroke: var(--c-primary);
+}
+
+/* Dark Mode Theme Toggle States */
+body.dark-mode .theme-toggle-track {
+    background-color: var(--c-primary);
+    border-color: var(--c-primary);
+}
+
+body.dark-mode .theme-toggle-thumb {
+    left: 28px;
+}
+
+body.dark-mode .theme-toggle .sun-icon {
+    display: none;
+}
+
+body.dark-mode .theme-toggle .moon-icon {
+    display: block;
+}
