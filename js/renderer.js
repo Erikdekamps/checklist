@@ -101,16 +101,26 @@ export function createGroupElement(group, stepsToRender, isCollapsed = false) {
 export function updateStatsDisplay(dataWithComputedValues, elements) {
     const allSteps = dataWithComputedValues.flatMap(group => group.steps);
     
-    // Update total time
+    // Calculate completed and total time
+    const completedSteps = allSteps.filter(step => step.completed);
+    let completedTime = 0;
+    
+    // Sum up time for completed steps
+    completedSteps.forEach(step => {
+        completedTime += step.time_taken || 0;
+    });
+    
+    // Total time is the cumulative time of the last step
     const totalMinutes = allSteps.length > 0 ? allSteps[allSteps.length - 1].cumulative_time : 0;
+    
+    // Update total time display with completed/total format
     if (elements.totalTimeElement) {
-        elements.totalTimeElement.textContent = formatTime(totalMinutes);
+        elements.totalTimeElement.textContent = `${formatTime(completedTime)} / ${formatTime(totalMinutes)}`;
     }
     
     // Update progress statistics
-    const completedSteps = allSteps.filter(step => step.completed).length;
     if (elements.progressStatElement) {
-        elements.progressStatElement.textContent = `${completedSteps}/${allSteps.length}`;
+        elements.progressStatElement.textContent = `${completedSteps.length}/${allSteps.length}`;
     }
 }
 
