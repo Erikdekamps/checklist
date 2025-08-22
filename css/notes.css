@@ -7,11 +7,11 @@
 
 /**
  * Note Display
- * Shows saved notes with gradient background
+ * Shows saved notes with transparent background
  */
 .step .note-display {
-    background: linear-gradient(135deg, var(--c-accent-light), var(--c-accent));
-    color: white;
+    background: transparent; /* Removed gradient background */
+    color: var(--c-text-primary); /* Use primary text color instead of white */
     padding: var(--spacing-sm) var(--spacing-md);
     border-radius: var(--border-radius-lg);
     font-style: italic;
@@ -19,10 +19,11 @@
     transition: all 0.3s ease;
     white-space: pre-wrap;
     margin-top: var(--spacing-md);
-    box-shadow: 0 4px 16px color-mix(in srgb, var(--c-accent) 25%, transparent);
+    box-shadow: none; /* Removed shadow */
     position: relative;
     overflow: hidden;
     font-size: 0.9rem;
+    border: 1px solid var(--c-border); /* Added subtle border for definition */
 }
 
 /**
@@ -40,7 +41,7 @@
 
 .step .note-display:hover { 
     transform: translateY(-2px);
-    box-shadow: 0 6px 24px color-mix(in srgb, var(--c-accent) 35%, transparent);
+    box-shadow: 0 6px 24px color-mix(in srgb, var(--c-border) 35%, transparent);
 }
 
 /**
@@ -63,6 +64,7 @@
     color: var(--c-text-primary); 
     cursor: text;
     margin-top: var(--spacing-md);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: inset 0 2px 8px var(--c-shadow);
 }
 

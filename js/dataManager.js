@@ -60,18 +60,33 @@ export function mergeWithSavedProgress(baseData, savedData) {
             steps: group.steps.map(step => ({
                 ...step,
                 completed: false,
-                notes: ""
+                notes: "",
+                sub_steps: step.sub_steps ? step.sub_steps.map(subStep => ({
+                    ...subStep,
+                    completed: false
+                })) : []
             }))
         }));
     }
 
-    // Create lookup map for saved step data for efficient merging
+    // Create lookup maps for saved step and sub-step data
     const savedStepsMap = new Map();
+    const savedSubStepsMap = new Map();
+    
     savedData.forEach(group => {
         if (group.steps && Array.isArray(group.steps)) {
             group.steps.forEach(step => {
                 if (step.step_number) {
                     savedStepsMap.set(step.step_number, step);
+                    
+                    // Index sub-steps
+                    if (step.sub_steps && Array.isArray(step.sub_steps)) {
+                        step.sub_steps.forEach(subStep => {
+                            if (subStep.sub_step_id) {
+                                savedSubStepsMap.set(subStep.sub_step_id, subStep);
+                            }
+                        });
+                    }
                 }
             });
         }
@@ -85,7 +100,14 @@ export function mergeWithSavedProgress(baseData, savedData) {
             return {
                 ...step,
                 completed: savedStep?.completed || false,
-                notes: savedStep?.notes || ""
+                notes: savedStep?.notes || "",
+                sub_steps: step.sub_steps ? step.sub_steps.map(subStep => {
+                    const savedSubStep = savedSubStepsMap.get(subStep.sub_step_id);
+                    return {
+                        ...subStep,
+                        completed: savedSubStep?.completed || false
+                    };
+                }) : []
             };
         })
     }));
@@ -102,10 +124,17 @@ export function addComputedValues(mergedData) {
     return mergedData.map(group => ({
         ...group,
         steps: group.steps.map(step => {
-            runningTotal += step.time_taken || 0;
+            // Calculate total time including sub-steps
+            const subStepsTime = step.sub_steps ? 
+                step.sub_steps.reduce((total, subStep) => total + (subStep.time_taken || 0), 0) : 0;
+            
+            const totalStepTime = (step.time_taken || 0) + subStepsTime;
+            runningTotal += totalStepTime;
+            
             return {
                 ...step,
-                cumulative_time: runningTotal
+                cumulative_time: runningTotal,
+                total_step_time: totalStepTime
             };
         })
     }));

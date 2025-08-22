@@ -1,9 +1,10 @@
+/* filepath: /workspaces/checklist/script.js */
 /**
- * @fileoverview Interactive Checklist Application - Simplified Version
- * @description A streamlined checklist management system for checking off items
+ * @fileoverview Interactive Checklist Application - Enhanced with Sub-Steps
+ * @description A streamlined checklist management system with nested task support
  * 
  * @author Interactive Checklist Team
- * @version 2.1.0
+ * @version 2.2.0
  * @created 2024
  */
 
@@ -19,6 +20,8 @@ import {
 } from './js/renderer.js';
 import {
     handleStepToggle,
+    handleSubStepToggle,
+    handleSubStepsToggle,
     handleGroupToggle,
     handleToggleAll,
     handleFilterChange,
@@ -26,6 +29,8 @@ import {
     handleThemeToggle,
     updateToggleButtonState,
     loadGroupCollapseState,
+    loadSubStepsCollapseState,
+    applySubStepsCollapseState,
     loadFilterState
 } from './js/eventHandlers.js';
 
@@ -37,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let dataWithComputedValues = [];
     let groupCollapseState = {};
+    let subStepsCollapseState = {};
     let appState = {
         currentFilter: 'all',
         searchTerm: ''
@@ -73,6 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFilterButtons(appState.currentFilter);
         updateSearchClearButton(appState.searchTerm);
         updateToggleButtonState(dataWithComputedValues, groupCollapseState);
+        
+        // Apply sub-steps collapse state after rendering
+        setTimeout(() => {
+            applySubStepsCollapseState(subStepsCollapseState);
+        }, 100);
     }
 
     // ==========================================
@@ -95,19 +106,55 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.groupContainer.addEventListener('click', (e) => {
             const stepElement = e.target.closest('.step');
             const groupHeader = e.target.closest('.group-header');
+            const subStepElement = e.target.closest('.sub-step');
+            const subStepsHeader = e.target.closest('.sub-steps-header');
+
+            console.log('Click detected:', {
+                stepElement: !!stepElement,
+                groupHeader: !!groupHeader,
+                subStepElement: !!subStepElement,
+                subStepsHeader: !!subStepsHeader,
+                target: e.target
+            });
+
+            // Handle sub-step clicks (toggle completion)
+            if (subStepElement && !subStepsHeader) {
+                e.preventDefault();
+                e.stopPropagation();
+                const subStepId = subStepElement.dataset.subStep;
+                console.log('Sub-step toggle:', subStepId);
+                handleSubStepToggle(subStepId, dataWithComputedValues, renderChecklist);
+                return;
+            }
+
+            // Handle sub-steps header clicks (toggle collapse)
+            if (subStepsHeader) {
+                e.preventDefault();
+                e.stopPropagation();
+                const stepNumber = subStepsHeader.closest('.sub-steps-container').dataset.step;
+                console.log('Sub-steps header toggle:', stepNumber);
+                handleSubStepsToggle(stepNumber, () => {
+                    // Update progress display without full re-render
+                    updateStatsDisplay(dataWithComputedValues, elements);
+                    updateProgressBar(dataWithComputedValues, elements);
+                });
+                return;
+            }
 
             // Handle group header clicks (entire header is clickable)
             if (groupHeader && !stepElement) {
                 e.preventDefault();
                 const groupTitle = groupHeader.dataset.group;
+                console.log('Group header toggle:', groupTitle);
                 handleGroupToggle(groupTitle, groupCollapseState, renderChecklist);
                 return;
             }
 
             // Handle step clicks (toggle completion)
-            if (stepElement) {
+            if (stepElement && !subStepElement && !subStepsHeader) {
                 e.preventDefault();
                 const stepNumber = stepElement.dataset.step;
+                console.log('Step toggle:', stepNumber);
                 handleStepToggle(stepNumber, dataWithComputedValues, renderChecklist);
             }
         });
@@ -171,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Load saved state
             groupCollapseState = loadGroupCollapseState();
+            subStepsCollapseState = loadSubStepsCollapseState();
             appState.currentFilter = loadFilterState();
 
             // Load and process data

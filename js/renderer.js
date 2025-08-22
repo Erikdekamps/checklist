@@ -1,12 +1,12 @@
 /**
- * UI Rendering Module - Simplified Version
- * =========================================
+ * UI Rendering Module - Enhanced with Sub-Steps
+ * ==============================================
  * 
- * Handles DOM manipulation for basic checklist functionality
+ * Handles DOM manipulation for checklist functionality including sub-steps
  */
 
 /**
- * Utility functions moved inline
+ * Utility functions
  */
 function formatTime(minutes) {
     if (!minutes || minutes <= 0) return '0m';
@@ -44,7 +44,12 @@ function filterSteps(steps, filter, searchTerm) {
                 step.step_title,
                 step.step_instruction,
                 ...(step.items || []),
-                step.notes || ''
+                step.notes || '',
+                // Include sub-step content in search
+                ...(step.sub_steps || []).flatMap(sub => [
+                    sub.sub_step_title || '',
+                    sub.sub_step_instruction || ''
+                ])
             ].join(' ').toLowerCase();
             
             return searchableText.includes(searchTerm);
@@ -55,7 +60,56 @@ function filterSteps(steps, filter, searchTerm) {
 }
 
 /**
- * Creates a simplified step DOM element
+ * Creates sub-steps HTML content
+ * @param {Array<Object>} subSteps - Array of sub-steps
+ * @param {string} stepNumber - Parent step number
+ * @returns {string} HTML string for sub-steps
+ */
+function createSubStepsHTML(subSteps, stepNumber) {
+    if (!subSteps || subSteps.length === 0) return '';
+    
+    const completedCount = subSteps.filter(sub => sub.completed).length;
+    const totalCount = subSteps.length;
+    const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+    
+    const subStepsListHTML = subSteps.map(subStep => `
+        <div class="sub-step ${subStep.completed ? 'completed' : ''}" data-sub-step="${subStep.sub_step_id}">
+            <input type="checkbox" class="sub-step-checkbox" ${subStep.completed ? 'checked' : ''} tabindex="-1">
+            <div class="sub-step-content">
+                <div class="sub-step-title">${subStep.sub_step_title}</div>
+                <div class="sub-step-instruction">${subStep.sub_step_instruction}</div>
+                <div class="sub-step-time">${formatTime(subStep.time_taken)}</div>
+            </div>
+        </div>
+    `).join('');
+    
+    return `
+        <div class="sub-steps-container" data-step="${stepNumber}">
+            <div class="sub-steps-header">
+                <div class="sub-steps-header-left">
+                    <button class="sub-steps-toggle-btn" type="button" aria-label="Toggle sub-steps">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <span>Sub-tasks</span>
+                </div>
+                <div class="sub-steps-progress">
+                    ${completedCount}/${totalCount}
+                    <div class="sub-steps-progress-bar">
+                        <div class="sub-steps-progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="sub-steps-list">
+                ${subStepsListHTML}
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Creates a step DOM element with sub-steps support
  * @param {Object} step - Step data object
  * @returns {HTMLElement} Complete step DOM element
  */
@@ -64,6 +118,12 @@ export function createStepElement(step) {
     stepElement.className = 'step';
     stepElement.dataset.step = step.step_number;
     stepElement.classList.toggle('completed', step.completed);
+    
+    if (step.sub_steps && step.sub_steps.length > 0) {
+        stepElement.classList.add('has-sub-steps');
+    }
+
+    const subStepsHTML = createSubStepsHTML(step.sub_steps, step.step_number);
 
     stepElement.innerHTML = `
         <div class="step-header">
@@ -78,6 +138,7 @@ export function createStepElement(step) {
         <div class="step-body">
             <p class="step-instruction">${step.step_instruction}</p>
             ${step.notes ? `<div class="step-notes-display">${step.notes.replace(/\n/g, '<br>')}</div>` : ''}
+            ${subStepsHTML}
         </div>
         <div class="step-footer">
            <span class="step-items">${step.items.join(', ')}</span>
@@ -190,9 +251,9 @@ export function updateStatsDisplay(dataWithComputedValues, elements) {
     const completedSteps = allSteps.filter(step => step.completed);
     let completedTime = 0;
     
-    // Sum up time for completed steps
+    // Sum up time for completed steps (including sub-steps)
     completedSteps.forEach(step => {
-        completedTime += step.time_taken || 0;
+        completedTime += step.total_step_time || step.time_taken || 0;
     });
     
     // Total time is the cumulative time of the last step

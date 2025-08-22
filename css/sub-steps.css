@@ -1,0 +1,281 @@
+/**
+ * Sub-Steps Components
+ * ===================
+ * 
+ * Styling for nested sub-steps within main steps
+ */
+
+/**
+ * Sub-Steps Container
+ * Container for all sub-steps within a main step
+ */
+.sub-steps-container {
+    margin-top: var(--spacing-md);
+    border-left: 3px solid var(--c-primary-light);
+    padding-left: var(--spacing-md);
+    background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--c-primary) 3%, transparent), 
+        color-mix(in srgb, var(--c-primary) 6%, transparent)
+    );
+    border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+/**
+ * Sub-Steps Header
+ * Header section with collapse toggle and progress - Dark blue design
+ */
+.sub-steps-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin: 0 calc(-1 * var(--spacing-md)) var(--spacing-sm) calc(-1 * var(--spacing-md));
+    background: #1e3a8a; /* Dark blue background */
+    color: white;
+    border-radius: 0; /* No border radius */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.sub-steps-header:hover {
+    background: #1e40af; /* Slightly lighter blue on hover */
+    transform: translateY(-1px);
+}
+
+.sub-steps-header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.sub-steps-toggle-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius-sm);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.sub-steps-toggle-btn svg {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sub-steps-progress {
+        font-size: 0.85em;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    backdrop-filter: blur(4px);
+    margin-right: var(--spacing-sm); /* Added margin from right edge */
+}
+
+/**
+ * Sub-Steps List
+ * Container for individual sub-step items
+ */
+.sub-steps-list {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    max-height: none;
+    opacity: 1;
+}
+
+/**
+ * Collapsed Sub-Steps
+ * Hide sub-steps when collapsed
+ */
+.sub-steps-container.collapsed .sub-steps-list {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.sub-steps-container.collapsed .sub-steps-toggle-btn svg {
+    transform: rotate(-90deg);
+}
+
+.sub-steps-container.collapsed .sub-steps-header {
+    border-radius: 0; /* Keep no border radius when collapsed */
+    margin-bottom: 0;
+}
+
+/**
+ * Individual Sub-Step
+ * Single sub-step item styling
+ */
+.sub-step {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--c-primary) 15%, var(--c-border));
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.sub-step:last-child {
+    border-bottom: none;
+}
+
+.sub-step:hover {
+    background: color-mix(in srgb, var(--c-primary) 8%, transparent);
+    border-radius: var(--border-radius-sm);
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+}
+
+/**
+ * Sub-Step Checkbox
+ * Checkbox for sub-step completion
+ */
+.sub-step-checkbox {
+    margin: 0;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--c-primary);
+    cursor: pointer;
+    margin-top: 2px;
+    filter: drop-shadow(0 1px 2px var(--c-shadow));
+}
+
+/**
+ * Sub-Step Content
+ * Main content area for sub-step
+ */
+.sub-step-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.sub-step-title {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--c-text-primary);
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.3;
+}
+
+.sub-step-instruction {
+    font-size: 0.8em;
+    color: var(--c-text-secondary);
+    line-height: 1.4;
+    margin-bottom: var(--spacing-xs);
+}
+
+.sub-step-time {
+    font-size: 0.75em;
+    color: var(--c-text-subtle);
+    font-weight: 500;
+    background: var(--c-bg-surface-2);
+    padding: 2px 6px;
+    border-radius: var(--border-radius-sm);
+    display: inline-block;
+}
+
+/**
+ * Completed Sub-Step Styling
+ * Visual changes for completed sub-steps
+ */
+.sub-step.completed .sub-step-title {
+    text-decoration: line-through;
+    text-decoration-color: var(--c-success);
+    color: var(--c-text-secondary);
+    opacity: 0.8;
+}
+
+.sub-step.completed .sub-step-instruction {
+    opacity: 0.7;
+}
+
+.sub-step.completed .sub-step-checkbox {
+    accent-color: var(--c-success);
+}
+
+.sub-step.completed {
+    background: color-mix(in srgb, var(--c-success) 5%, transparent);
+}
+
+/**
+ * Main Step with Sub-Steps
+ * Additional styling for main steps that contain sub-steps
+ */
+.step.has-sub-steps .step-body {
+    padding-bottom: var(--spacing-sm);
+}
+
+/**
+ * Sub-Steps Progress Indicator
+ * Visual progress indicator for sub-steps completion
+ */
+.sub-steps-progress-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: var(--spacing-xs);
+}
+
+.sub-steps-progress-fill {
+    height: 100%;
+    background: white;
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+/**
+ * Mobile Responsive Adjustments
+ */
+@media (max-width: 768px) {
+    .sub-steps-container {
+        padding-left: var(--spacing-sm);
+        border-left-width: 2px;
+    }
+    
+    .sub-steps-header {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        margin: 0 calc(-1 * var(--spacing-sm)) var(--spacing-sm) calc(-1 * var(--spacing-sm));
+    }
+    
+    .sub-step {
+        padding: var(--spacing-xs) 0;
+    }
+    
+    .sub-step-title {
+        font-size: 0.85em;
+    }
+    
+    .sub-step-instruction {
+        font-size: 0.75em;
+    }
+}
+
+@media (max-width: 480px) {
+    .sub-steps-header-left {
+        font-size: 0.8em;
+    }
+    
+    .sub-steps-progress {
+        font-size: 0.75em;
+    }
+    
+    .sub-step-checkbox {
+        width: 14px;
+        height: 14px;
+    }
+}

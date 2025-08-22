@@ -151,67 +151,133 @@
 
 /**
  * Step Instruction
- * Main instruction text with styled background
+ * Main instruction text with no background
  */
 .step .step-body .step-instruction { 
     margin-bottom: var(--spacing-md);
     color: var(--c-text-secondary);
     line-height: 1.6;
     font-size: 0.95rem;
-    padding: var(--spacing-sm);
-    background: var(--c-bg-surface-2);
-    border-radius: var(--border-radius-md);
-    border-left: 3px solid var(--c-accent);
-    box-shadow: inset 0 1px 3px var(--c-shadow);
+    padding: 0; /* Removed padding */
+    background: transparent; /* Removed background */
+    border-radius: 0; /* Removed border radius */
 }
 
 /**
  * Step Footer
- * Contains add note button and items list
+ * Contains money, items, and metadata
  */
 .step .step-footer {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
+    border-top: 1px solid var(--c-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
-    font-size: 0.85em;
-    color: var(--c-text-secondary);
-    border-top: 1px solid var(--c-border);
-    position: relative;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
 }
 
 /**
- * Step Footer Top Border
- * Subtle gradient line at the top
+ * Step Footer Meta Section
+ * Contains money and time badges
  */
-.step .step-footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: var(--spacing-md);
-    right: var(--spacing-md);
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--c-border), transparent);
+.step .step-footer .step-meta {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/**
+ * Step Money Badge
+ * Shows cost with gradient background
+ */
+.step .step-footer .step-money {
+    background: linear-gradient(135deg, var(--c-success), #22c55e);
+    color: white;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-md);
+    font-size: 0.8em;
+    font-weight: 600;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--c-success) 25%, transparent);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
 }
 
 /**
  * Step Items List
- * Shows required items/tools for the step
+ * Shows required items for the step
  */
-.step .step-footer .step-items { 
-    text-align: right; 
-    font-weight: 500;
-    color: var(--c-text-primary);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
-    justify-content: flex-end;
-    max-width: 60%;
+.step .step-footer .step-items {
+    color: var(--c-text-secondary);
     font-size: 0.85em;
+    text-align: right;
+    flex: 1;
+    min-width: 0;
 }
 
-.step .step-footer .step-items::before {
-    content: '🔧 ';
-    margin-right: var(--spacing-xs);
+.step .step-footer .step-items strong {
+    color: var(--c-text-primary);
+    font-weight: 600;
+}
+
+/**
+ * Mobile Responsive Adjustments
+ */
+@media (max-width: 768px) {
+    .step {
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .step .step-header {
+        padding: var(--spacing-sm);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+    
+    .step .step-header .step-header-left {
+        gap: var(--spacing-sm);
+    }
+    
+    .step .step-header .step-time {
+        align-self: flex-end;
+    }
+    
+    .step .step-body {
+        padding: var(--spacing-sm);
+    }
+    
+    .step .step-footer {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-xs);
+    }
+    
+    .step .step-footer .step-items {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .step .step-header .step-title {
+        font-size: 1em;
+    }
+    
+    .step .step-body .step-instruction {
+        font-size: 0.9rem;
+    }
+    
+    .step .step-footer .step-money {
+        font-size: 0.75em;
+        padding: 3px 6px;
+    }
+    
+    .step .step-footer .step-items {
+        font-size: 0.8em;
+    }
 }

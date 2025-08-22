@@ -1,8 +1,9 @@
+/* filepath: /workspaces/checklist/js/eventHandlers.js */
 /**
- * Event Handlers Module - Simplified Version
- * ===========================================
+ * Event Handlers Module - Enhanced with Sub-Steps
+ * ================================================
  * 
- * Contains essential user interaction event handlers
+ * Contains event handlers for steps, sub-steps, and UI interactions
  */
 
 import { saveProgress } from './storage.js';
@@ -18,11 +19,112 @@ export function handleStepToggle(stepNumber, dataWithComputedValues, onUpdate) {
         const step = group.steps.find(s => s.step_number === stepNumber);
         if (step) {
             step.completed = !step.completed;
+            
+            // If step is being completed, mark all sub-steps as completed
+            if (step.completed && step.sub_steps) {
+                step.sub_steps.forEach(subStep => {
+                    subStep.completed = true;
+                });
+            }
+            // If step is being uncompleted, mark all sub-steps as uncompleted
+            else if (!step.completed && step.sub_steps) {
+                step.sub_steps.forEach(subStep => {
+                    subStep.completed = false;
+                });
+            }
         }
     });
     
     saveProgress(dataWithComputedValues);
     onUpdate();
+}
+
+/**
+ * Handles sub-step completion toggle
+ * @param {string} subStepId - Identifier of the sub-step to toggle
+ * @param {Array<Object>} dataWithComputedValues - Current data state
+ * @param {Function} onUpdate - Callback function after update
+ */
+export function handleSubStepToggle(subStepId, dataWithComputedValues, onUpdate) {
+    dataWithComputedValues.forEach(group => {
+        group.steps.forEach(step => {
+            if (step.sub_steps) {
+                const subStep = step.sub_steps.find(sub => sub.sub_step_id === subStepId);
+                if (subStep) {
+                    subStep.completed = !subStep.completed;
+                    
+                    // Auto-complete parent step if all sub-steps are completed
+                    const allSubStepsCompleted = step.sub_steps.every(sub => sub.completed);
+                    if (allSubStepsCompleted && !step.completed) {
+                        step.completed = true;
+                    }
+                    // Auto-uncomplete parent step if any sub-step is uncompleted
+                    else if (!subStep.completed && step.completed) {
+                        step.completed = false;
+                    }
+                }
+            }
+        });
+    });
+    
+    saveProgress(dataWithComputedValues);
+    onUpdate();
+}
+
+/**
+ * Handles sub-steps container toggle
+ * @param {string} stepNumber - Parent step number
+ * @param {Function} onUpdate - Callback function after update
+ */
+export function handleSubStepsToggle(stepNumber, onUpdate) {
+    const subStepsContainer = document.querySelector(`.sub-steps-container[data-step="${stepNumber}"]`);
+    if (subStepsContainer) {
+        const isCurrentlyCollapsed = subStepsContainer.classList.contains('collapsed');
+        
+        if (isCurrentlyCollapsed) {
+            subStepsContainer.classList.remove('collapsed');
+        } else {
+            subStepsContainer.classList.add('collapsed');
+        }
+        
+        // Save sub-steps collapse state
+        try {
+            const subStepsCollapseState = JSON.parse(localStorage.getItem('subStepsCollapseState') || '{}');
+            subStepsCollapseState[stepNumber] = !isCurrentlyCollapsed;
+            localStorage.setItem('subStepsCollapseState', JSON.stringify(subStepsCollapseState));
+        } catch (error) {
+            console.warn('Failed to save sub-steps collapse state:', error);
+        }
+    }
+    
+    // Don't call onUpdate() here to prevent re-rendering which would lose the animation
+}
+
+/**
+ * Loads sub-steps collapse state from localStorage
+ * @returns {Object} Object with step numbers as keys and collapse state as values
+ */
+export function loadSubStepsCollapseState() {
+    try {
+        const saved = localStorage.getItem('subStepsCollapseState');
+        return saved ? JSON.parse(saved) : {};
+    } catch (error) {
+        console.warn('Failed to load sub-steps collapse state:', error);
+        return {};
+    }
+}
+
+/**
+ * Applies sub-steps collapse state to rendered elements
+ * @param {Object} subStepsCollapseState - Collapse state object
+ */
+export function applySubStepsCollapseState(subStepsCollapseState) {
+    Object.entries(subStepsCollapseState).forEach(([stepNumber, isCollapsed]) => {
+        const subStepsContainer = document.querySelector(`.sub-steps-container[data-step="${stepNumber}"]`);
+        if (subStepsContainer && isCollapsed) {
+            subStepsContainer.classList.add('collapsed');
+        }
+    });
 }
 
 /**
