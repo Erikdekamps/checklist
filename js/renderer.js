@@ -1,8 +1,8 @@
 /**
- * Renderer Module - Enhanced with Sub-Steps
- * ==========================================
+ * Renderer Module - Enhanced with Sub-Steps and Required Items
+ * ============================================================
  * 
- * Handles rendering of steps, groups, and sub-steps with dynamic numbering
+ * Handles rendering of steps, groups, sub-steps, and required items with dynamic numbering
  */
 
 import { formatTime, formatMoney } from './dataManager.js';
@@ -130,13 +130,17 @@ function renderStep(step, subStepsCollapseState) {
             </div>
             
             <div class="step-body">
+                ${renderRequiredItems(step)}
+                
                 <p class="step-instruction">${escapeHtml(step.step_instruction)}</p>
                 
-                ${step.notes ? `<div class="note-display">${escapeHtml(step.notes)}</div>` : ''}
-                
-                <textarea class="step-notes" 
-                         placeholder="Add notes for this step..."
-                         style="display: none;">${escapeHtml(step.notes || '')}</textarea>
+                <div class="notes-section">
+                    ${step.notes ? `<div class="note-display">${escapeHtml(step.notes)}</div>` : ''}
+                    
+                    <textarea class="step-notes" 
+                             placeholder="Add notes for this step..."
+                             style="display: none;">${escapeHtml(step.notes || '')}</textarea>
+                </div>
                 
                 ${hasSubSteps ? renderSubSteps(step, subStepsCollapsed) : ''}
             </div>
@@ -153,12 +157,41 @@ function renderStep(step, subStepsCollapseState) {
                         </div>
                     ` : ''}
                 </div>
-                
-                <div class="step-items">
-                    ${step.items && step.items.length > 0 ? 
-                        `<strong>Items:</strong> ${step.items.join(', ')}` : ''
-                    }
-                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Renders required items with checkboxes
+ * @param {Object} step - Step data
+ * @returns {string} HTML for required items section
+ */
+function renderRequiredItems(step) {
+    if (!step.items || !Array.isArray(step.items) || step.items.length === 0) {
+        return '';
+    }
+    
+    return `
+        <div class="required-items">
+            <h4>Required Items</h4>
+            <div class="required-items-list">
+                ${step.items.map((item, index) => {
+                    const itemId = `${step.step_number}-item-${index}`;
+                    const isCompleted = step.required_items_completed?.[index] || false;
+                    
+                    return `
+                        <div class="required-item ${isCompleted ? 'completed' : ''}" 
+                             data-step="${step.step_number}" 
+                             data-item-index="${index}">
+                            <input type="checkbox" 
+                                   id="${itemId}"
+                                   ${isCompleted ? 'checked' : ''} 
+                                   tabindex="-1">
+                            <label for="${itemId}">${escapeHtml(item)}</label>
+                        </div>
+                    `;
+                }).join('')}
             </div>
         </div>
     `;

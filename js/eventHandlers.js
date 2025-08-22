@@ -1,12 +1,11 @@
-/* filepath: /workspaces/checklist/js/eventHandlers.js */
 /**
- * Event Handlers Module - Enhanced with Sub-Steps
- * ================================================
+ * Event Handlers Module - Enhanced with Sub-Steps and Required Items
+ * ==================================================================
  * 
- * Contains event handlers for steps, sub-steps, and UI interactions
+ * Contains event handlers for steps, sub-steps, required items, and UI interactions
  */
 
-import { saveProgress, clearAllData } from './storage.js';
+import { saveProgress } from './storage.js';
 import { recomputeAllProgress } from './dataManager.js';
 
 /**
@@ -31,8 +30,69 @@ export function handleStepToggle(stepNumber, dataWithComputedValues, onUpdate) {
                 step.sub_steps.forEach(subStep => {
                     subStep.completed = step.completed;
                 });
-                
-                console.log(`Updated ${step.sub_steps.length} sub-steps to match parent completion: ${step.completed}`);
+                console.log(`Updated ${step.sub_steps.length} sub-steps to match parent step completion`);
+            }
+            
+            // If step has required items, update them to match the parent step
+            if (step.items && Array.isArray(step.items)) {
+                if (!step.required_items_completed) {
+                    step.required_items_completed = new Array(step.items.length).fill(false);
+                }
+                step.required_items_completed.fill(step.completed);
+                console.log(`Updated ${step.items.length} required items to match parent step completion`);
+            }
+        }
+    });
+    
+    // Recompute all progress data to ensure consistency
+    const updatedData = recomputeAllProgress(dataWithComputedValues);
+    
+    // Copy the updated progress back to the original data
+    updatedData.forEach((updatedGroup, groupIndex) => {
+        dataWithComputedValues[groupIndex] = updatedGroup;
+    });
+    
+    saveProgress(dataWithComputedValues);
+    onUpdate();
+}
+
+/**
+ * Handles required item completion toggle
+ * @param {number} stepNumber - Parent step number
+ * @param {number} itemIndex - Index of the item to toggle
+ * @param {Array<Object>} dataWithComputedValues - Current data state
+ * @param {Function} onUpdate - Callback function after update
+ */
+export function handleRequiredItemToggle(stepNumber, itemIndex, dataWithComputedValues, onUpdate) {
+    console.log('Toggling required item:', stepNumber, itemIndex);
+    
+    dataWithComputedValues.forEach(group => {
+        const step = group.steps.find(s => s.step_number === stepNumber);
+        if (step && step.items && step.items[itemIndex]) {
+            // Initialize required_items_completed if it doesn't exist
+            if (!step.required_items_completed) {
+                step.required_items_completed = new Array(step.items.length).fill(false);
+            }
+            
+            // Toggle the specific item
+            const wasCompleted = step.required_items_completed[itemIndex];
+            step.required_items_completed[itemIndex] = !wasCompleted;
+            
+            console.log(`Required item ${itemIndex} for step ${stepNumber}: ${wasCompleted} -> ${!wasCompleted}`);
+            
+            // Check if all required items are completed and update step accordingly
+            const allItemsCompleted = step.required_items_completed.every(completed => completed);
+            const anyItemCompleted = step.required_items_completed.some(completed => completed);
+            
+            // Auto-complete step if all items and sub-steps are done
+            const allSubStepsCompleted = !step.sub_steps || step.sub_steps.every(subStep => subStep.completed);
+            
+            if (allItemsCompleted && allSubStepsCompleted && !step.completed) {
+                step.completed = true;
+                console.log(`Auto-completed step ${stepNumber} - all items and sub-steps done`);
+            } else if (!anyItemCompleted && !allSubStepsCompleted && step.completed) {
+                step.completed = false;
+                console.log(`Auto-uncompleted step ${stepNumber} - no items or sub-steps done`);
             }
         }
     });
@@ -61,25 +121,30 @@ export function handleSubStepToggle(subStepId, dataWithComputedValues, onUpdate)
     dataWithComputedValues.forEach(group => {
         group.steps.forEach(step => {
             if (step.sub_steps) {
-                const subStep = step.sub_steps.find(sub => sub.sub_step_id === subStepId);
+                const subStep = step.sub_steps.find(ss => ss.sub_step_id === subStepId);
                 if (subStep) {
                     const wasCompleted = subStep.completed;
                     subStep.completed = !subStep.completed;
                     
-                    console.log(`Sub-step ${subStepId} completion changed: ${wasCompleted} -> ${subStep.completed}`);
+                    console.log(`Sub-step ${subStepId}: ${wasCompleted} -> ${subStep.completed}`);
                     
-                    // Check if we should auto-complete or auto-uncomplete the parent step
-                    const allSubStepsCompleted = step.sub_steps.every(sub => sub.completed);
+                    // Check if all sub-steps are completed and update step accordingly
+                    const allSubStepsCompleted = step.sub_steps.every(ss => ss.completed);
+                    const anySubStepCompleted = step.sub_steps.some(ss => ss.completed);
                     
-                    // Auto-complete parent step if all sub-steps are completed
-                    if (allSubStepsCompleted && !step.completed) {
+                    // Check required items status
+                    const allItemsCompleted = !step.items || !step.required_items_completed || 
+                        step.required_items_completed.every(completed => completed);
+                    const anyItemCompleted = step.required_items_completed && 
+                        step.required_items_completed.some(completed => completed);
+                    
+                    // Auto-complete step if all sub-steps and items are done
+                    if (allSubStepsCompleted && allItemsCompleted && !step.completed) {
                         step.completed = true;
-                        console.log(`Auto-completed parent step ${step.step_number} because all sub-steps are done`);
-                    }
-                    // Auto-uncomplete parent step if any sub-step is uncompleted and parent was completed
-                    else if (!allSubStepsCompleted && step.completed) {
+                        console.log(`Auto-completed step ${step.step_number} - all sub-steps and items done`);
+                    } else if (!anySubStepCompleted && !anyItemCompleted && step.completed) {
                         step.completed = false;
-                        console.log(`Auto-uncompleted parent step ${step.step_number} because not all sub-steps are done`);
+                        console.log(`Auto-uncompleted step ${step.step_number} - no sub-steps or items done`);
                     }
                 }
             }
@@ -293,7 +358,7 @@ export function handleToggleAll(dataWithComputedValues, groupCollapseState, onUp
             // Save the sub-steps collapse state
             try {
                 localStorage.setItem('subStepsCollapseState', JSON.stringify(subStepsCollapseState));
-                console.log(`💾 Auto-collapsed ${subStepsContainers.length} sub-steps containers`);
+                console.log('💾 All sub-steps collapsed with groups');
             } catch (error) {
                 console.warn('Failed to save sub-steps collapse state:', error);
             }
@@ -384,6 +449,7 @@ export function handleReset(onReset) {
         'This will:\n' +
         '• Clear all completed steps\n' +
         '• Reset all sub-steps\n' +
+        '• Reset all required items\n' +
         '• Clear all saved state\n' +
         '• Restore to initial state\n\n' +
         'This action cannot be undone!'
@@ -392,43 +458,19 @@ export function handleReset(onReset) {
     if (confirmReset) {
         try {
             // Clear all localStorage data
-            clearAllData();
-            
-            // Also clear additional state data
+            localStorage.removeItem('checklistProgress');
             localStorage.removeItem('groupCollapseState');
             localStorage.removeItem('subStepsCollapseState');
+            localStorage.removeItem('checklistFilter');
             localStorage.removeItem('checklistSearchTerm');
             
-            console.log('🧹 All data reset successfully');
+            console.log('🧹 All application data cleared from localStorage');
             
-            // Show success message
-            const notification = document.createElement('div');
-            notification.className = 'reset-notification';
-            notification.innerHTML = `
-                <div class="notification-content">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 11l3 3L22 4"></path>
-                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                    </svg>
-                    <span>Reset completed successfully!</span>
-                </div>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Remove notification after 3 seconds
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 3000);
-            
-            // Trigger app reset
+            // Call the reset callback
             onReset();
-            
         } catch (error) {
-            console.error('❌ Error during reset:', error);
-            alert('❌ Error occurred during reset. Please refresh the page and try again.');
+            console.error('Failed to reset application:', error);
+            alert('Failed to reset application. Please try again.');
         }
     }
 }
@@ -600,7 +642,7 @@ export function getValidatedLocalStorageData(key, defaultValue) {
         try {
             return JSON.parse(saved);
         } catch {
-            // If JSON parsing fails, return as string
+            // If not JSON, return as string
             return saved;
         }
     } catch (error) {

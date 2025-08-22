@@ -135,7 +135,7 @@
 
 /**
  * Step Body
- * Contains instruction text and notes
+ * Contains required items, instruction text, and sub-steps
  */
 .step .step-body {
     padding: var(--spacing-md);
@@ -169,6 +169,88 @@
 }
 
 /**
+ * Required Items Section
+ * Container for required items with checkboxes
+ */
+.step .required-items {
+    margin-bottom: var(--spacing-md);
+}
+
+.step .required-items h4 {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--c-text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.step .required-items h4::before {
+    content: '📋';
+    font-size: 1em;
+}
+
+.step .required-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    background: var(--c-bg-surface-2);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm);
+    border: 1px solid var(--c-border);
+}
+
+/**
+ * Individual Required Item
+ * Each item with its own checkbox
+ */
+.step .required-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.step .required-item:hover {
+    background: color-mix(in srgb, var(--c-primary) 8%, transparent);
+}
+
+.step .required-item input[type="checkbox"] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--c-warning);
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.step .required-item label {
+    flex: 1;
+    font-size: 0.85em;
+    color: var(--c-text-secondary);
+    cursor: pointer;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.step .required-item:hover label {
+    color: var(--c-text-primary);
+}
+
+.step .required-item.completed {
+    background: color-mix(in srgb, var(--c-warning) 10%, transparent);
+}
+
+.step .required-item.completed label {
+    text-decoration: line-through;
+    color: var(--c-text-subtle);
+}
+
+/**
  * Step Instruction
  * Main instruction text with no background
  */
@@ -189,7 +271,7 @@
 
 /**
  * Step Footer
- * Contains money, items, and metadata
+ * Contains money and metadata
  */
 .step .step-footer {
     padding: var(--spacing-sm) var(--spacing-md);
@@ -209,7 +291,7 @@
 
 /**
  * Step Footer Meta Section
- * Contains money and time badges
+ * Contains money badge
  */
 .step .step-footer .step-meta {
     display: flex;
@@ -242,25 +324,11 @@
 }
 
 /**
- * Step Items List
- * Shows required items for the step
+ * Step Notes Placeholder
+ * Space for notes (styled in notes.css)
  */
-.step .step-footer .step-items {
-    color: var(--c-text-secondary);
-    font-size: 0.85em;
-    text-align: right;
-    flex: 1;
-    min-width: 0;
-    transition: color 0.2s ease;
-}
-
-.step:hover .step-footer .step-items {
-    color: var(--c-text-primary);
-}
-
-.step .step-footer .step-items strong {
-    color: var(--c-text-primary);
-    font-weight: 600;
+.step .notes-section {
+    margin-top: var(--spacing-md);
 }
 
 /**
@@ -290,15 +358,19 @@
         padding: var(--spacing-sm);
     }
     
+    .step .required-items-list {
+        padding: var(--spacing-xs);
+    }
+    
+    .step .required-item {
+        padding: 4px;
+    }
+    
     .step .step-footer {
         padding: var(--spacing-xs) var(--spacing-sm);
         flex-direction: column;
         align-items: stretch;
         gap: var(--spacing-xs);
-    }
-    
-    .step .step-footer .step-items {
-        text-align: left;
     }
 }
 
@@ -311,12 +383,16 @@
         font-size: 0.9rem;
     }
     
+    .step .required-items h4 {
+        font-size: 0.85em;
+    }
+    
+    .step .required-item label {
+        font-size: 0.8em;
+    }
+    
     .step .step-footer .step-money {
         font-size: 0.75em;
         padding: 3px 6px;
-    }
-    
-    .step .step-footer .step-items {
-        font-size: 0.8em;
     }
 }
