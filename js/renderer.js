@@ -126,7 +126,10 @@ function renderStep(step, subStepsCollapseState) {
                            aria-label="Mark step ${stepNumber} as ${step.completed ? 'incomplete' : 'complete'}">
                     <span class="step-title">${stepNumber}. ${escapeHtml(step.step_title)}</span>
                 </div>
-                <div class="step-time">${formatTime(step.time_taken)}</div>
+                <div class="step-header-right">
+                    ${renderStepValue(step)}
+                    <div class="step-time">${formatTime(step.time_taken)}</div>
+                </div>
             </div>
             
             <div class="step-body">
@@ -144,20 +147,26 @@ function renderStep(step, subStepsCollapseState) {
                 
                 ${hasSubSteps ? renderSubSteps(step, subStepsCollapsed) : ''}
             </div>
-            
-            <div class="step-footer">
-                <div class="step-meta">
-                    ${step.money_value > 0 ? `
-                        <div class="step-money">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="1" x2="12" y2="23"></line>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
-                            ${formatMoney(step.money_value)}
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
+        </div>
+    `;
+}
+
+/**
+ * Renders the step value badge
+ * @param {Object} step - Step data
+ * @returns {string} HTML for the step value
+ */
+function renderStepValue(step) {
+    const value = step.money_value || 0;
+    const isZero = value === 0;
+    
+    return `
+        <div class="step-value ${isZero ? 'zero-value' : ''}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            ${formatMoney(value)}
         </div>
     `;
 }

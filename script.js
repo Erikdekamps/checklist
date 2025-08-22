@@ -3,42 +3,10 @@
  * @description A streamlined checklist management system with nested task support and required items
  * 
  * @author Interactive Checklist Team
- * @version 2.4.0
+ * @version 2.5.0
  * @created 2024
+ * @updated 2025
  */
-
-import { loadAndProcessData, computeGlobalStats, formatTime, formatMoney } from './js/dataManager.js';
-import { initializeTheme, applyTheme } from './js/themeManager.js';
-import {
-    renderChecklist as renderChecklistHTML,
-    updateStatsDisplay,
-    updateProgressBar,
-    updateFilterButtons,
-    updateSearchClearButton,
-    showError
-} from './js/renderer.js';
-import {
-    handleStepToggle,
-    handleSubStepToggle,
-    handleSubStepsToggle,
-    handleGroupToggle,
-    handleToggleAll,
-    handleToggleAllSubSteps,
-    handleFilterChange,
-    handleSearch,
-    handleThemeToggle,
-    handleReset,
-    updateToggleButtonState,
-    updateSubStepsToggleButtonState,
-    loadGroupCollapseState,
-    loadSubStepsCollapseState,
-    applySubStepsCollapseState,
-    loadFilterState,
-    loadSearchTerm,
-    saveSearchState,
-    debounce
-} from './js/eventHandlers.js';
-import { saveProgress, loadProgress } from './js/storage.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -49,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let dataWithComputedValues = [];
     let groupCollapseState = {};
     let subStepsCollapseState = {};
+    let footerCollapsed = false;
     let appState = {
         currentFilter: 'all',
         searchTerm: ''
@@ -63,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle: document.getElementById('theme-toggle'),
         
         // Footer progress elements
+        progressFooter: document.getElementById('progress-footer'),
+        footerToggle: document.getElementById('footer-toggle'),
         progressText: document.getElementById('progress-text'),
         progressPercentage: document.getElementById('progress-percentage'),
         progressBar: document.querySelector('.progress-fill'),
@@ -80,6 +51,132 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleSubStepsBtn: document.getElementById('toggle-substeps-btn'),
         resetBtn: document.getElementById('reset-btn')
     };
+
+    // ==========================================
+    //  DATA MANAGEMENT
+    // ==========================================
+
+    async function loadAndProcessData() {
+        try {
+            const response = await fetch('./data.json');
+            if (!response.ok) {
+                throw new Error(`Failed to load data: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            return generateStepNumbers(data);
+        } catch (error) {
+            console.error('Error loading data:', error);
+            throw error;
+        }
+    }
+
+    function generateStepNumbers(data) {
+        let globalStepNumber = 1;
+        
+        return data.map(group => ({
+            ...group,
+            steps: group.steps.map(step => {
+                const processedStep = {
+                    ...step,
+                    step_number: globalStepNumber++,
+                    sub_steps: step.sub_steps ? step.sub_steps.map((subStep, index) => ({
+                        ...subStep,
+                        sub_step_id: `${globalStepNumber - 1}.${index + 1}`,
+                        completed: subStep.completed || false
+                    })) : []
+                };
+                return processedStep;
+            })
+        }));
+    }
+
+    function computeGlobalStats(dataWithComputedValues) {
+        const totalSteps = dataWithComputedValues.reduce((sum, group) => 
+            sum + group.steps.length, 0);
+        
+        const completedSteps = dataWithComputedValues.reduce((sum, group) => 
+            sum + group.steps.filter(step => step.completed).length, 0);
+        
+        const totalTime = dataWithComputedValues.reduce((sum, group) => 
+            sum + group.steps.reduce((stepSum, step) => 
+                stepSum + (step.time_taken || 0), 0), 0);
+        
+        const totalMoney = dataWithComputedValues.reduce((sum, group) => 
+            sum + group.steps.reduce((stepSum, step) => {
+                const money = parseFloat(step.money?.replace(/[^0-9.]/g, '') || 0);
+                return stepSum + money;
+            }, 0), 0);
+        
+        const completionPercentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+        
+        return {
+            total_steps: totalSteps,
+            completed_steps: completedSteps,
+            completion_percentage: completionPercentage,
+            total_time: totalTime,
+            total_money: totalMoney
+        };
+    }
+
+    function formatTime(minutes) {
+        if (minutes < 60) {
+            return `${minutes}m`;
+        } else {
+            const hours = Math.floor(minutes / 60);
+            const remainingMinutes = minutes % 60;
+            return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+        }
+    }
+
+    function formatMoney(amount) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    }
+
+    // ==========================================
+    //  STORAGE MANAGEMENT
+    // ==========================================
+
+    function saveProgress(dataToSave) {
+        try {
+            const dataToStore = JSON.stringify(dataToSave);
+            localStorage.setItem('checklistProgress', dataToStore);
+        } catch (error) {
+            console.error('Failed to save progress:', error);
+        }
+    }
+
+    function loadProgress() {
+        try {
+            const saved = localStorage.getItem('checklistProgress');
+            return saved ? JSON.parse(saved) : null;
+        } catch (error) {
+            console.error('Failed to load progress:', error);
+            return null;
+        }
+    }
+
+    function saveFooterState(collapsed) {
+        try {
+            localStorage.setItem('footerCollapsed', JSON.stringify(collapsed));
+        } catch (error) {
+            console.error('Failed to save footer state:', error);
+        }
+    }
+
+    function loadFooterState() {
+        try {
+            const saved = localStorage.getItem('footerCollapsed');
+            return saved ? JSON.parse(saved) : false;
+        } catch (error) {
+            console.error('Failed to load footer state:', error);
+            return false;
+        }
+    }
 
     // ==========================================
     //  UI STATE MANAGEMENT
@@ -112,16 +209,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 elements.progressText.textContent = 'Ready to start your checklist';
             } else if (globalStats.completion_percentage === 100) {
                 elements.progressText.textContent = '🎉 Congratulations! All tasks completed!';
-            } else if (globalStats.completion_percentage === 0) {
-                elements.progressText.textContent = 'Let\'s get started on your tasks';
-            } else if (globalStats.completion_percentage < 25) {
-                elements.progressText.textContent = 'Great start! Keep going strong';
-            } else if (globalStats.completion_percentage < 50) {
-                elements.progressText.textContent = 'Making good progress!';
-            } else if (globalStats.completion_percentage < 75) {
-                elements.progressText.textContent = 'More than halfway there!';
+                elements.progressFooter?.classList.add('progress-complete');
             } else {
-                elements.progressText.textContent = 'Almost finished! You\'re doing great!';
+                elements.progressFooter?.classList.remove('progress-complete');
+                if (globalStats.completion_percentage === 0) {
+                    elements.progressText.textContent = 'Let\'s get started on your tasks';
+                } else if (globalStats.completion_percentage < 25) {
+                    elements.progressText.textContent = 'Great start! Keep going strong';
+                } else if (globalStats.completion_percentage < 50) {
+                    elements.progressText.textContent = 'Making good progress!';
+                } else if (globalStats.completion_percentage < 75) {
+                    elements.progressText.textContent = 'More than halfway there!';
+                } else {
+                    elements.progressText.textContent = 'Almost finished! You\'re doing great!';
+                }
             }
         }
         
@@ -131,226 +232,386 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function toggleFooter() {
+        footerCollapsed = !footerCollapsed;
+        elements.progressFooter?.classList.toggle('collapsed', footerCollapsed);
+        saveFooterState(footerCollapsed);
+    }
+
     function updateUI() {
         updateFooterProgress();
-        updateFilterButtons(appState.currentFilter);
-        updateSearchClearButton(appState.searchTerm);
-        updateToggleButtonState(dataWithComputedValues, groupCollapseState);
         
         // Update search input value if needed
         if (elements.searchInput && elements.searchInput.value !== appState.searchTerm) {
             elements.searchInput.value = appState.searchTerm;
         }
-        
-        // Update sub-steps toggle button after a short delay to ensure DOM is updated
-        setTimeout(() => {
-            updateSubStepsToggleButtonState(dataWithComputedValues);
-            applySubStepsCollapseState(subStepsCollapseState);
-        }, 100);
     }
 
     // ==========================================
     //  RENDERING FUNCTIONS
     // ==========================================
 
+    function renderChecklist(dataWithComputedValues, groupCollapseState, subStepsCollapseState, appState) {
+        return dataWithComputedValues.map(group => {
+            const isCollapsed = groupCollapseState[group.group_title] || false;
+            const filteredSteps = filterSteps(group.steps, appState);
+            
+            if (filteredSteps.length === 0 && appState.searchTerm) {
+                return ''; // Hide empty groups when searching
+            }
+
+            const completedSteps = group.steps.filter(step => step.completed).length;
+            const totalSteps = group.steps.length;
+            const completionPercentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
+            return `
+                <div class="step-group ${isCollapsed ? 'collapsed' : ''}" data-group="${escapeHtml(group.group_title)}">
+                    <div class="group-header" data-group="${escapeHtml(group.group_title)}">
+                        <button class="group-collapse-btn" type="button">
+                            <svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        <h2 class="group-title">${escapeHtml(group.group_title)}</h2>
+                        <div class="group-stats">
+                            <span class="group-progress">${completedSteps}/${totalSteps} (${completionPercentage}%)</span>
+                        </div>
+                    </div>
+                    <div class="group-body">
+                        ${filteredSteps.map(step => renderStep(step, subStepsCollapseState)).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterSteps(steps, appState) {
+        return steps.filter(step => {
+            // Filter by completion status
+            if (appState.currentFilter === 'completed' && !step.completed) return false;
+            if (appState.currentFilter === 'todo' && step.completed) return false;
+            
+            // Filter by search term
+            if (appState.searchTerm) {
+                const searchLower = appState.searchTerm.toLowerCase();
+                const titleMatch = step.step_title?.toLowerCase().includes(searchLower);
+                const instructionMatch = step.step_instruction?.toLowerCase().includes(searchLower);
+                const itemsMatch = step.items?.some(item => item.toLowerCase().includes(searchLower));
+                
+                if (!titleMatch && !instructionMatch && !itemsMatch) return false;
+            }
+            
+            return true;
+        });
+    }
+
+    function renderStep(step, subStepsCollapseState) {
+        const hasSubSteps = step.sub_steps && step.sub_steps.length > 0;
+        const subStepsCollapsed = hasSubSteps ? (subStepsCollapseState[step.step_number] !== false) : false;
+        
+        return `
+            <div class="step ${step.completed ? 'completed' : ''}" data-step="${step.step_number}">
+                <div class="step-header">
+                    <div class="step-header-left">
+                        <input type="checkbox" ${step.completed ? 'checked' : ''} />
+                        <h3 class="step-title">${escapeHtml(step.step_title)}</h3>
+                    </div>
+                    <div class="step-header-right">
+                        ${renderStepValue(step)}
+                        <div class="step-time">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                            ${formatTime(step.time_taken || 0)}
+                        </div>
+                    </div>
+                </div>
+                <div class="step-body">
+                    <p class="step-instruction">${escapeHtml(step.step_instruction)}</p>
+                    ${renderRequiredItems(step)}
+                    ${renderNotes(step)}
+                </div>
+                ${hasSubSteps ? renderSubSteps(step, subStepsCollapsed) : ''}
+            </div>
+        `;
+    }
+
+    function renderStepValue(step) {
+        const money = parseFloat(step.money?.replace(/[^0-9.]/g, '') || 0);
+        const isZero = money === 0;
+        
+        if (isZero) {
+            return `
+                <div class="step-value zero-value">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    <span class="value-text">Free</span>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="step-value money-value">
+                    <div class="money-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        <span class="money-amount">${formatMoney(money)}</span>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function renderRequiredItems(step) {
+        if (!step.items || step.items.length === 0) return '';
+        
+        const requiredItemsCompleted = step.required_items_completed || [];
+        
+        return `
+            <div class="required-items">
+                <h4>Required Items</h4>
+                <div class="required-items-list">
+                    ${step.items.map((item, index) => {
+                        const isCompleted = requiredItemsCompleted[index] || false;
+                        return `
+                            <div class="required-item ${isCompleted ? 'completed' : ''}" data-item-index="${index}">
+                                <input type="checkbox" ${isCompleted ? 'checked' : ''} />
+                                <label>${escapeHtml(item)}</label>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderNotes(step) {
+        const hasNote = step.notes && step.notes.trim();
+        
+        if (hasNote) {
+            return `
+                <div class="notes-section">
+                    <div class="note-display">${escapeHtml(step.notes)}</div>
+                    <textarea class="step-notes" placeholder="Add your notes here...">${escapeHtml(step.notes)}</textarea>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="notes-section">
+                    <button class="add-note-btn" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        </svg>
+                        Add Note
+                    </button>
+                    <textarea class="step-notes" placeholder="Add your notes here..."></textarea>
+                </div>
+            `;
+        }
+    }
+
+    function renderSubSteps(step, isCollapsed) {
+        const completedSubSteps = step.sub_steps.filter(subStep => subStep.completed).length;
+        const totalSubSteps = step.sub_steps.length;
+        const progressPercentage = totalSubSteps > 0 ? (completedSubSteps / totalSubSteps) * 100 : 0;
+
+        return `
+            <div class="sub-steps-container ${isCollapsed ? 'collapsed' : ''}" data-step="${step.step_number}">
+                <div class="sub-steps-header">
+                    <div class="sub-steps-header-left">
+                        <h4>Sub-Tasks (${completedSubSteps}/${totalSubSteps})</h4>
+                        <div class="sub-steps-progress">
+                            <div class="sub-steps-progress-bar">
+                                <div class="sub-steps-progress-fill" style="width: ${progressPercentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="sub-steps-toggle-btn" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div class="sub-steps-list">
+                    ${step.sub_steps.map(subStep => renderSubStep(subStep)).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderSubStep(subStep) {
+        return `
+            <div class="sub-step ${subStep.completed ? 'completed' : ''}" data-sub-step="${subStep.sub_step_id}">
+                <input type="checkbox" class="sub-step-checkbox" ${subStep.completed ? 'checked' : ''} />
+                <div class="sub-step-content">
+                    <h5 class="sub-step-title">${escapeHtml(subStep.step_title)}</h5>
+                    <p class="sub-step-instruction">${escapeHtml(subStep.step_instruction)}</p>
+                    <div class="sub-step-time">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12,6 12,12 16,14"></polyline>
+                        </svg>
+                        ${formatTime(subStep.time_taken || 0)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     function renderApp() {
         if (!elements.groupContainer) return;
         
         try {
-            const html = renderChecklistHTML(dataWithComputedValues, groupCollapseState, subStepsCollapseState, appState);
+            const html = renderChecklist(dataWithComputedValues, groupCollapseState, subStepsCollapseState, appState);
             elements.groupContainer.innerHTML = html;
             updateUI();
         } catch (error) {
-            console.error('❌ Error rendering app:', error);
-            showError(elements.groupContainer, 'Failed to render checklist: ' + error.message);
+            console.error('Error rendering app:', error);
+            elements.groupContainer.innerHTML = `
+                <div class="error-message">
+                    <h3>Error loading checklist</h3>
+                    <p>${error.message}</p>
+                </div>
+            `;
         }
     }
 
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     // ==========================================
-    //  REQUIRED ITEMS FUNCTIONALITY
+    //  EVENT HANDLERS
     // ==========================================
 
-    /**
-     * Handles required item toggle with proper data structure management
-     * @param {number} stepNumber - Step number containing the required item
-     * @param {number} itemIndex - Index of the required item to toggle
-     */
+    function handleStepToggle(stepNumber) {
+        for (const group of dataWithComputedValues) {
+            const step = group.steps.find(s => s.step_number === stepNumber);
+            if (step) {
+                step.completed = !step.completed;
+                saveProgress(dataWithComputedValues);
+                renderApp();
+                break;
+            }
+        }
+    }
+
     function handleRequiredItemToggle(stepNumber, itemIndex) {
-        console.log(`🔄 Toggling required item ${itemIndex} for step ${stepNumber}`);
+        for (const group of dataWithComputedValues) {
+            const step = group.steps.find(s => s.step_number === stepNumber);
+            if (step) {
+                if (!step.required_items_completed) {
+                    step.required_items_completed = new Array(step.items ? step.items.length : 0).fill(false);
+                }
+                
+                if (itemIndex >= 0 && itemIndex < step.required_items_completed.length) {
+                    step.required_items_completed[itemIndex] = !step.required_items_completed[itemIndex];
+                    saveProgress(dataWithComputedValues);
+                    renderApp();
+                }
+                break;
+            }
+        }
+    }
+
+    function handleSubStepToggle(subStepId) {
+        const [stepNumber, subStepIndex] = subStepId.split('.').map(num => parseInt(num));
         
-        try {
-            // Find the step that contains this required item
-            let targetStep = null;
-            for (const group of dataWithComputedValues) {
-                const step = group.steps.find(s => s.step_number === stepNumber);
-                if (step) {
-                    targetStep = step;
+        for (const group of dataWithComputedValues) {
+            const step = group.steps.find(s => s.step_number === stepNumber);
+            if (step && step.sub_steps) {
+                const subStep = step.sub_steps.find(ss => ss.sub_step_id === subStepId);
+                if (subStep) {
+                    subStep.completed = !subStep.completed;
+                    saveProgress(dataWithComputedValues);
+                    renderApp();
                     break;
                 }
             }
-
-            if (!targetStep) {
-                console.error(`❌ Step ${stepNumber} not found`);
-                return;
-            }
-
-            // Initialize required_items_completed array if it doesn't exist
-            if (!targetStep.required_items_completed) {
-                targetStep.required_items_completed = new Array(targetStep.items ? targetStep.items.length : 0).fill(false);
-            }
-
-            // Ensure the array is the right length
-            if (targetStep.items && targetStep.required_items_completed.length !== targetStep.items.length) {
-                // Resize the array to match items length
-                const newArray = new Array(targetStep.items.length).fill(false);
-                // Copy existing values
-                for (let i = 0; i < Math.min(targetStep.required_items_completed.length, newArray.length); i++) {
-                    newArray[i] = targetStep.required_items_completed[i];
-                }
-                targetStep.required_items_completed = newArray;
-            }
-
-            // Validate item index
-            if (itemIndex < 0 || itemIndex >= targetStep.required_items_completed.length) {
-                console.error(`❌ Invalid item index ${itemIndex} for step ${stepNumber}`);
-                return;
-            }
-
-            // Toggle the completion status
-            const wasCompleted = targetStep.required_items_completed[itemIndex];
-            targetStep.required_items_completed[itemIndex] = !wasCompleted;
-
-            const itemName = targetStep.items && targetStep.items[itemIndex] ? targetStep.items[itemIndex] : `Item ${itemIndex + 1}`;
-            console.log(`✅ Required item "${itemName}" toggled from ${wasCompleted} to ${!wasCompleted}`);
-
-            // Save the complete data structure to localStorage
-            saveRequiredItemsProgress(dataWithComputedValues);
-
-            // Re-render the app
-            renderApp();
-
-        } catch (error) {
-            console.error('❌ Error toggling required item:', error);
         }
     }
 
-    /**
-     * Saves the complete checklist progress including required items
-     * @param {Array} data - Complete data structure to save
-     */
-    function saveRequiredItemsProgress(data) {
-        try {
-            // Create a clean copy of the data for saving
-            const dataToSave = data.map(group => ({
-                ...group,
-                steps: group.steps.map(step => ({
-                    ...step,
-                    // Ensure required_items_completed is included
-                    required_items_completed: step.required_items_completed || []
-                }))
-            }));
-
-            saveProgress(dataToSave);
-            console.log('✅ Progress saved including required items');
-        } catch (error) {
-            console.error('❌ Error saving required items progress:', error);
+    function handleSubStepsToggle(stepNumber) {
+        const currentState = subStepsCollapseState[stepNumber];
+        subStepsCollapseState[stepNumber] = currentState === false ? true : false;
+        
+        const container = document.querySelector(`[data-step="${stepNumber}"].sub-steps-container`);
+        if (container) {
+            container.classList.toggle('collapsed', subStepsCollapseState[stepNumber]);
         }
     }
 
-    /**
-     * Loads and merges saved progress with fresh data
-     * @param {Array} freshData - Fresh data from data.json
-     * @returns {Array} Data merged with saved progress
-     */
-    function mergeWithSavedProgress(freshData) {
+    function handleGroupToggle(groupTitle) {
+        groupCollapseState[groupTitle] = !groupCollapseState[groupTitle];
+        renderApp();
+    }
+
+    function handleSearch(searchTerm) {
+        appState.searchTerm = searchTerm;
+        renderApp();
+    }
+
+    function handleFilterChange(filter) {
+        appState.currentFilter = filter;
+        
+        // Update filter button states
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        const activeButton = document.getElementById(`filter-${filter}`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+        
+        renderApp();
+    }
+
+    function handleNoteEdit(stepNumber, noteValue) {
+        for (const group of dataWithComputedValues) {
+            const step = group.steps.find(s => s.step_number === stepNumber);
+            if (step) {
+                step.notes = noteValue;
+                saveProgress(dataWithComputedValues);
+                break;
+            }
+        }
+    }
+
+    function handleThemeToggle() {
+        const isDark = document.body.classList.contains('dark-mode');
+        const newTheme = isDark ? 'light' : 'dark';
+        
+        document.body.classList.toggle('dark-mode', newTheme === 'dark');
+        
         try {
-            const savedProgress = loadProgress();
+            localStorage.setItem('checklistTheme', newTheme);
+        } catch (error) {
+            console.error('Failed to save theme:', error);
+        }
+    }
+
+    function handleReset() {
+        if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+            localStorage.removeItem('checklistProgress');
+            localStorage.removeItem('footerCollapsed');
+            groupCollapseState = {};
+            subStepsCollapseState = {};
+            footerCollapsed = false;
+            appState = { currentFilter: 'all', searchTerm: '' };
             
-            if (!savedProgress || !Array.isArray(savedProgress)) {
-                console.log('📁 No saved progress found, using fresh data');
-                return initializeRequiredItemsArrays(freshData);
+            if (elements.searchInput) {
+                elements.searchInput.value = '';
             }
-
-            console.log('📁 Merging fresh data with saved progress');
-
-            return freshData.map(group => {
-                const savedGroup = savedProgress.find(sg => sg.group_title === group.group_title);
-                
-                return {
-                    ...group,
-                    steps: group.steps.map(step => {
-                        const savedStep = savedGroup?.steps?.find(ss => ss.step_number === step.step_number);
-                        
-                        // Start with fresh step data
-                        let mergedStep = {
-                            ...step,
-                            completed: false,
-                            notes: '',
-                            required_items_completed: []
-                        };
-
-                        // Apply saved progress if it exists
-                        if (savedStep) {
-                            mergedStep.completed = Boolean(savedStep.completed);
-                            mergedStep.notes = savedStep.notes || '';
-                            
-                            // Merge required items completion state
-                            if (step.items && Array.isArray(step.items)) {
-                                mergedStep.required_items_completed = new Array(step.items.length).fill(false);
-                                
-                                if (savedStep.required_items_completed && Array.isArray(savedStep.required_items_completed)) {
-                                    // Copy saved completion states up to the length of current items
-                                    for (let i = 0; i < Math.min(step.items.length, savedStep.required_items_completed.length); i++) {
-                                        mergedStep.required_items_completed[i] = Boolean(savedStep.required_items_completed[i]);
-                                    }
-                                }
-                            }
-
-                            // Merge sub-steps progress
-                            if (step.sub_steps && savedStep.sub_steps) {
-                                mergedStep.sub_steps = step.sub_steps.map(subStep => {
-                                    const savedSubStep = savedStep.sub_steps.find(sss => sss.sub_step_id === subStep.sub_step_id);
-                                    return {
-                                        ...subStep,
-                                        completed: savedSubStep ? Boolean(savedSubStep.completed) : false
-                                    };
-                                });
-                            }
-                        } else {
-                            // Initialize required items array for steps with no saved data
-                            if (step.items && Array.isArray(step.items)) {
-                                mergedStep.required_items_completed = new Array(step.items.length).fill(false);
-                            }
-                        }
-
-                        return mergedStep;
-                    })
-                };
-            });
-
-        } catch (error) {
-            console.error('❌ Error merging saved progress:', error);
-            return initializeRequiredItemsArrays(freshData);
+            
+            init();
         }
-    }
-
-    /**
-     * Initializes required_items_completed arrays for all steps
-     * @param {Array} data - Data to initialize
-     * @returns {Array} Data with initialized arrays
-     */
-    function initializeRequiredItemsArrays(data) {
-        return data.map(group => ({
-            ...group,
-            steps: group.steps.map(step => ({
-                ...step,
-                completed: false,
-                notes: '',
-                required_items_completed: step.items && Array.isArray(step.items) 
-                    ? new Array(step.items.length).fill(false) 
-                    : []
-            }))
-        }));
     }
 
     // ==========================================
@@ -368,263 +629,138 @@ document.addEventListener('DOMContentLoaded', () => {
             const subStepsHeader = e.target.closest('.sub-steps-header');
             const requiredItemElement = e.target.closest('.required-item');
 
-            console.log('Click detected:', {
-                stepElement: !!stepElement,
-                groupHeader: !!groupHeader,
-                subStepElement: !!subStepElement,
-                subStepsHeader: !!subStepsHeader,
-                requiredItemElement: !!requiredItemElement,
-                target: e.target.tagName + (e.target.className ? '.' + e.target.className : '')
-            });
-
-            // Handle required item clicks (toggle completion)
+            // Handle required item clicks
             if (requiredItemElement && !subStepElement && !subStepsHeader) {
                 e.preventDefault();
                 e.stopPropagation();
                 const stepNumber = parseInt(stepElement.dataset.step);
                 const itemIndex = parseInt(requiredItemElement.dataset.itemIndex);
-                console.log('Required item toggle:', { stepNumber, itemIndex });
-                
-                // Use our enhanced handler
                 handleRequiredItemToggle(stepNumber, itemIndex);
                 return;
             }
 
-            // Handle sub-step clicks (toggle completion)
+            // Handle sub-step clicks
             if (subStepElement && !subStepsHeader) {
                 e.preventDefault();
                 e.stopPropagation();
                 const subStepId = subStepElement.dataset.subStep;
-                console.log('Sub-step toggle:', subStepId);
-                handleSubStepToggle(subStepId, dataWithComputedValues, renderApp);
+                handleSubStepToggle(subStepId);
                 return;
             }
 
-            // Handle sub-steps header clicks (toggle collapse)
+            // Handle sub-steps header clicks
             if (subStepsHeader) {
                 e.preventDefault();
                 e.stopPropagation();
-                const stepNumber = subStepsHeader.closest('.sub-steps-container').dataset.step;
-                console.log('Sub-steps header toggle:', stepNumber);
-                handleSubStepsToggle(stepNumber, () => {
-                    // Update progress display and button states without full re-render
-                    updateFooterProgress();
-                    setTimeout(() => updateSubStepsToggleButtonState(dataWithComputedValues), 50);
-                });
+                const stepNumber = parseInt(subStepsHeader.closest('.sub-steps-container').dataset.step);
+                handleSubStepsToggle(stepNumber);
                 return;
             }
 
-            // Handle group header clicks (entire header is clickable)
+            // Handle group header clicks
             if (groupHeader && !stepElement) {
                 e.preventDefault();
                 const groupTitle = groupHeader.dataset.group;
-                console.log('Group header toggle:', groupTitle);
-                handleGroupToggle(groupTitle, groupCollapseState, renderApp);
+                handleGroupToggle(groupTitle);
                 return;
             }
 
-            // Handle step clicks (toggle completion) - only if not clicking on required items or sub-elements
+            // Handle step clicks
             if (stepElement && !subStepElement && !subStepsHeader && !requiredItemElement) {
                 e.preventDefault();
                 const stepNumber = parseInt(stepElement.dataset.step);
-                console.log('Step toggle:', stepNumber);
-                handleStepToggle(stepNumber, dataWithComputedValues, renderApp);
+                handleStepToggle(stepNumber);
             }
         });
 
-        // Handle note editing
+        // Note editing
         elements.groupContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('note-display') || e.target.classList.contains('add-note-btn')) {
                 e.preventDefault();
                 e.stopPropagation();
                 
                 const stepElement = e.target.closest('.step');
-                if (!stepElement) return;
-                
-                const stepNumber = parseInt(stepElement.dataset.step);
-                startNoteEditing(stepElement, stepNumber);
-            }
-        });
-
-        // Handle note textarea blur (save note)
-        elements.groupContainer.addEventListener('blur', (e) => {
-            if (e.target.classList.contains('step-notes')) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const stepElement = e.target.closest('.step');
-                if (!stepElement) return;
-                
-                const stepNumber = parseInt(stepElement.dataset.step);
-                const noteValue = e.target.value.trim();
-                
-                saveNote(stepElement, stepNumber, noteValue);
-            }
-        }, true);
-
-        // Handle note textarea key events
-        elements.groupContainer.addEventListener('keydown', (e) => {
-            if (e.target.classList.contains('step-notes')) {
-                if (e.key === 'Escape') {
-                    e.preventDefault();
-                    e.target.blur(); // This will trigger the blur event and save
-                } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                    e.preventDefault();
-                    e.target.blur(); // This will trigger the blur event and save
+                if (stepElement) {
+                    stepElement.classList.add('is-editing-note');
+                    const textarea = stepElement.querySelector('.step-notes');
+                    if (textarea) {
+                        textarea.focus();
+                    }
                 }
             }
         });
 
-        // Search functionality with debounced saving
+        elements.groupContainer.addEventListener('blur', (e) => {
+            if (e.target.classList.contains('step-notes')) {
+                const stepElement = e.target.closest('.step');
+                if (stepElement) {
+                    stepElement.classList.remove('is-editing-note');
+                    const stepNumber = parseInt(stepElement.dataset.step);
+                    const noteValue = e.target.value.trim();
+                    handleNoteEdit(stepNumber, noteValue);
+                    renderApp();
+                }
+            }
+        }, true);
+
+        // Footer toggle
+        if (elements.footerToggle) {
+            elements.footerToggle.addEventListener('click', toggleFooter);
+        }
+
+        // Search functionality
         if (elements.searchInput) {
-            const debouncedSave = debounce(saveSearchState, 300);
-            
             elements.searchInput.addEventListener('input', (e) => {
-                // Update search immediately for UI responsiveness
-                handleSearch(e.target.value, appState, renderApp);
-                
-                // Debounce the localStorage save to avoid excessive writes
-                debouncedSave(appState);
+                handleSearch(e.target.value);
             });
         }
 
         if (elements.searchClear) {
             elements.searchClear.addEventListener('click', () => {
                 elements.searchInput.value = '';
-                handleSearch('', appState, renderApp);
-                saveSearchState(appState);
+                handleSearch('');
             });
         }
 
         // Filter functionality
         if (elements.filterAll) {
-            elements.filterAll.addEventListener('click', () => {
-                handleFilterChange('all', appState, renderApp);
-            });
+            elements.filterAll.addEventListener('click', () => handleFilterChange('all'));
         }
-
         if (elements.filterTodo) {
-            elements.filterTodo.addEventListener('click', () => {
-                handleFilterChange('todo', appState, renderApp);
-            });
+            elements.filterTodo.addEventListener('click', () => handleFilterChange('todo'));
         }
-
         if (elements.filterCompleted) {
-            elements.filterCompleted.addEventListener('click', () => {
-                handleFilterChange('completed', appState, renderApp);
-            });
-        }
-
-        // Toggle All functionality
-        if (elements.toggleAllBtn) {
-            elements.toggleAllBtn.addEventListener('click', () => {
-                const action = handleToggleAll(dataWithComputedValues, groupCollapseState, renderApp);
-                console.log(`Groups toggle action: ${action}`);
-                
-                // After collapsing all groups, ensure sub-steps button is updated
-                if (action === 'collapse') {
-                    setTimeout(() => {
-                        updateSubStepsToggleButtonState(dataWithComputedValues);
-                    }, 200);
-                }
-            });
-        }
-
-        // Toggle All Sub-Steps functionality
-        if (elements.toggleSubStepsBtn) {
-            elements.toggleSubStepsBtn.addEventListener('click', () => {
-                const action = handleToggleAllSubSteps(dataWithComputedValues, () => {
-                    // Update button state and progress display without full re-render
-                    updateFooterProgress();
-                    setTimeout(() => updateSubStepsToggleButtonState(dataWithComputedValues), 50);
-                });
-                console.log(`Sub-steps toggle action: ${action}`);
-            });
-        }
-
-        // Reset functionality
-        if (elements.resetBtn) {
-            elements.resetBtn.addEventListener('click', () => {
-                handleReset(async () => {
-                    console.log('🔄 Resetting application...');
-                    
-                    // Reset application state
-                    groupCollapseState = {};
-                    subStepsCollapseState = {};
-                    appState = {
-                        currentFilter: 'all',
-                        searchTerm: ''
-                    };
-                    
-                    // Clear search input
-                    if (elements.searchInput) {
-                        elements.searchInput.value = '';
-                    }
-                    
-                    try {
-                        // Reload fresh data
-                        dataWithComputedValues = await loadAndProcessData();
-                        
-                        // Initialize required items arrays (no saved progress)
-                        dataWithComputedValues = initializeRequiredItemsArrays(dataWithComputedValues);
-                        
-                        // Re-render everything
-                        renderApp();
-                        
-                        console.log('✅ Application reset completed');
-                    } catch (error) {
-                        console.error('❌ Error during app reset:', error);
-                        if (elements.groupContainer) {
-                            showError(elements.groupContainer, 'Failed to reset application: ' + error.message);
-                        }
-                    }
-                });
-            });
+            elements.filterCompleted.addEventListener('click', () => handleFilterChange('completed'));
         }
 
         // Theme toggle
         if (elements.themeToggle) {
-            elements.themeToggle.addEventListener('click', () => {
-                handleThemeToggle(applyTheme);
-            });
+            elements.themeToggle.addEventListener('click', handleThemeToggle);
+        }
+
+        // Reset functionality
+        if (elements.resetBtn) {
+            elements.resetBtn.addEventListener('click', handleReset);
         }
     }
 
     // ==========================================
-    //  NOTE EDITING FUNCTIONALITY
+    //  THEME INITIALIZATION
     // ==========================================
 
-    function startNoteEditing(stepElement, stepNumber) {
-        // Add editing class
-        stepElement.classList.add('is-editing-note');
-        
-        // Find the textarea and focus it
-        const textarea = stepElement.querySelector('.step-notes');
-        if (textarea) {
-            textarea.focus();
-            // Position cursor at end
-            textarea.setSelectionRange(textarea.value.length, textarea.value.length);
-        }
-    }
-
-    function saveNote(stepElement, stepNumber, noteValue) {
-        // Remove editing class
-        stepElement.classList.remove('is-editing-note');
-        
-        // Find the step in our data and update the note
-        for (const group of dataWithComputedValues) {
-            const step = group.steps.find(s => s.step_number === stepNumber);
-            if (step) {
-                step.notes = noteValue;
-                break;
+    function initializeTheme() {
+        try {
+            const savedTheme = localStorage.getItem('checklistTheme');
+            const userPrefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme) {
+                document.body.classList.toggle('dark-mode', savedTheme === 'dark');
+            } else if (userPrefersDark) {
+                document.body.classList.add('dark-mode');
             }
+        } catch (error) {
+            console.error('Failed to initialize theme:', error);
         }
-        
-        // Save the updated data structure
-        saveRequiredItemsProgress(dataWithComputedValues);
-        
-        // Re-render to update the display
-        renderApp();
     }
 
     // ==========================================
@@ -633,34 +769,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function init() {
         try {
-            console.log('🚀 Initializing Interactive Checklist Application v2.4.0...');
+            console.log('🚀 Initializing Interactive Checklist Application v2.5.0...');
             
             // Initialize theme
             initializeTheme();
 
-            // Load saved state
-            groupCollapseState = loadGroupCollapseState();
-            subStepsCollapseState = loadSubStepsCollapseState();
-            appState.currentFilter = loadFilterState();
-            appState.searchTerm = loadSearchTerm();
+            // Load footer state
+            footerCollapsed = loadFooterState();
+            if (elements.progressFooter) {
+                elements.progressFooter.classList.toggle('collapsed', footerCollapsed);
+            }
 
-            console.log('📁 Loaded saved state:', {
-                filter: appState.currentFilter,
-                searchTerm: appState.searchTerm,
-                groupsCollapsed: Object.keys(groupCollapseState).length,
-                subStepsCollapsed: Object.keys(subStepsCollapseState).length
-            });
-
-            // Load fresh data from data.json
+            // Load data
             const freshData = await loadAndProcessData();
+            const savedProgress = loadProgress();
             
-            // Merge with saved progress (including required items)
-            dataWithComputedValues = mergeWithSavedProgress(freshData);
-            
-            console.log('✅ Data loaded and merged with saved progress:', {
-                groups: dataWithComputedValues.length,
-                totalSteps: dataWithComputedValues.reduce((sum, group) => sum + (group.steps?.length || 0), 0)
-            });
+            // Merge saved progress with fresh data
+            if (savedProgress) {
+                dataWithComputedValues = freshData.map(group => {
+                    const savedGroup = savedProgress.find(sg => sg.group_title === group.group_title);
+                    
+                    return {
+                        ...group,
+                        steps: group.steps.map(step => {
+                            const savedStep = savedGroup?.steps?.find(ss => ss.step_number === step.step_number);
+                            
+                            if (savedStep) {
+                                return {
+                                    ...step,
+                                    completed: savedStep.completed || false,
+                                    notes: savedStep.notes || '',
+                                    required_items_completed: savedStep.required_items_completed || [],
+                                    sub_steps: step.sub_steps ? step.sub_steps.map(subStep => {
+                                        const savedSubStep = savedStep.sub_steps?.find(sss => sss.sub_step_id === subStep.sub_step_id);
+                                        return {
+                                            ...subStep,
+                                            completed: savedSubStep?.completed || false
+                                        };
+                                    }) : []
+                                };
+                            }
+                            
+                            return {
+                                ...step,
+                                completed: false,
+                                notes: '',
+                                required_items_completed: step.items ? new Array(step.items.length).fill(false) : []
+                            };
+                        })
+                    };
+                });
+            } else {
+                dataWithComputedValues = freshData.map(group => ({
+                    ...group,
+                    steps: group.steps.map(step => ({
+                        ...step,
+                        completed: false,
+                        notes: '',
+                        required_items_completed: step.items ? new Array(step.items.length).fill(false) : []
+                    }))
+                }));
+            }
 
             // Render UI
             renderApp();
@@ -673,9 +842,14 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('❌ Critical error during initialization:', error);
             
-            // Show user-friendly error message
             if (elements.groupContainer) {
-                showError(elements.groupContainer, 'Failed to load checklist: ' + error.message);
+                elements.groupContainer.innerHTML = `
+                    <div class="error-message">
+                        <h3>Failed to load checklist</h3>
+                        <p>${error.message}</p>
+                        <button onclick="location.reload()">Reload Page</button>
+                    </div>
+                `;
             }
         }
     }

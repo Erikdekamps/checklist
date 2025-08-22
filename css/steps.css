@@ -45,7 +45,7 @@
 
 /**
  * Step Header
- * Contains checkbox, title, and time information
+ * Contains checkbox, title, and value information
  */
 .step .step-header {
     display: flex;
@@ -69,7 +69,8 @@
 .step .step-header .step-header-left { 
     display: flex; 
     align-items: center; 
-    gap: var(--spacing-md); 
+    gap: var(--spacing-md);
+    flex: 1;
 }
 
 /**
@@ -105,10 +106,59 @@
     color: var(--c-text-primary);
     line-height: 1.4;
     transition: color 0.2s ease;
+    flex: 1;
 }
 
 .step:hover .step-title {
     color: var(--c-primary);
+}
+
+/**
+ * Step Header Right Section
+ * Contains value and time information
+ */
+.step .step-header .step-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+}
+
+/**
+ * Step Value Badge
+ * Redesigned money/value display
+ */
+.step .step-value {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 6px 12px;
+    border-radius: var(--border-radius-lg);
+    font-size: 0.85em;
+    font-weight: 700;
+    box-shadow: 0 2px 8px color-mix(in srgb, #10b981 25%, transparent);
+    transition: all 0.2s ease;
+    min-width: 60px;
+    justify-content: center;
+}
+
+.step .step-value.zero-value {
+    background: linear-gradient(135deg, var(--c-text-subtle), color-mix(in srgb, var(--c-text-subtle) 80%, transparent));
+    opacity: 0.6;
+}
+
+.step:hover .step-value {
+    filter: brightness(1.1);
+    box-shadow: 0 3px 12px color-mix(in srgb, #10b981 35%, transparent);
+    transform: translateY(-1px);
+}
+
+.step .step-value svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
 }
 
 /**
@@ -120,7 +170,7 @@
     font-weight: 600; 
     color: white;
     background: linear-gradient(135deg, var(--c-primary-light), var(--c-primary));
-    padding: 4px 8px;
+    padding: 6px 10px;
     border-radius: var(--border-radius-lg);
     box-shadow: 0 2px 8px color-mix(in srgb, var(--c-primary) 25%, transparent);
     min-width: 50px;
@@ -270,60 +320,6 @@
 }
 
 /**
- * Step Footer
- * Contains money and metadata
- */
-.step .step-footer {
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
-    border-top: 1px solid var(--c-border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-    transition: background 0.2s ease;
-}
-
-.step:hover .step-footer {
-    background: linear-gradient(135deg, var(--c-bg-surface-hover), color-mix(in srgb, var(--c-primary) 5%, var(--c-bg-surface-hover)));
-}
-
-/**
- * Step Footer Meta Section
- * Contains money badge
- */
-.step .step-footer .step-meta {
-    display: flex;
-    gap: var(--spacing-sm);
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-/**
- * Step Money Badge
- * Shows cost with brightness change
- */
-.step .step-footer .step-money {
-    background: linear-gradient(135deg, var(--c-success), #22c55e);
-    color: white;
-    padding: 4px 8px;
-    border-radius: var(--border-radius-md);
-    font-size: 0.8em;
-    font-weight: 600;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--c-success) 25%, transparent);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    transition: filter 0.2s ease, box-shadow 0.2s ease;
-}
-
-.step:hover .step-money {
-    filter: brightness(1.1);
-    box-shadow: 0 3px 12px color-mix(in srgb, var(--c-success) 35%, transparent);
-}
-
-/**
  * Step Notes Placeholder
  * Space for notes (styled in notes.css)
  */
@@ -347,11 +343,13 @@
     }
     
     .step .step-header .step-header-left {
+        width: 100%;
         gap: var(--spacing-sm);
     }
     
-    .step .step-header .step-time {
-        align-self: flex-end;
+    .step .step-header .step-header-right {
+        width: 100%;
+        justify-content: space-between;
     }
     
     .step .step-body {
@@ -364,13 +362,6 @@
     
     .step .required-item {
         padding: 4px;
-    }
-    
-    .step .step-footer {
-        padding: var(--spacing-xs) var(--spacing-sm);
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--spacing-xs);
     }
 }
 
@@ -391,8 +382,10 @@
         font-size: 0.8em;
     }
     
-    .step .step-footer .step-money {
+    .step .step-value,
+    .step .step-time {
         font-size: 0.75em;
-        padding: 3px 6px;
+        padding: 4px 8px;
+        min-width: 40px;
     }
 }
