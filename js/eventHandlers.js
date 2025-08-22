@@ -129,6 +129,95 @@ export function handleSubStepsToggle(stepNumber, onUpdate) {
 }
 
 /**
+ * Handles toggle all sub-steps (smart toggle based on current state)
+ * @param {Array<Object>} dataWithComputedValues - Current data state
+ * @param {Function} onUpdate - Callback function after update
+ * @returns {string} The action performed ('expand' or 'collapse')
+ */
+export function handleToggleAllSubSteps(dataWithComputedValues, onUpdate) {
+    // Get all sub-steps containers
+    const subStepsContainers = document.querySelectorAll('.sub-steps-container');
+    const totalSubStepsContainers = subStepsContainers.length;
+    
+    if (totalSubStepsContainers === 0) {
+        console.log('No sub-steps containers found');
+        return 'no-action';
+    }
+    
+    // Count collapsed sub-steps containers
+    const collapsedContainers = Array.from(subStepsContainers).filter(container => 
+        container.classList.contains('collapsed')
+    ).length;
+    
+    // If more than half are collapsed, expand all; otherwise collapse all
+    const shouldExpand = collapsedContainers > totalSubStepsContainers / 2;
+    
+    console.log(`Sub-steps toggle: ${collapsedContainers}/${totalSubStepsContainers} collapsed, will ${shouldExpand ? 'expand' : 'collapse'}`);
+    
+    // Apply action to all sub-steps containers
+    const subStepsCollapseState = {};
+    subStepsContainers.forEach(container => {
+        const stepNumber = container.dataset.step;
+        if (stepNumber) {
+            if (shouldExpand) {
+                container.classList.remove('collapsed');
+            } else {
+                container.classList.add('collapsed');
+            }
+            subStepsCollapseState[stepNumber] = !shouldExpand;
+        }
+    });
+    
+    // Save the new collapse state
+    try {
+        localStorage.setItem('subStepsCollapseState', JSON.stringify(subStepsCollapseState));
+    } catch (error) {
+        console.warn('Failed to save sub-steps collapse state:', error);
+    }
+    
+    if (onUpdate) onUpdate();
+    return shouldExpand ? 'expand' : 'collapse';
+}
+
+/**
+ * Updates the sub-steps toggle button state and text
+ * @param {Array<Object>} dataWithComputedValues - Current data state
+ */
+export function updateSubStepsToggleButtonState(dataWithComputedValues) {
+    const toggleBtn = document.getElementById('toggle-substeps-btn');
+    const buttonText = toggleBtn?.querySelector('.button-text');
+    
+    if (!toggleBtn || !buttonText) return;
+    
+    // Get all sub-steps containers
+    const subStepsContainers = document.querySelectorAll('.sub-steps-container');
+    const totalSubStepsContainers = subStepsContainers.length;
+    
+    if (totalSubStepsContainers === 0) {
+        toggleBtn.style.display = 'none';
+        return;
+    }
+    
+    toggleBtn.style.display = 'flex';
+    
+    // Count collapsed sub-steps containers
+    const collapsedContainers = Array.from(subStepsContainers).filter(container => 
+        container.classList.contains('collapsed')
+    ).length;
+    
+    // If more than half are collapsed, show "Expand Sub-Steps"
+    const shouldShowExpand = collapsedContainers > totalSubStepsContainers / 2;
+    
+    if (shouldShowExpand) {
+        toggleBtn.setAttribute('data-state', 'expand');
+        buttonText.textContent = 'Expand Sub-Steps';
+    } else {
+        toggleBtn.setAttribute('data-state', 'collapse');
+        buttonText.textContent = 'Collapse Sub-Steps';
+    }
+}
+
+/**
  * Loads sub-steps collapse state from localStorage
  * @returns {Object} Object with step numbers as keys and collapse state as values
  */
@@ -176,6 +265,7 @@ export function handleGroupToggle(groupTitle, groupCollapseState, onUpdate) {
 
 /**
  * Handles toggle all groups (smart toggle based on current state)
+ * Also manages sub-steps collapse state when collapsing all groups
  * @param {Array<Object>} dataWithComputedValues - Current data state
  * @param {Object} groupCollapseState - State object tracking collapsed groups
  * @param {Function} onUpdate - Callback function after update
@@ -191,6 +281,9 @@ export function handleToggleAll(dataWithComputedValues, groupCollapseState, onUp
     // If more than half are collapsed, expand all; otherwise collapse all
     const shouldExpand = collapsedGroups > totalGroups / 2;
     
+    console.log(`Groups toggle: ${collapsedGroups}/${totalGroups} collapsed, will ${shouldExpand ? 'expand' : 'collapse'}`);
+    
+    // Update group collapse state
     dataWithComputedValues.forEach(group => {
         groupCollapseState[group.group_title] = !shouldExpand;
     });
@@ -199,6 +292,35 @@ export function handleToggleAll(dataWithComputedValues, groupCollapseState, onUp
         localStorage.setItem('groupCollapseState', JSON.stringify(groupCollapseState));
     } catch (error) {
         console.warn('Failed to save group collapse state:', error);
+    }
+    
+    // When collapsing all groups, also collapse all sub-steps
+    if (!shouldExpand) {
+        console.log('Collapsing all groups - also collapsing all sub-steps');
+        
+        // Delay the sub-steps collapse until after the groups are rendered
+        setTimeout(() => {
+            const subStepsContainers = document.querySelectorAll('.sub-steps-container');
+            const subStepsCollapseState = {};
+            
+            subStepsContainers.forEach(container => {
+                const stepNumber = container.dataset.step;
+                if (stepNumber) {
+                    container.classList.add('collapsed');
+                    subStepsCollapseState[stepNumber] = true;
+                }
+            });
+            
+            // Save the sub-steps collapse state
+            try {
+                localStorage.setItem('subStepsCollapseState', JSON.stringify(subStepsCollapseState));
+            } catch (error) {
+                console.warn('Failed to save sub-steps collapse state:', error);
+            }
+            
+            // Update the sub-steps toggle button
+            updateSubStepsToggleButtonState(dataWithComputedValues);
+        }, 100);
     }
     
     onUpdate();

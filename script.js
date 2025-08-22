@@ -1,4 +1,3 @@
-/* filepath: /workspaces/checklist/script.js */
 /**
  * @fileoverview Interactive Checklist Application - Enhanced with Sub-Steps
  * @description A streamlined checklist management system with nested task support
@@ -24,10 +23,12 @@ import {
     handleSubStepsToggle,
     handleGroupToggle,
     handleToggleAll,
+    handleToggleAllSubSteps,
     handleFilterChange,
     handleSearch,
     handleThemeToggle,
     updateToggleButtonState,
+    updateSubStepsToggleButtonState,
     loadGroupCollapseState,
     loadSubStepsCollapseState,
     applySubStepsCollapseState,
@@ -66,7 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
         filterAll: document.getElementById('filter-all'),
         filterTodo: document.getElementById('filter-todo'),
         filterCompleted: document.getElementById('filter-completed'),
-        toggleAllBtn: document.getElementById('toggle-all-btn')
+        toggleAllBtn: document.getElementById('toggle-all-btn'),
+        toggleSubStepsBtn: document.getElementById('toggle-substeps-btn')
     };
 
     // ==========================================
@@ -80,8 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSearchClearButton(appState.searchTerm);
         updateToggleButtonState(dataWithComputedValues, groupCollapseState);
         
-        // Apply sub-steps collapse state after rendering
+        // Update sub-steps toggle button after a short delay to ensure DOM is updated
         setTimeout(() => {
+            updateSubStepsToggleButtonState(dataWithComputedValues);
             applySubStepsCollapseState(subStepsCollapseState);
         }, 100);
     }
@@ -142,9 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const stepNumber = subStepsHeader.closest('.sub-steps-container').dataset.step;
                 console.log('Sub-steps header toggle:', stepNumber);
                 handleSubStepsToggle(stepNumber, () => {
-                    // Update progress display without full re-render
+                    // Update progress display and button states without full re-render
                     updateStatsDisplay(dataWithComputedValues, elements);
                     updateProgressBar(dataWithComputedValues, elements);
+                    setTimeout(() => updateSubStepsToggleButtonState(dataWithComputedValues), 50);
                 });
                 return;
             }
@@ -203,7 +207,28 @@ document.addEventListener('DOMContentLoaded', () => {
         // Toggle All functionality
         if (elements.toggleAllBtn) {
             elements.toggleAllBtn.addEventListener('click', () => {
-                handleToggleAll(dataWithComputedValues, groupCollapseState, renderApp);
+                const action = handleToggleAll(dataWithComputedValues, groupCollapseState, renderApp);
+                console.log(`Groups toggle action: ${action}`);
+                
+                // After collapsing all groups, ensure sub-steps button is updated
+                if (action === 'collapse') {
+                    setTimeout(() => {
+                        updateSubStepsToggleButtonState(dataWithComputedValues);
+                    }, 200);
+                }
+            });
+        }
+
+        // Toggle All Sub-Steps functionality
+        if (elements.toggleSubStepsBtn) {
+            elements.toggleSubStepsBtn.addEventListener('click', () => {
+                const action = handleToggleAllSubSteps(dataWithComputedValues, () => {
+                    // Update button state and progress display without full re-render
+                    updateStatsDisplay(dataWithComputedValues, elements);
+                    updateProgressBar(dataWithComputedValues, elements);
+                    setTimeout(() => updateSubStepsToggleButtonState(dataWithComputedValues), 50);
+                });
+                console.log(`Sub-steps toggle action: ${action}`);
             });
         }
 
