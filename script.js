@@ -4,11 +4,11 @@
  * @description A streamlined checklist management system with nested task support
  * 
  * @author Interactive Checklist Team
- * @version 2.2.0
+ * @version 2.3.0
  * @created 2024
  */
 
-import { loadAndProcessData, computeGlobalStats } from './js/dataManager.js';
+import { loadAndProcessData, computeGlobalStats, formatTime, formatMoney } from './js/dataManager.js';
 import { initializeTheme, applyTheme } from './js/themeManager.js';
 import {
     renderChecklist as renderChecklistHTML,
@@ -28,13 +28,16 @@ import {
     handleFilterChange,
     handleSearch,
     handleThemeToggle,
+    handleReset,
     updateToggleButtonState,
     updateSubStepsToggleButtonState,
     loadGroupCollapseState,
     loadSubStepsCollapseState,
     applySubStepsCollapseState,
     loadFilterState,
-    loadSearchTerm
+    loadSearchTerm,
+    saveSearchState,
+    debounce
 } from './js/eventHandlers.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -57,11 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const elements = {
         groupContainer: document.getElementById('group-container'),
-        totalTimeElement: document.getElementById('total-time'),
-        progressStatElement: document.getElementById('progress-stat'),
         themeToggle: document.getElementById('theme-toggle'),
+        
+        // Footer progress elements
         progressText: document.getElementById('progress-text'),
-        progressBar: document.getElementById('progress-bar'),
+        progressPercentage: document.getElementById('progress-percentage'),
+        progressBar: document.querySelector('.progress-fill'),
+        progressStat: document.getElementById('progress-stat'),
+        totalTime: document.getElementById('total-time'),
+        totalMoney: document.getElementById('total-money'),
         
         // Control elements
         searchInput: document.getElementById('search-input'),
@@ -70,16 +77,62 @@ document.addEventListener('DOMContentLoaded', () => {
         filterTodo: document.getElementById('filter-todo'),
         filterCompleted: document.getElementById('filter-completed'),
         toggleAllBtn: document.getElementById('toggle-all-btn'),
-        toggleSubStepsBtn: document.getElementById('toggle-substeps-btn')
+        toggleSubStepsBtn: document.getElementById('toggle-substeps-btn'),
+        resetBtn: document.getElementById('reset-btn')
     };
 
     // ==========================================
     //  UI STATE MANAGEMENT
     // ==========================================
 
+    function updateFooterProgress() {
+        const globalStats = computeGlobalStats(dataWithComputedValues);
+        
+        // Update progress stats
+        if (elements.progressStat) {
+            elements.progressStat.textContent = `${globalStats.completed_steps}/${globalStats.total_steps}`;
+        }
+        
+        if (elements.totalTime) {
+            elements.totalTime.textContent = formatTime(globalStats.total_time);
+        }
+        
+        if (elements.totalMoney) {
+            elements.totalMoney.textContent = formatMoney(globalStats.total_money);
+        }
+        
+        // Update progress percentage
+        if (elements.progressPercentage) {
+            elements.progressPercentage.textContent = `${globalStats.completion_percentage}%`;
+        }
+        
+        // Update progress text
+        if (elements.progressText) {
+            if (globalStats.total_steps === 0) {
+                elements.progressText.textContent = 'Ready to start your checklist';
+            } else if (globalStats.completion_percentage === 100) {
+                elements.progressText.textContent = '🎉 Congratulations! All tasks completed!';
+            } else if (globalStats.completion_percentage === 0) {
+                elements.progressText.textContent = 'Let\'s get started on your tasks';
+            } else if (globalStats.completion_percentage < 25) {
+                elements.progressText.textContent = 'Great start! Keep going strong';
+            } else if (globalStats.completion_percentage < 50) {
+                elements.progressText.textContent = 'Making good progress!';
+            } else if (globalStats.completion_percentage < 75) {
+                elements.progressText.textContent = 'More than halfway there!';
+            } else {
+                elements.progressText.textContent = 'Almost finished! You\'re doing great!';
+            }
+        }
+        
+        // Update progress bar
+        if (elements.progressBar) {
+            elements.progressBar.style.width = `${globalStats.completion_percentage}%`;
+        }
+    }
+
     function updateUI() {
-        updateStatsDisplay(dataWithComputedValues, elements);
-        updateProgressBar(dataWithComputedValues, elements);
+        updateFooterProgress();
         updateFilterButtons(appState.currentFilter);
         updateSearchClearButton(appState.searchTerm);
         updateToggleButtonState(dataWithComputedValues, groupCollapseState);
@@ -153,8 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Sub-steps header toggle:', stepNumber);
                 handleSubStepsToggle(stepNumber, () => {
                     // Update progress display and button states without full re-render
-                    updateStatsDisplay(dataWithComputedValues, elements);
-                    updateProgressBar(dataWithComputedValues, elements);
+                    updateFooterProgress();
                     setTimeout(() => updateSubStepsToggleButtonState(dataWithComputedValues), 50);
                 });
                 return;
@@ -180,29 +232,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Search functionality with debounced saving
         if (elements.searchInput) {
-            let searchTimeout;
+            const debouncedSave = debounce(saveSearchState, 300);
+            
             elements.searchInput.addEventListener('input', (e) => {
-                // Clear previous timeout
-                if (searchTimeout) {
-                    clearTimeout(searchTimeout);
-                }
-                
                 // Update search immediately for UI responsiveness
                 handleSearch(e.target.value, appState, renderApp);
                 
                 // Debounce the localStorage save to avoid excessive writes
-                searchTimeout = setTimeout(() => {
-                    try {
-                        localStorage.setItem('checklistSearchTerm', appState.searchTerm);
-                        localStorage.setItem('checklistFilter', appState.currentFilter);
-                        console.log('💾 Search state saved:', { 
-                            searchTerm: appState.searchTerm, 
-                            filter: appState.currentFilter 
-                        });
-                    } catch (error) {
-                        console.warn('Failed to save search state:', error);
-                    }
-                }, 300); // Save after 300ms of no typing
+                debouncedSave(appState);
             });
         }
 
@@ -210,14 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.searchClear.addEventListener('click', () => {
                 elements.searchInput.value = '';
                 handleSearch('', appState, renderApp);
-                
-                // Save cleared search state
-                try {
-                    localStorage.setItem('checklistSearchTerm', '');
-                    localStorage.setItem('checklistFilter', appState.currentFilter);
-                } catch (error) {
-                    console.warn('Failed to save cleared search state:', error);
-                }
+                saveSearchState(appState);
             });
         }
 
@@ -260,11 +290,47 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.toggleSubStepsBtn.addEventListener('click', () => {
                 const action = handleToggleAllSubSteps(dataWithComputedValues, () => {
                     // Update button state and progress display without full re-render
-                    updateStatsDisplay(dataWithComputedValues, elements);
-                    updateProgressBar(dataWithComputedValues, elements);
+                    updateFooterProgress();
                     setTimeout(() => updateSubStepsToggleButtonState(dataWithComputedValues), 50);
                 });
                 console.log(`Sub-steps toggle action: ${action}`);
+            });
+        }
+
+        // Reset functionality
+        if (elements.resetBtn) {
+            elements.resetBtn.addEventListener('click', () => {
+                handleReset(async () => {
+                    console.log('🔄 Resetting application...');
+                    
+                    // Reset application state
+                    groupCollapseState = {};
+                    subStepsCollapseState = {};
+                    appState = {
+                        currentFilter: 'all',
+                        searchTerm: ''
+                    };
+                    
+                    // Clear search input
+                    if (elements.searchInput) {
+                        elements.searchInput.value = '';
+                    }
+                    
+                    try {
+                        // Reload fresh data
+                        dataWithComputedValues = await loadAndProcessData();
+                        
+                        // Re-render everything
+                        renderApp();
+                        
+                        console.log('✅ Application reset completed');
+                    } catch (error) {
+                        console.error('❌ Error during app reset:', error);
+                        if (elements.groupContainer) {
+                            showError(elements.groupContainer, 'Failed to reset application: ' + error.message);
+                        }
+                    }
+                });
             });
         }
 
@@ -282,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function init() {
         try {
-            console.log('🚀 Initializing Interactive Checklist Application...');
+            console.log('🚀 Initializing Interactive Checklist Application v2.3.0...');
             
             // Initialize theme
             initializeTheme();

@@ -1,4 +1,3 @@
-/* filepath: /workspaces/checklist/js/renderer.js */
 /**
  * Renderer Module - Enhanced with Sub-Steps
  * ==========================================
@@ -267,72 +266,82 @@ export function updateSearchClearButton(searchTerm) {
 }
 
 /**
- * Updates header statistics display
+ * Updates enhanced footer progress display
  * @param {Array<Object>} dataWithComputedValues - Current data state
  * @param {Object} elements - DOM element references
  */
 export function updateStatsDisplay(dataWithComputedValues, elements) {
     const allSteps = dataWithComputedValues.flatMap(group => group.steps || []);
+    const totalSteps = allSteps.length;
     
-    // Calculate completed and total time
-    const completedSteps = allSteps.filter(step => step.completed);
-    let completedTime = 0;
-    
-    // Sum up time for completed steps
-    completedSteps.forEach(step => {
-        completedTime += step.time_taken || 0;
-    });
-    
-    // Total time
-    const totalTime = allSteps.reduce((sum, step) => sum + (step.time_taken || 0), 0);
-    
-    // Update total time display with completed/total format
-    if (elements.totalTimeElement) {
-        elements.totalTimeElement.textContent = `${formatTime(completedTime)} / ${formatTime(totalTime)}`;
+    if (totalSteps === 0) {
+        if (elements.progressText) elements.progressText.textContent = "No steps available";
+        if (elements.progressStatElement) elements.progressStatElement.textContent = "0/0 steps";
+        if (elements.totalTimeElement) elements.totalTimeElement.textContent = "0m / 0m";
+        return;
     }
     
-    // Update progress statistics
+    // Calculate completed steps and time
+    const completedSteps = allSteps.filter(step => step.completed);
+    const completedCount = completedSteps.length;
+    
+    // Sum up time for completed and total
+    const completedTime = completedSteps.reduce((sum, step) => sum + (step.time_taken || 0), 0);
+    const totalTime = allSteps.reduce((sum, step) => sum + (step.time_taken || 0), 0);
+    
+    // Update main progress text
+    if (elements.progressText) {
+        elements.progressText.textContent = `Completed ${completedCount} of ${totalSteps} steps`;
+    }
+    
+    // Update detailed stats
     if (elements.progressStatElement) {
-        elements.progressStatElement.textContent = `${completedSteps.length}/${allSteps.length}`;
+        elements.progressStatElement.textContent = `${completedCount}/${totalSteps} steps`;
+    }
+    
+    if (elements.totalTimeElement) {
+        elements.totalTimeElement.textContent = `${formatTime(completedTime)} / ${formatTime(totalTime)}`;
     }
 }
 
 /**
- * Updates the progress bar in the footer
+ * Updates the enhanced progress bar with percentage and completion state
  * @param {Array<Object>} dataWithComputedValues - Current data state
  * @param {Object} elements - Progress elements
  */
 export function updateProgressBar(dataWithComputedValues, elements) {
-    if (!elements.progressText || !elements.progressBar) return;
+    if (!elements.progressBar) return;
     
     const allSteps = dataWithComputedValues.flatMap(group => group.steps || []);
     const totalSteps = allSteps.length;
     
     if (totalSteps === 0) {
-        elements.progressText.textContent = "No steps available.";
         elements.progressBar.style.width = '0%';
+        if (elements.progressText) elements.progressText.textContent = "No steps available";
+        
+        // Update percentage display
+        const percentageElement = document.getElementById('progress-percentage');
+        if (percentageElement) percentageElement.textContent = '0%';
         return;
     }
     
     const completedSteps = allSteps.filter(step => step.completed).length;
-    const percentage = (completedSteps / totalSteps) * 100;
+    const percentage = Math.round((completedSteps / totalSteps) * 100);
     
-    elements.progressText.textContent = `Completed ${completedSteps} of ${totalSteps} (${Math.round(percentage)}%)`;
+    // Update progress bar width
     elements.progressBar.style.width = `${percentage}%`;
-}
-
-/**
- * Renders all groups with filtering applied
- * @param {Array<Object>} dataWithComputedValues - Current data state
- * @param {Object} state - Application state (filter, search, etc.)
- * @param {Object} groupCollapseState - Collapse state for groups
- * @param {HTMLElement} container - Container element
- */
-export function renderFilteredGroups(dataWithComputedValues, state, groupCollapseState, container) {
-    if (!container) return;
     
-    const html = renderChecklist(dataWithComputedValues, groupCollapseState, {}, state);
-    container.innerHTML = html;
+    // Update percentage display
+    const percentageElement = document.getElementById('progress-percentage');
+    if (percentageElement) {
+        percentageElement.textContent = `${percentage}%`;
+    }
+    
+    // Add completion state class
+    const footer = document.getElementById('progress-footer');
+    if (footer) {
+        footer.classList.toggle('progress-complete', percentage === 100);
+    }
 }
 
 /**

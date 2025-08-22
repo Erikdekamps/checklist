@@ -6,7 +6,7 @@
  * Contains event handlers for steps, sub-steps, and UI interactions
  */
 
-import { saveProgress } from './storage.js';
+import { saveProgress, clearAllData } from './storage.js';
 import { recomputeAllProgress } from './dataManager.js';
 
 /**
@@ -221,41 +221,6 @@ export function updateSubStepsToggleButtonState(dataWithComputedValues) {
 }
 
 /**
- * Loads sub-steps collapse state from localStorage
- * @returns {Object} Object with step numbers as keys and collapse state as values
- */
-export function loadSubStepsCollapseState() {
-    try {
-        const saved = localStorage.getItem('subStepsCollapseState');
-        const state = saved ? JSON.parse(saved) : {};
-        console.log('📁 Loaded sub-steps collapse state:', Object.keys(state).length, 'steps');
-        return state;
-    } catch (error) {
-        console.warn('Failed to load sub-steps collapse state:', error);
-        return {};
-    }
-}
-
-/**
- * Applies sub-steps collapse state to rendered elements
- * @param {Object} subStepsCollapseState - Collapse state object
- */
-export function applySubStepsCollapseState(subStepsCollapseState) {
-    let appliedCount = 0;
-    Object.entries(subStepsCollapseState).forEach(([stepNumber, isCollapsed]) => {
-        const subStepsContainer = document.querySelector(`.sub-steps-container[data-step="${stepNumber}"]`);
-        if (subStepsContainer && isCollapsed) {
-            subStepsContainer.classList.add('collapsed');
-            appliedCount++;
-        }
-    });
-    
-    if (appliedCount > 0) {
-        console.log(`🎨 Applied sub-steps collapse state to ${appliedCount} containers`);
-    }
-}
-
-/**
  * Handles group collapse/expand toggle
  * @param {string} groupTitle - Title of the group to toggle
  * @param {Object} groupCollapseState - State object tracking collapsed groups
@@ -409,6 +374,66 @@ export function handleThemeToggle(applyTheme) {
 }
 
 /**
+ * Handles reset button click with confirmation
+ * @param {Function} onReset - Callback function after reset
+ */
+export function handleReset(onReset) {
+    // Create confirmation modal
+    const confirmReset = confirm(
+        '⚠️ Are you sure you want to reset all progress?\n\n' +
+        'This will:\n' +
+        '• Clear all completed steps\n' +
+        '• Reset all sub-steps\n' +
+        '• Clear all saved state\n' +
+        '• Restore to initial state\n\n' +
+        'This action cannot be undone!'
+    );
+    
+    if (confirmReset) {
+        try {
+            // Clear all localStorage data
+            clearAllData();
+            
+            // Also clear additional state data
+            localStorage.removeItem('groupCollapseState');
+            localStorage.removeItem('subStepsCollapseState');
+            localStorage.removeItem('checklistSearchTerm');
+            
+            console.log('🧹 All data reset successfully');
+            
+            // Show success message
+            const notification = document.createElement('div');
+            notification.className = 'reset-notification';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 11l3 3L22 4"></path>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    <span>Reset completed successfully!</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+            
+            // Trigger app reset
+            onReset();
+            
+        } catch (error) {
+            console.error('❌ Error during reset:', error);
+            alert('❌ Error occurred during reset. Please refresh the page and try again.');
+        }
+    }
+}
+
+/**
  * Updates the toggle button state and text
  * @param {Array<Object>} dataWithComputedValues - Current data state
  * @param {Object} groupCollapseState - State object tracking collapsed groups
@@ -434,6 +459,45 @@ export function updateToggleButtonState(dataWithComputedValues, groupCollapseSta
     } else {
         toggleBtn.setAttribute('data-state', 'collapse');
         buttonText.textContent = 'Collapse All';
+    }
+}
+
+/**
+ * Storage and State Management Functions
+ */
+
+/**
+ * Loads sub-steps collapse state from localStorage
+ * @returns {Object} Object with step numbers as keys and collapse state as values
+ */
+export function loadSubStepsCollapseState() {
+    try {
+        const saved = localStorage.getItem('subStepsCollapseState');
+        const state = saved ? JSON.parse(saved) : {};
+        console.log('📁 Loaded sub-steps collapse state:', Object.keys(state).length, 'steps');
+        return state;
+    } catch (error) {
+        console.warn('Failed to load sub-steps collapse state:', error);
+        return {};
+    }
+}
+
+/**
+ * Applies sub-steps collapse state to rendered elements
+ * @param {Object} subStepsCollapseState - Collapse state object
+ */
+export function applySubStepsCollapseState(subStepsCollapseState) {
+    let appliedCount = 0;
+    Object.entries(subStepsCollapseState).forEach(([stepNumber, isCollapsed]) => {
+        const subStepsContainer = document.querySelector(`.sub-steps-container[data-step="${stepNumber}"]`);
+        if (subStepsContainer && isCollapsed) {
+            subStepsContainer.classList.add('collapsed');
+            appliedCount++;
+        }
+    });
+    
+    if (appliedCount > 0) {
+        console.log(`🎨 Applied sub-steps collapse state to ${appliedCount} containers`);
     }
 }
 
@@ -502,6 +566,10 @@ export function clearSearch(state, onUpdate) {
     
     onUpdate();
 }
+
+/**
+ * Utility Functions
+ */
 
 /**
  * Debounced function factory for localStorage operations
