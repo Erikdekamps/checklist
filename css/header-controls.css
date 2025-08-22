@@ -52,7 +52,7 @@
     background: var(--c-bg-surface-1);
     color: var(--c-text-primary);
     font-size: 0.9em;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 #search-input:focus {
@@ -75,7 +75,7 @@
     cursor: pointer;
     color: var(--c-text-secondary);
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -84,6 +84,10 @@
 .search-clear:hover {
     background: var(--c-bg-surface-hover);
     color: var(--c-danger);
+}
+
+.search-clear:active {
+    opacity: 0.8;
 }
 
 .search-clear.visible {
@@ -117,8 +121,9 @@
     font-weight: 500;
     border-radius: calc(var(--border-radius-lg) - 2px);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     white-space: nowrap;
+    position: relative;
 }
 
 .filter-btn:hover {
@@ -126,10 +131,39 @@
     color: var(--c-text-primary);
 }
 
+/**
+ * Filter Button Active State (when clicked)
+ * Ensures text remains visible during click
+ */
+.filter-btn:active {
+    opacity: 0.9;
+    color: var(--c-text-primary);
+    background: var(--c-bg-surface-hover);
+}
+
+/**
+ * Filter Button Selected State (when filter is active)
+ * Different from :active - this is when the filter is currently selected
+ */
 .filter-btn.active {
-    background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
+    background: linear-gradient(135deg, var(--c-primary), var(--c-primary-light));
     color: white;
     box-shadow: 0 2px 8px color-mix(in srgb, var(--c-primary) 30%, transparent);
+}
+
+.filter-btn.active:hover {
+    background: linear-gradient(135deg, var((--c-primary-light)), var(--c-primary));
+    color: white;
+}
+
+/**
+ * Filter Button Active State when Selected
+ * When clicking on an already selected filter button
+ */
+.filter-btn.active:active {
+    opacity: 0.95;
+    color: white;
+    background: var(--c-primary-dark);
 }
 
 /**
@@ -154,25 +188,31 @@
     font-weight: 500;
     border-radius: var(--border-radius-lg);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     white-space: nowrap;
     position: relative;
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, var(--c-bg-surface-hover), var(--c-primary-light));
+    background: linear-gradient(135deg, var(--c-bg-surface-hover), color-mix(in srgb, var(--c-primary) 10%, var(--c-bg-surface-hover)));
     border-color: var(--c-primary);
-    transform: translateY(-1px);
     box-shadow: 0 4px 12px var(--c-shadow);
 }
 
+/**
+ * Action Button Active State
+ * Ensures text remains visible when clicked
+ */
 .action-btn:active {
-    transform: translateY(0);
+    opacity: 0.95;
+    color: var(--c-text-primary);
+    background: var(--c-bg-surface-hover);
+    box-shadow: 0 2px 6px var(--c-shadow);
 }
 
 .action-btn svg {
     flex-shrink: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
 }
 
 /**
