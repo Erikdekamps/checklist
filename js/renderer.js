@@ -54,21 +54,31 @@ export function createStepElement(step) {
 }
 
 /**
- * Creates a simplified group DOM element
+ * Creates a group DOM element with collapse functionality
  * @param {Object} group - Group data object
  * @param {Array<Object>} stepsToRender - Steps to render
- * @param {Object} groupCollapseState - Unused but kept for compatibility
+ * @param {boolean} isCollapsed - Whether the group is collapsed
  * @returns {HTMLElement} Complete group DOM element
  */
-export function createGroupElement(group, stepsToRender, groupCollapseState) {
+export function createGroupElement(group, stepsToRender, isCollapsed = false) {
     const groupElement = document.createElement('div');
     groupElement.className = 'step-group';
     groupElement.dataset.groupTitle = group.group_title;
+    
+    if (isCollapsed) {
+        groupElement.classList.add('collapsed');
+    }
 
-    // Create simplified group header (no collapse functionality)
+    // Create group header with collapse button
     groupElement.innerHTML = `
-        <div class="group-header">
+        <div class="group-header" data-group="${group.group_title}">
+            <button class="group-collapse-btn" type="button" aria-label="Toggle group">
+                <svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
             <span class="group-title">${group.group_title}</span>
+            <span class="group-stats">${stepsToRender.filter(s => s.completed).length}/${stepsToRender.length}</span>
         </div>
         <div class="group-body"></div>
     `;

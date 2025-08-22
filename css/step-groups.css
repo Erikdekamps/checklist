@@ -1,118 +1,166 @@
 /**
- * Step Groups & Group Headers
- * ===========================
+ * Step Group Components
+ * ====================
  * 
- * Styling for step group containers and their headers
+ * Styling for group containers, headers, and collapse functionality
  */
 
 /**
  * Step Group Container
- * Main container for each group of steps with hover effects
+ * Main container for grouped steps with collapse functionality
  */
 #group-container .step-group {
-    background: var(--c-bg-surface-1);
-    border-radius: var(--border-radius-xl);
     margin-bottom: var(--spacing-xl);
-    box-shadow: 0 8px 32px var(--c-shadow);
+    border-radius: var(--border-radius-xl);
+    overflow: hidden;
+    background: var(--c-bg-surface-1);
     border: 1px solid var(--c-border);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px var(--c-shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #group-container .step-group:hover {
-    box-shadow: 0 12px 48px var(--c-shadow-lg);
-    transform: translateY(-2px);
+    box-shadow: 0 8px 32px var(--c-shadow-lg);
 }
 
 /**
  * Group Header
- * Clickable header with title and collapse icon
+ * Contains group title and collapse button - entire header is clickable
  */
 #group-container .step-group .group-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-md) var(--spacing-lg);
-    cursor: pointer;
-    user-select: none;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
     background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
     border-bottom: 1px solid var(--c-border);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
     position: relative;
-    overflow: hidden;
+}
+
+#group-container .step-group .group-header:hover {
+    background: linear-gradient(135deg, var(--c-bg-surface-hover), var(--c-primary-light));
 }
 
 /**
- * Group Header Accent Line
- * Animated accent line that appears on hover
+ * Group Collapse Button
+ * Visual indicator only - header handles the click
  */
-#group-container .step-group .group-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
-    transform: scaleY(0);
-    transition: transform 0.3s ease;
+.group-collapse-btn {
+    background: none;
+    border: none;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: var(--c-text-secondary);
+    pointer-events: none; /* Prevent button from capturing clicks */
+    position: relative;
+    z-index: 2;
 }
 
-#group-container .step-group:hover .group-header::before {
-    transform: scaleY(1);
+/* Icon hover effect triggered by header hover */
+#group-container .step-group .group-header:hover .group-collapse-btn {
+    background: var(--c-bg-surface-1);
+    color: var(--c-primary);
+    transform: scale(1.1);
+}
+
+.group-collapse-btn .collapse-icon {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /**
  * Group Title
- * Main title for each step group
+ * Main title for the group
  */
-#group-container .step-group .group-header .group-title { 
-    font-size: 1.3em; 
+#group-container .step-group .group-title {
+    font-size: 1.4em;
     font-weight: 700;
     color: var(--c-text-primary);
     text-shadow: 0 1px 2px var(--c-shadow);
+    flex: 1;
 }
 
 /**
- * Collapse Icon
- * Animated icon that rotates when group is collapsed
+ * Group Stats
+ * Shows completion progress for the group
  */
-#group-container .step-group .group-header .collapse-icon {
-    width: 24px;
-    height: 24px;
-    transition: transform 0.3s ease;
-    stroke: var(--c-text-secondary);
+.group-stats {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--c-text-secondary);
     background: var(--c-bg-surface-1);
-    border-radius: 50%;
-    padding: 4px;
-    box-shadow: 0 2px 8px var(--c-shadow);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--c-border);
 }
 
 /**
  * Group Body
- * Container for step cards with collapse animation
+ * Contains all steps in the group
  */
 #group-container .step-group .group-body {
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg) var(--spacing-md);
-    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out, opacity 0.3s ease;
-    opacity: 1;
-    overflow: hidden;
+    padding: var(--spacing-lg);
+    background: var(--c-bg-surface-1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /**
- * Collapsed Group Body
- * Hidden state for collapsed groups
+ * Collapsed State
+ * Styling for collapsed groups - matches JavaScript class
  */
-#group-container .step-group.is-collapsed .group-body {
+.step-group.collapsed .group-body {
     max-height: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    opacity: 0;
+    padding: 0 var(--spacing-lg);
     overflow: hidden;
+    opacity: 0;
+}
+
+.step-group.collapsed .group-collapse-btn .collapse-icon {
+    transform: rotate(-90deg);
+}
+
+.step-group.collapsed .group-header {
+    border-bottom: none;
 }
 
 /**
- * Collapsed Icon State
- * Rotated icon for collapsed groups
+ * Expanded State Animation
+ * Smooth expansion animation
  */
-#group-container .step-group.is-collapsed .collapse-icon { 
-    transform: rotate(-90deg); 
+.step-group:not(.collapsed) .group-body {
+    max-height: none;
+    opacity: 1;
+}
+
+/**
+ * Mobile Responsive Adjustments
+ */
+@media (max-width: 768px) {
+    #group-container .step-group .group-header {
+        padding: var(--spacing-md);
+    }
+    
+    #group-container .step-group .group-title {
+        font-size: 1.2em;
+    }
+    
+    .group-stats {
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    #group-container .step-group .group-body {
+        padding: var(--spacing-md);
+    }
+    
+    .step-group.collapsed .group-body {
+        padding: 0 var(--spacing-md);
+    }
 }

@@ -17,7 +17,9 @@ import {
 } from './js/renderer.js';
 import {
     handleStepToggle,
-    handleThemeToggle
+    handleGroupToggle,
+    handleThemeToggle,
+    loadGroupCollapseState
 } from './js/eventHandlers.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
 
     let dataWithComputedValues = [];
+    let groupCollapseState = {};
 
     // ==========================================
     //  DOM ELEMENT REFERENCES
@@ -60,8 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.groupContainer.innerHTML = '';
 
         dataWithComputedValues.forEach(group => {
-            // Render all steps in each group
-            const groupElement = createGroupElement(group, group.steps, {});
+            const isCollapsed = groupCollapseState[group.group_title] || false;
+            const groupElement = createGroupElement(group, group.steps, isCollapsed);
             elements.groupContainer.appendChild(groupElement);
         });
         
@@ -75,9 +78,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function bindEventListeners() {
         if (!elements.groupContainer) return;
         
-        // Main container event delegation for step clicks
+        // Main container event delegation
         elements.groupContainer.addEventListener('click', (e) => {
             const stepElement = e.target.closest('.step');
+            const groupHeader = e.target.closest('.group-header');
+
+            // Handle group header clicks (entire header is clickable)
+            if (groupHeader && !stepElement) {
+                e.preventDefault();
+                const groupTitle = groupHeader.dataset.group;
+                handleGroupToggle(groupTitle, groupCollapseState, renderChecklist);
+                return;
+            }
 
             // Handle step clicks (toggle completion)
             if (stepElement) {
@@ -103,6 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // Initialize theme
             initializeTheme();
+
+            // Load group collapse state
+            groupCollapseState = loadGroupCollapseState();
 
             // Load and process data
             dataWithComputedValues = await loadAndProcessData();
