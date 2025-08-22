@@ -1,3 +1,4 @@
+/* filepath: /workspaces/checklist/js/eventHandlers.js */
 /**
  * Event Handlers Module - Enhanced with Sub-Steps
  * ================================================
@@ -69,7 +70,6 @@ export function handleSubStepToggle(subStepId, dataWithComputedValues, onUpdate)
                     
                     // Check if we should auto-complete or auto-uncomplete the parent step
                     const allSubStepsCompleted = step.sub_steps.every(sub => sub.completed);
-                    const anySubStepCompleted = step.sub_steps.some(sub => sub.completed);
                     
                     // Auto-complete parent step if all sub-steps are completed
                     if (allSubStepsCompleted && !step.completed) {
@@ -119,6 +119,8 @@ export function handleSubStepsToggle(stepNumber, onUpdate) {
             const subStepsCollapseState = JSON.parse(localStorage.getItem('subStepsCollapseState') || '{}');
             subStepsCollapseState[stepNumber] = !isCurrentlyCollapsed;
             localStorage.setItem('subStepsCollapseState', JSON.stringify(subStepsCollapseState));
+            
+            console.log(`💾 Sub-steps collapse state saved for step ${stepNumber}: ${!isCurrentlyCollapsed}`);
         } catch (error) {
             console.warn('Failed to save sub-steps collapse state:', error);
         }
@@ -171,6 +173,7 @@ export function handleToggleAllSubSteps(dataWithComputedValues, onUpdate) {
     // Save the new collapse state
     try {
         localStorage.setItem('subStepsCollapseState', JSON.stringify(subStepsCollapseState));
+        console.log(`💾 All sub-steps collapse state saved: ${shouldExpand ? 'expanded' : 'collapsed'}`);
     } catch (error) {
         console.warn('Failed to save sub-steps collapse state:', error);
     }
@@ -224,7 +227,9 @@ export function updateSubStepsToggleButtonState(dataWithComputedValues) {
 export function loadSubStepsCollapseState() {
     try {
         const saved = localStorage.getItem('subStepsCollapseState');
-        return saved ? JSON.parse(saved) : {};
+        const state = saved ? JSON.parse(saved) : {};
+        console.log('📁 Loaded sub-steps collapse state:', Object.keys(state).length, 'steps');
+        return state;
     } catch (error) {
         console.warn('Failed to load sub-steps collapse state:', error);
         return {};
@@ -236,12 +241,18 @@ export function loadSubStepsCollapseState() {
  * @param {Object} subStepsCollapseState - Collapse state object
  */
 export function applySubStepsCollapseState(subStepsCollapseState) {
+    let appliedCount = 0;
     Object.entries(subStepsCollapseState).forEach(([stepNumber, isCollapsed]) => {
         const subStepsContainer = document.querySelector(`.sub-steps-container[data-step="${stepNumber}"]`);
         if (subStepsContainer && isCollapsed) {
             subStepsContainer.classList.add('collapsed');
+            appliedCount++;
         }
     });
+    
+    if (appliedCount > 0) {
+        console.log(`🎨 Applied sub-steps collapse state to ${appliedCount} containers`);
+    }
 }
 
 /**
@@ -251,11 +262,13 @@ export function applySubStepsCollapseState(subStepsCollapseState) {
  * @param {Function} onUpdate - Callback function after update
  */
 export function handleGroupToggle(groupTitle, groupCollapseState, onUpdate) {
+    const wasCollapsed = groupCollapseState[groupTitle];
     groupCollapseState[groupTitle] = !groupCollapseState[groupTitle];
     
     // Save collapse state to localStorage
     try {
         localStorage.setItem('groupCollapseState', JSON.stringify(groupCollapseState));
+        console.log(`💾 Group "${groupTitle}" ${wasCollapsed ? 'expanded' : 'collapsed'}`);
     } catch (error) {
         console.warn('Failed to save group collapse state:', error);
     }
@@ -290,13 +303,14 @@ export function handleToggleAll(dataWithComputedValues, groupCollapseState, onUp
     
     try {
         localStorage.setItem('groupCollapseState', JSON.stringify(groupCollapseState));
+        console.log(`💾 All groups ${shouldExpand ? 'expanded' : 'collapsed'}`);
     } catch (error) {
         console.warn('Failed to save group collapse state:', error);
     }
     
     // When collapsing all groups, also collapse all sub-steps
     if (!shouldExpand) {
-        console.log('Collapsing all groups - also collapsing all sub-steps');
+        console.log('🔄 Collapsing all groups - also collapsing all sub-steps');
         
         // Delay the sub-steps collapse until after the groups are rendered
         setTimeout(() => {
@@ -314,6 +328,7 @@ export function handleToggleAll(dataWithComputedValues, groupCollapseState, onUp
             // Save the sub-steps collapse state
             try {
                 localStorage.setItem('subStepsCollapseState', JSON.stringify(subStepsCollapseState));
+                console.log(`💾 Auto-collapsed ${subStepsContainers.length} sub-steps containers`);
             } catch (error) {
                 console.warn('Failed to save sub-steps collapse state:', error);
             }
@@ -334,11 +349,13 @@ export function handleToggleAll(dataWithComputedValues, groupCollapseState, onUp
  * @param {Function} onUpdate - Callback function after update
  */
 export function handleFilterChange(filterType, state, onUpdate) {
+    const previousFilter = state.currentFilter;
     state.currentFilter = filterType;
     
     // Save filter state to localStorage
     try {
         localStorage.setItem('checklistFilter', filterType);
+        console.log(`🔍 Filter changed: ${previousFilter} → ${filterType}`);
     } catch (error) {
         console.warn('Failed to save filter state:', error);
     }
@@ -347,14 +364,36 @@ export function handleFilterChange(filterType, state, onUpdate) {
 }
 
 /**
- * Handles search input
+ * Handles search input with debounced saving
  * @param {string} searchTerm - Search term to filter by
  * @param {Object} state - Application state object
  * @param {Function} onUpdate - Callback function after update
  */
 export function handleSearch(searchTerm, state, onUpdate) {
+    const previousTerm = state.searchTerm;
     state.searchTerm = searchTerm.toLowerCase().trim();
+    
+    // Always update UI immediately for responsiveness
     onUpdate();
+    
+    // Log search change
+    if (previousTerm !== state.searchTerm) {
+        console.log(`🔍 Search term: "${previousTerm}" → "${state.searchTerm}"`);
+    }
+}
+
+/**
+ * Saves search state to localStorage with debouncing
+ * @param {Object} state - Application state object
+ */
+export function saveSearchState(state) {
+    try {
+        localStorage.setItem('checklistSearchTerm', state.searchTerm);
+        localStorage.setItem('checklistFilter', state.currentFilter);
+        console.log(`💾 Search state saved: "${state.searchTerm}" (${state.currentFilter})`);
+    } catch (error) {
+        console.warn('Failed to save search state:', error);
+    }
 }
 
 /**
@@ -364,6 +403,8 @@ export function handleSearch(searchTerm, state, onUpdate) {
 export function handleThemeToggle(applyTheme) {
     const isDarkMode = document.body.classList.contains('dark-mode');
     const newTheme = isDarkMode ? 'light' : 'dark';
+    
+    console.log(`🎨 Theme toggle: ${isDarkMode ? 'dark' : 'light'} → ${newTheme}`);
     applyTheme(newTheme);
 }
 
@@ -403,7 +444,9 @@ export function updateToggleButtonState(dataWithComputedValues, groupCollapseSta
 export function loadGroupCollapseState() {
     try {
         const saved = localStorage.getItem('groupCollapseState');
-        return saved ? JSON.parse(saved) : {};
+        const state = saved ? JSON.parse(saved) : {};
+        console.log('📁 Loaded group collapse state:', Object.keys(state).length, 'groups');
+        return state;
     } catch (error) {
         console.warn('Failed to load group collapse state:', error);
         return {};
@@ -416,9 +459,101 @@ export function loadGroupCollapseState() {
  */
 export function loadFilterState() {
     try {
-        return localStorage.getItem('checklistFilter') || 'all';
+        const filterState = localStorage.getItem('checklistFilter') || 'all';
+        console.log('📁 Loaded filter state:', filterState);
+        return filterState;
     } catch (error) {
         console.warn('Failed to load filter state:', error);
         return 'all';
+    }
+}
+
+/**
+ * Loads search term from localStorage
+ * @returns {string} Saved search term
+ */
+export function loadSearchTerm() {
+    try {
+        const searchTerm = localStorage.getItem('checklistSearchTerm') || '';
+        if (searchTerm) {
+            console.log('📁 Loaded search term:', `"${searchTerm}"`);
+        }
+        return searchTerm;
+    } catch (error) {
+        console.warn('Failed to load search term:', error);
+        return '';
+    }
+}
+
+/**
+ * Clears search state and saves to localStorage
+ * @param {Object} state - Application state object
+ * @param {Function} onUpdate - Callback function after update
+ */
+export function clearSearch(state, onUpdate) {
+    state.searchTerm = '';
+    
+    try {
+        localStorage.setItem('checklistSearchTerm', '');
+        console.log('🧹 Search cleared and saved');
+    } catch (error) {
+        console.warn('Failed to save cleared search state:', error);
+    }
+    
+    onUpdate();
+}
+
+/**
+ * Debounced function factory for localStorage operations
+ * @param {Function} func - Function to debounce
+ * @param {number} delay - Delay in milliseconds
+ * @returns {Function} Debounced function
+ */
+export function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+/**
+ * Validates and sanitizes localStorage data
+ * @param {string} key - localStorage key
+ * @param {*} defaultValue - Default value if invalid
+ * @returns {*} Validated data or default value
+ */
+export function getValidatedLocalStorageData(key, defaultValue) {
+    try {
+        const saved = localStorage.getItem(key);
+        if (saved === null) return defaultValue;
+        
+        // Try to parse as JSON first
+        try {
+            return JSON.parse(saved);
+        } catch {
+            // If JSON parsing fails, return as string
+            return saved;
+        }
+    } catch (error) {
+        console.warn(`Failed to load ${key} from localStorage:`, error);
+        return defaultValue;
+    }
+}
+
+/**
+ * Safely saves data to localStorage with error handling
+ * @param {string} key - localStorage key
+ * @param {*} value - Value to save
+ * @returns {boolean} Success status
+ */
+export function safeLocalStorageSave(key, value) {
+    try {
+        const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+        localStorage.setItem(key, stringValue);
+        return true;
+    } catch (error) {
+        console.warn(`Failed to save ${key} to localStorage:`, error);
+        return false;
     }
 }

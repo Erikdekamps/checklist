@@ -1,3 +1,4 @@
+/* filepath: /workspaces/checklist/script.js */
 /**
  * @fileoverview Interactive Checklist Application - Enhanced with Sub-Steps
  * @description A streamlined checklist management system with nested task support
@@ -32,7 +33,8 @@ import {
     loadGroupCollapseState,
     loadSubStepsCollapseState,
     applySubStepsCollapseState,
-    loadFilterState
+    loadFilterState,
+    loadSearchTerm
 } from './js/eventHandlers.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -81,6 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFilterButtons(appState.currentFilter);
         updateSearchClearButton(appState.searchTerm);
         updateToggleButtonState(dataWithComputedValues, groupCollapseState);
+        
+        // Update search input value if needed
+        if (elements.searchInput && elements.searchInput.value !== appState.searchTerm) {
+            elements.searchInput.value = appState.searchTerm;
+        }
         
         // Update sub-steps toggle button after a short delay to ensure DOM is updated
         setTimeout(() => {
@@ -171,10 +178,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Search functionality
+        // Search functionality with debounced saving
         if (elements.searchInput) {
+            let searchTimeout;
             elements.searchInput.addEventListener('input', (e) => {
+                // Clear previous timeout
+                if (searchTimeout) {
+                    clearTimeout(searchTimeout);
+                }
+                
+                // Update search immediately for UI responsiveness
                 handleSearch(e.target.value, appState, renderApp);
+                
+                // Debounce the localStorage save to avoid excessive writes
+                searchTimeout = setTimeout(() => {
+                    try {
+                        localStorage.setItem('checklistSearchTerm', appState.searchTerm);
+                        localStorage.setItem('checklistFilter', appState.currentFilter);
+                        console.log('💾 Search state saved:', { 
+                            searchTerm: appState.searchTerm, 
+                            filter: appState.currentFilter 
+                        });
+                    } catch (error) {
+                        console.warn('Failed to save search state:', error);
+                    }
+                }, 300); // Save after 300ms of no typing
             });
         }
 
@@ -182,6 +210,14 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.searchClear.addEventListener('click', () => {
                 elements.searchInput.value = '';
                 handleSearch('', appState, renderApp);
+                
+                // Save cleared search state
+                try {
+                    localStorage.setItem('checklistSearchTerm', '');
+                    localStorage.setItem('checklistFilter', appState.currentFilter);
+                } catch (error) {
+                    console.warn('Failed to save cleared search state:', error);
+                }
             });
         }
 
@@ -255,6 +291,14 @@ document.addEventListener('DOMContentLoaded', () => {
             groupCollapseState = loadGroupCollapseState();
             subStepsCollapseState = loadSubStepsCollapseState();
             appState.currentFilter = loadFilterState();
+            appState.searchTerm = loadSearchTerm();
+
+            console.log('📁 Loaded saved state:', {
+                filter: appState.currentFilter,
+                searchTerm: appState.searchTerm,
+                groupsCollapsed: Object.keys(groupCollapseState).length,
+                subStepsCollapsed: Object.keys(subStepsCollapseState).length
+            });
 
             // Load and process data
             dataWithComputedValues = await loadAndProcessData();
