@@ -10,16 +10,23 @@
 import { loadAndProcessData } from './js/dataManager.js';
 import { initializeTheme, applyTheme } from './js/themeManager.js';
 import {
-    createGroupElement,
+    renderFilteredGroups,
     updateStatsDisplay,
     updateProgressBar,
+    updateFilterButtons,
+    updateSearchClearButton,
     showError
 } from './js/renderer.js';
 import {
     handleStepToggle,
     handleGroupToggle,
+    handleToggleAll,
+    handleFilterChange,
+    handleSearch,
     handleThemeToggle,
-    loadGroupCollapseState
+    updateToggleButtonState,
+    loadGroupCollapseState,
+    loadFilterState
 } from './js/eventHandlers.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,6 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let dataWithComputedValues = [];
     let groupCollapseState = {};
+    let appState = {
+        currentFilter: 'all',
+        searchTerm: ''
+    };
 
     // ==========================================
     //  DOM ELEMENT REFERENCES
@@ -41,7 +52,15 @@ document.addEventListener('DOMContentLoaded', () => {
         progressStatElement: document.getElementById('progress-stat'),
         themeToggle: document.getElementById('theme-toggle'),
         progressText: document.getElementById('progress-text'),
-        progressBar: document.getElementById('progress-bar')
+        progressBar: document.getElementById('progress-bar'),
+        
+        // Control elements
+        searchInput: document.getElementById('search-input'),
+        searchClear: document.getElementById('search-clear'),
+        filterAll: document.getElementById('filter-all'),
+        filterTodo: document.getElementById('filter-todo'),
+        filterCompleted: document.getElementById('filter-completed'),
+        toggleAllBtn: document.getElementById('toggle-all-btn')
     };
 
     // ==========================================
@@ -51,6 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateUI() {
         updateStatsDisplay(dataWithComputedValues, elements);
         updateProgressBar(dataWithComputedValues, elements);
+        updateFilterButtons(appState.currentFilter);
+        updateSearchClearButton(appState.searchTerm);
+        updateToggleButtonState(dataWithComputedValues, groupCollapseState);
     }
 
     // ==========================================
@@ -58,16 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
 
     function renderChecklist() {
-        if (!elements.groupContainer) return;
-        
-        elements.groupContainer.innerHTML = '';
-
-        dataWithComputedValues.forEach(group => {
-            const isCollapsed = groupCollapseState[group.group_title] || false;
-            const groupElement = createGroupElement(group, group.steps, isCollapsed);
-            elements.groupContainer.appendChild(groupElement);
-        });
-        
+        renderFilteredGroups(dataWithComputedValues, appState, groupCollapseState, elements.groupContainer);
         updateUI();
     }
 
@@ -99,6 +112,46 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Search functionality
+        if (elements.searchInput) {
+            elements.searchInput.addEventListener('input', (e) => {
+                handleSearch(e.target.value, appState, renderChecklist);
+            });
+        }
+
+        if (elements.searchClear) {
+            elements.searchClear.addEventListener('click', () => {
+                elements.searchInput.value = '';
+                handleSearch('', appState, renderChecklist);
+            });
+        }
+
+        // Filter functionality
+        if (elements.filterAll) {
+            elements.filterAll.addEventListener('click', () => {
+                handleFilterChange('all', appState, renderChecklist);
+            });
+        }
+
+        if (elements.filterTodo) {
+            elements.filterTodo.addEventListener('click', () => {
+                handleFilterChange('todo', appState, renderChecklist);
+            });
+        }
+
+        if (elements.filterCompleted) {
+            elements.filterCompleted.addEventListener('click', () => {
+                handleFilterChange('completed', appState, renderChecklist);
+            });
+        }
+
+        // Toggle All functionality
+        if (elements.toggleAllBtn) {
+            elements.toggleAllBtn.addEventListener('click', () => {
+                handleToggleAll(dataWithComputedValues, groupCollapseState, renderChecklist);
+            });
+        }
+
         // Theme toggle
         if (elements.themeToggle) {
             elements.themeToggle.addEventListener('click', () => {
@@ -116,8 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initialize theme
             initializeTheme();
 
-            // Load group collapse state
+            // Load saved state
             groupCollapseState = loadGroupCollapseState();
+            appState.currentFilter = loadFilterState();
 
             // Load and process data
             dataWithComputedValues = await loadAndProcessData();

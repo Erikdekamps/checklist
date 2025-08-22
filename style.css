@@ -1,24 +1,19 @@
 /**
- * Interactive Checklist Application - Main Stylesheet
- * ===================================================
+ * Main Stylesheet
+ * ===============
  * 
- * This is the main CSS file that imports all component stylesheets.
- * The CSS has been split into modular files for better maintainability.
- * 
- * @author Interactive Checklist Team
- * @version 2.0.0
- * @created 2024
+ * Imports all component stylesheets and sets up the overall design system
  */
 
 /* Import all component stylesheets */
 @import url('./css/variables.css');
 @import url('./css/base.css');
 @import url('./css/header.css');
-@import url('./css/theme-toggle.css');
-@import url('./css/filters.css');
+@import url('./css/header-controls.css');
 @import url('./css/step-groups.css');
 @import url('./css/steps.css');
-@import url('./css/notes.css');
 @import url('./css/completed-state.css');
+@import url('./css/notes.css');
 @import url('./css/progress-footer.css');
+@import url('./css/theme-toggle.css');
 @import url('./css/responsive.css');

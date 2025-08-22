@@ -21,6 +21,40 @@ function formatTime(minutes) {
 }
 
 /**
+ * Filters steps based on current filter and search term
+ * @param {Array<Object>} steps - Steps to filter
+ * @param {string} filter - Current filter ('all', 'todo', 'completed')
+ * @param {string} searchTerm - Search term to filter by
+ * @returns {Array<Object>} Filtered steps
+ */
+function filterSteps(steps, filter, searchTerm) {
+    let filteredSteps = steps;
+    
+    // Apply completion filter
+    if (filter === 'todo') {
+        filteredSteps = steps.filter(step => !step.completed);
+    } else if (filter === 'completed') {
+        filteredSteps = steps.filter(step => step.completed);
+    }
+    
+    // Apply search filter
+    if (searchTerm) {
+        filteredSteps = filteredSteps.filter(step => {
+            const searchableText = [
+                step.step_title,
+                step.step_instruction,
+                ...(step.items || []),
+                step.notes || ''
+            ].join(' ').toLowerCase();
+            
+            return searchableText.includes(searchTerm);
+        });
+    }
+    
+    return filteredSteps;
+}
+
+/**
  * Creates a simplified step DOM element
  * @param {Object} step - Step data object
  * @returns {HTMLElement} Complete step DOM element
@@ -69,6 +103,12 @@ export function createGroupElement(group, stepsToRender, isCollapsed = false) {
         groupElement.classList.add('collapsed');
     }
 
+    // Hide group if no steps to show
+    if (stepsToRender.length === 0) {
+        groupElement.style.display = 'none';
+        return groupElement;
+    }
+
     // Create group header with collapse button
     groupElement.innerHTML = `
         <div class="group-header" data-group="${group.group_title}">
@@ -91,6 +131,51 @@ export function createGroupElement(group, stepsToRender, isCollapsed = false) {
     });
 
     return groupElement;
+}
+
+/**
+ * Renders all groups with filtering applied
+ * @param {Array<Object>} dataWithComputedValues - Current data state
+ * @param {Object} state - Application state (filter, search, etc.)
+ * @param {Object} groupCollapseState - Collapse state for groups
+ * @param {HTMLElement} container - Container element
+ */
+export function renderFilteredGroups(dataWithComputedValues, state, groupCollapseState, container) {
+    if (!container) return;
+    
+    container.innerHTML = '';
+
+    dataWithComputedValues.forEach(group => {
+        const filteredSteps = filterSteps(group.steps, state.currentFilter, state.searchTerm);
+        const isCollapsed = groupCollapseState[group.group_title] || false;
+        const groupElement = createGroupElement(group, filteredSteps, isCollapsed);
+        container.appendChild(groupElement);
+    });
+}
+
+/**
+ * Updates filter button states
+ * @param {string} activeFilter - Currently active filter
+ */
+export function updateFilterButtons(activeFilter) {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.id === `filter-${activeFilter}`) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+/**
+ * Updates search clear button visibility
+ * @param {string} searchTerm - Current search term
+ */
+export function updateSearchClearButton(searchTerm) {
+    const clearButton = document.getElementById('search-clear');
+    if (clearButton) {
+        clearButton.classList.toggle('visible', searchTerm.length > 0);
+    }
 }
 
 /**
