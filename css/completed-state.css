@@ -10,60 +10,100 @@
  * Visual changes for completed steps
  */
 .step.completed {
-    opacity: 0.85;
-    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
+    opacity: 0.9;
+    background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--c-success) 8%, var(--c-bg-surface-1)), 
+        color-mix(in srgb, var(--c-success) 12%, var(--c-bg-surface-2))
+    );
     border-color: var(--c-success);
+    border-width: 2px;
     position: relative;
 }
 
 /**
- * Completed Step Checkmark
- * Success checkmark overlay for completed steps
+ * Completed Step Left Border Accent
+ * Green accent stripe instead of overlay checkmark
  */
-.step.completed::after {
-    content: '✓';
+.step.completed::before {
+    content: '';
     position: absolute;
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
-    width: 28px;
-    height: 28px;
-    background: linear-gradient(135deg, var(--c-success), #2d7d32);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1em;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--c-success) 30%, transparent);
-    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--c-success), #2d7d32);
+    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
+    box-shadow: 2px 0 8px color-mix(in srgb, var(--c-success) 25%, transparent);
+}
+
+/**
+ * Completed Step Header
+ * Enhanced styling for completed step headers
+ */
+.step.completed .step-header {
+    background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--c-success) 10%, var(--c-bg-surface-1)), 
+        color-mix(in srgb, var(--c-success) 15%, var(--c-bg-surface-hover))
+    );
+}
+
+/**
+ * Completed Step Checkbox
+ * Style the actual checkbox for completed state
+ */
+.step.completed input[type="checkbox"] {
+    accent-color: var(--c-success);
+    transform: scale(1.1);
+    filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--c-success) 30%, transparent));
 }
 
 /**
  * Completed Step Title
- * Strikethrough effect for completed step titles
+ * Subtle strikethrough with color change
  */
 .step.completed .step-title { 
-    text-decoration: line-through; 
-    color: var(--c-text-subtle); 
-}
-
-/**
- * Completed Step Content
- * Reduced opacity for completed step content
- */
-.step.completed .step-body, 
-.step.completed .step-footer { 
-    opacity: 0.8; 
+    text-decoration: line-through;
+    text-decoration-color: var(--c-success);
+    text-decoration-thickness: 2px;
+    color: var(--c-text-secondary);
+    opacity: 0.85;
 }
 
 /**
  * Completed Step Time Badge
- * Success color for completed step time
+ * Success color theme for time badge
  */
 .step.completed .step-time {
     background: linear-gradient(135deg, var(--c-success), #2d7d32);
     color: white;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--c-success) 30%, transparent);
+    font-weight: 700;
+}
+
+/**
+ * Completed Step Content
+ * Subtle opacity reduction for body and footer
+ */
+.step.completed .step-body { 
+    opacity: 0.85;
+    background: color-mix(in srgb, var(--c-success) 5%, var(--c-bg-surface-1));
+}
+
+.step.completed .step-footer { 
+    opacity: 0.85;
+    background: linear-gradient(135deg, 
+        color-mix(in srgb, var(--c-success) 8%, var(--c-bg-surface-2)), 
+        color-mix(in srgb, var(--c-success) 12%, var(--c-bg-surface-hover))
+    );
+}
+
+/**
+ * Completed Step Instruction
+ * Success-themed instruction styling
+ */
+.step.completed .step-instruction {
+    border-left-color: var(--c-success);
+    background: color-mix(in srgb, var(--c-success) 8%, var(--c-bg-surface-2));
 }
 
 /**
@@ -71,6 +111,34 @@
  * Reduced hover effects for completed steps
  */
 .step.completed:hover {
-    transform: none;
-    box-shadow: 0 4px 16px var(--c-shadow);
+    transform: translateY(-2px); /* Less dramatic than incomplete steps */
+    box-shadow: 0 6px 24px color-mix(in srgb, var(--c-success) 20%, var(--c-shadow));
+    border-color: var(--c-success);
+}
+
+/**
+ * Completed Step Items List
+ * Success accent for items
+ */
+.step.completed .step-items::before {
+    content: '✅ ';
+}
+
+/**
+ * Mobile Responsive Adjustments
+ */
+@media (max-width: 768px) {
+    .step.completed::before {
+        width: 4px; /* Thinner accent on mobile */
+    }
+    
+    .step.completed input[type="checkbox"] {
+        transform: scale(1.05); /* Slightly smaller scaling on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .step.completed .step-title {
+        font-size: 1em; /* Slightly smaller title on very small screens */
+    }
 }

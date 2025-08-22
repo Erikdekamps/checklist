@@ -5,25 +5,16 @@
  * Handles all localStorage operations and data persistence
  */
 
-import { validateDataStructure } from './utils.js';
-
 /**
  * Saves progress data to localStorage with error handling
  * @param {Array<Object>} dataToSave - Checklist data to save
  */
 export function saveProgress(dataToSave) {
     try {
-        // Validate data before saving
-        if (!validateDataStructure(dataToSave)) {
-            console.error('Invalid data structure, skipping save');
-            return;
-        }
-        
-        const serializedData = JSON.stringify(dataToSave);
-        localStorage.setItem('checklistProgress', serializedData);
+        const dataToStore = JSON.stringify(dataToSave);
+        localStorage.setItem('checklistProgress', dataToStore);
     } catch (error) {
         console.error('Failed to save progress to localStorage:', error);
-        // Could implement fallback storage or user notification here
     }
 }
 
@@ -33,14 +24,10 @@ export function saveProgress(dataToSave) {
  */
 export function loadProgress() {
     try {
-        const savedData = localStorage.getItem('checklistProgress');
-        if (!savedData) return null;
-        
-        const parsedData = JSON.parse(savedData);
-        return validateDataStructure(parsedData) ? parsedData : null;
+        const saved = localStorage.getItem('checklistProgress');
+        return saved ? JSON.parse(saved) : null;
     } catch (error) {
         console.error('Failed to load progress from localStorage:', error);
-        localStorage.removeItem('checklistProgress');
         return null;
     }
 }
@@ -52,16 +39,20 @@ export function loadProgress() {
  * @param {Array<Object>} dataWithComputedValues - Current data state
  */
 export function saveNoteToStorage(stepNumber, noteValue, dataWithComputedValues) {
-    // Find and update the step in memory
-    dataWithComputedValues.forEach(group => {
-        const step = group.steps.find(s => s.step_number === stepNumber);
-        if (step) {
-            step.notes = noteValue;
-        }
-    });
-    
-    // Save to localStorage
-    saveProgress(dataWithComputedValues);
+    try {
+        // Update the note in the data structure
+        dataWithComputedValues.forEach(group => {
+            const step = group.steps.find(s => s.step_number === stepNumber);
+            if (step) {
+                step.notes = noteValue;
+            }
+        });
+        
+        // Save the updated data
+        saveProgress(dataWithComputedValues);
+    } catch (error) {
+        console.error('Failed to save note:', error);
+    }
 }
 
 /**
@@ -115,41 +106,13 @@ export function loadFilter() {
 }
 
 /**
- * Saves group collapse state to localStorage
- * @param {Object<string, boolean>} groupCollapseState - Collapse state object
- */
-export function saveGroupState(groupCollapseState) {
-    try {
-        localStorage.setItem('checklistGroupState', JSON.stringify(groupCollapseState));
-    } catch (error) {
-        console.error('Failed to save group state:', error);
-    }
-}
-
-/**
- * Loads group collapse state from localStorage
- * @returns {Object<string, boolean>} Saved group state or empty object
- */
-export function loadGroupState() {
-    try {
-        const savedState = localStorage.getItem('checklistGroupState');
-        return savedState ? JSON.parse(savedState) : {};
-    } catch (error) {
-        console.error('Failed to load group state:', error);
-        localStorage.removeItem('checklistGroupState');
-        return {};
-    }
-}
-
-/**
- * Clears all application data from localStorage
+ * Clears all checklist data from localStorage
  */
 export function clearAllData() {
     try {
         localStorage.removeItem('checklistProgress');
-        localStorage.removeItem('checklistGroupState');
+        localStorage.removeItem('checklistTheme');
         localStorage.removeItem('checklistFilter');
-        // Note: We don't clear theme as user might want to keep that preference
     } catch (error) {
         console.error('Failed to clear localStorage data:', error);
     }

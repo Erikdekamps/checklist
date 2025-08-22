@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Checklist</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    
     <link rel="stylesheet" href="style.css">
 </head>
-<body> <!-- The 'dark-mode' class will be added here by JavaScript -->
+<body>
 
     <header>
         <!-- Top Bar with Theme Toggle and Title -->
@@ -43,64 +49,6 @@
             </div>
         </div>
 
-        <!-- Controls Section -->
-        <div class="header-controls">
-            <!-- Search Bar -->
-            <div class="search-section">
-                <div class="search-container">
-                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                    <input type="text" id="searchInput" placeholder="Search steps, instructions, or items...">
-                    <button class="search-clear" id="search-clear" style="display: none;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Filter and Action Buttons -->
-            <div class="controls-section">
-                <div class="filter-group">
-                    <label class="filter-label">Show:</label>
-                    <div class="filter-buttons">
-                        <button id="filter-all" class="filter-btn active">
-                            <span class="filter-count" id="filter-all-count">0</span>
-                            All
-                        </button>
-                        <button id="filter-incomplete" class="filter-btn">
-                            <span class="filter-count" id="filter-incomplete-count">0</span>
-                            To Do
-                        </button>
-                        <button id="filter-completed" class="filter-btn">
-                            <span class="filter-count" id="filter-completed-count">0</span>
-                            Done
-                        </button>
-                    </div>
-                </div>
-
-                <div class="action-group">
-                    <button id="collapse-all-btn" class="action-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                        <span>Collapse All</span>
-                    </button>
-                    <button id="focus-incomplete-btn" class="action-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <eye x="1" y="12" width="22" height="10" rx="5"></eye>
-                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                        <span>Focus Mode</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <!-- Stats Bar -->
         <div class="header-stats">
             <div class="stat-item">
@@ -119,14 +67,6 @@
                 <span class="stat-label">Progress:</span>
                 <span id="progress-stat" class="stat-value">0/0</span>
             </div>
-            <div class="stat-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-                <span class="stat-label">Budget:</span>
-                <span id="total-cost" class="stat-value">$0</span>
-            </div>
         </div>
     </header>
 
@@ -140,9 +80,8 @@
                 <div id="progress-bar"></div>
             </div>
         </div>
-        <button id="reset-btn" class="reset-btn">Reset Progress</button>
     </div>
 
-        <script type="module" src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>

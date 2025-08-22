@@ -5,7 +5,6 @@
  * Handles data loading, processing, and merging operations
  */
 
-import { validateDataStructure } from './utils.js';
 import { loadProgress } from './storage.js';
 
 /**
@@ -27,8 +26,9 @@ export async function loadBaseData() {
             
             const data = await response.json();
             
-            if (!validateDataStructure(data)) {
-                throw new Error('Invalid data structure in data.json');
+            // Basic validation - ensure it's an array
+            if (!Array.isArray(data)) {
+                throw new Error('Invalid data structure: expected array in data.json');
             }
             
             return data;
