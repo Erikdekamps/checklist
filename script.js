@@ -8,10 +8,10 @@
  * @created 2024
  */
 
-import { loadAndProcessData } from './js/dataManager.js';
+import { loadAndProcessData, computeGlobalStats } from './js/dataManager.js';
 import { initializeTheme, applyTheme } from './js/themeManager.js';
 import {
-    renderFilteredGroups,
+    renderChecklist as renderChecklistHTML,
     updateStatsDisplay,
     updateProgressBar,
     updateFilterButtons,
@@ -90,9 +90,17 @@ document.addEventListener('DOMContentLoaded', () => {
     //  RENDERING FUNCTIONS
     // ==========================================
 
-    function renderChecklist() {
-        renderFilteredGroups(dataWithComputedValues, appState, groupCollapseState, elements.groupContainer);
-        updateUI();
+    function renderApp() {
+        if (!elements.groupContainer) return;
+        
+        try {
+            const html = renderChecklistHTML(dataWithComputedValues, groupCollapseState, subStepsCollapseState, appState);
+            elements.groupContainer.innerHTML = html;
+            updateUI();
+        } catch (error) {
+            console.error('❌ Error rendering app:', error);
+            showError(elements.groupContainer, 'Failed to render checklist: ' + error.message);
+        }
     }
 
     // ==========================================
@@ -123,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.stopPropagation();
                 const subStepId = subStepElement.dataset.subStep;
                 console.log('Sub-step toggle:', subStepId);
-                handleSubStepToggle(subStepId, dataWithComputedValues, renderChecklist);
+                handleSubStepToggle(subStepId, dataWithComputedValues, renderApp);
                 return;
             }
 
@@ -146,56 +154,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 const groupTitle = groupHeader.dataset.group;
                 console.log('Group header toggle:', groupTitle);
-                handleGroupToggle(groupTitle, groupCollapseState, renderChecklist);
+                handleGroupToggle(groupTitle, groupCollapseState, renderApp);
                 return;
             }
 
             // Handle step clicks (toggle completion)
             if (stepElement && !subStepElement && !subStepsHeader) {
                 e.preventDefault();
-                const stepNumber = stepElement.dataset.step;
+                const stepNumber = parseInt(stepElement.dataset.step);
                 console.log('Step toggle:', stepNumber);
-                handleStepToggle(stepNumber, dataWithComputedValues, renderChecklist);
+                handleStepToggle(stepNumber, dataWithComputedValues, renderApp);
             }
         });
 
         // Search functionality
         if (elements.searchInput) {
             elements.searchInput.addEventListener('input', (e) => {
-                handleSearch(e.target.value, appState, renderChecklist);
+                handleSearch(e.target.value, appState, renderApp);
             });
         }
 
         if (elements.searchClear) {
             elements.searchClear.addEventListener('click', () => {
                 elements.searchInput.value = '';
-                handleSearch('', appState, renderChecklist);
+                handleSearch('', appState, renderApp);
             });
         }
 
         // Filter functionality
         if (elements.filterAll) {
             elements.filterAll.addEventListener('click', () => {
-                handleFilterChange('all', appState, renderChecklist);
+                handleFilterChange('all', appState, renderApp);
             });
         }
 
         if (elements.filterTodo) {
             elements.filterTodo.addEventListener('click', () => {
-                handleFilterChange('todo', appState, renderChecklist);
+                handleFilterChange('todo', appState, renderApp);
             });
         }
 
         if (elements.filterCompleted) {
             elements.filterCompleted.addEventListener('click', () => {
-                handleFilterChange('completed', appState, renderChecklist);
+                handleFilterChange('completed', appState, renderApp);
             });
         }
 
         // Toggle All functionality
         if (elements.toggleAllBtn) {
             elements.toggleAllBtn.addEventListener('click', () => {
-                handleToggleAll(dataWithComputedValues, groupCollapseState, renderChecklist);
+                handleToggleAll(dataWithComputedValues, groupCollapseState, renderApp);
             });
         }
 
@@ -213,6 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function init() {
         try {
+            console.log('🚀 Initializing Interactive Checklist Application...');
+            
             // Initialize theme
             initializeTheme();
 
@@ -223,15 +233,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Load and process data
             dataWithComputedValues = await loadAndProcessData();
+            
+            console.log('✅ Data loaded:', {
+                groups: dataWithComputedValues.length,
+                totalSteps: dataWithComputedValues.reduce((sum, group) => sum + (group.steps?.length || 0), 0)
+            });
 
             // Render UI
-            renderChecklist();
+            renderApp();
 
             // Bind event listeners
             bindEventListeners();
 
+            console.log('✅ Application initialized successfully');
+
         } catch (error) {
-            console.error('Critical error during initialization:', error);
+            console.error('❌ Critical error during initialization:', error);
             
             // Show user-friendly error message
             if (elements.groupContainer) {

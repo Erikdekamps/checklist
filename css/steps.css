@@ -7,39 +7,18 @@
 
 /**
  * Individual Step Card
- * Main container for each step with hover effects and animations
+ * Main container for each step with opacity-based hover effects
  */
 .step {
     margin-bottom: var(--spacing-md);
     border-radius: var(--border-radius-lg);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, opacity 0.1s ease;
     overflow: hidden;
     border: 1px solid var(--c-border);
     background: linear-gradient(135deg, var(--c-bg-surface-1), var(--c-bg-surface-2));
-    box-shadow: 0 4px 16px var(--c-shadow);
+    box-shadow: 0 2px 8px var(--c-shadow);
     position: relative;
-}
-
-/**
- * Step Hover Overlay
- * Subtle gradient overlay on hover
- */
-.step::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, transparent 0%, color-mix(in srgb, var(--c-primary) 5%, transparent) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.step:hover::before {
-    opacity: 1;
 }
 
 .step:last-child { 
@@ -48,12 +27,20 @@
 
 /**
  * Step Hover Effects
- * Elevation and border color changes on hover
+ * Opacity and color changes only
  */
 .step:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 32px var(--c-shadow-lg);
+    box-shadow: 0 4px 16px var(--c-shadow-lg);
     border-color: color-mix(in srgb, var(--c-primary) 30%, var(--c-border));
+}
+
+/**
+ * Step Active State
+ * Brief opacity change when clicked
+ */
+.step:active {
+    opacity: 0.95;
+    transition: opacity 0.05s ease;
 }
 
 /**
@@ -68,6 +55,11 @@
     background: linear-gradient(135deg, var(--c-bg-surface-1), var(--c-bg-surface-hover));
     border-bottom: 1px solid var(--c-border);
     position: relative;
+    transition: background 0.2s ease;
+}
+
+.step:hover .step-header {
+    background: linear-gradient(135deg, var(--c-bg-surface-hover), color-mix(in srgb, var(--c-primary) 8%, var(--c-bg-surface-hover)));
 }
 
 /**
@@ -82,7 +74,7 @@
 
 /**
  * Step Checkbox
- * Completion checkbox with custom styling
+ * Completion checkbox with scale on active
  */
 .step .step-header input[type="checkbox"] { 
     margin: 0; 
@@ -92,37 +84,53 @@
     accent-color: var(--c-primary);
     cursor: pointer;
     pointer-events: none;
-    filter: drop-shadow(0 2px 4px var(--c-shadow));
+    transition: filter 0.2s ease;
+}
+
+.step:hover .step-header input[type="checkbox"] {
+    filter: brightness(1.1) drop-shadow(0 2px 4px color-mix(in srgb, var(--c-primary) 20%, transparent));
+}
+
+.step:active .step-header input[type="checkbox"] {
+    filter: brightness(0.95);
 }
 
 /**
  * Step Title
- * Main title for each step
+ * Main title for each step with color transition
  */
 .step .step-header .step-title { 
     font-weight: 700; 
     font-size: 1.1em; 
     color: var(--c-text-primary);
-    text-shadow: 0 1px 2px var(--c-shadow);
     line-height: 1.4;
+    transition: color 0.2s ease;
+}
+
+.step:hover .step-title {
+    color: var(--c-primary);
 }
 
 /**
  * Step Time Badge
- * Shows cumulative time with gradient background
+ * Shows cumulative time with brightness change
  */
 .step .step-header .step-time { 
     font-size: 0.85em; 
     font-weight: 600; 
-    color: var(--c-primary); 
-    background: linear-gradient(135deg, var(--c-primary-light), var(--c-primary));
     color: white;
+    background: linear-gradient(135deg, var(--c-primary-light), var(--c-primary));
     padding: 4px 8px;
     border-radius: var(--border-radius-lg);
     box-shadow: 0 2px 8px color-mix(in srgb, var(--c-primary) 25%, transparent);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     min-width: 50px;
     text-align: center;
+    transition: filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.step:hover .step-time {
+    filter: brightness(1.1);
+    box-shadow: 0 3px 12px color-mix(in srgb, var(--c-primary) 35%, transparent);
 }
 
 /**
@@ -133,6 +141,11 @@
     padding: var(--spacing-md);
     background: var(--c-bg-surface-1);
     position: relative;
+    transition: background 0.2s ease;
+}
+
+.step:hover .step-body {
+    background: color-mix(in srgb, var(--c-primary) 3%, var(--c-bg-surface-1));
 }
 
 /**
@@ -147,6 +160,12 @@
     right: var(--spacing-md);
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--c-border), transparent);
+    transition: background 0.2s ease;
+}
+
+.step:hover .step-body::before {
+    background: linear-gradient(90deg, transparent, var(--c-primary), transparent);
+    opacity: 0.6;
 }
 
 /**
@@ -158,9 +177,14 @@
     color: var(--c-text-secondary);
     line-height: 1.6;
     font-size: 0.95rem;
-    padding: 0; /* Removed padding */
-    background: transparent; /* Removed background */
-    border-radius: 0; /* Removed border radius */
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    transition: color 0.2s ease;
+}
+
+.step:hover .step-instruction {
+    color: var(--c-text-primary);
 }
 
 /**
@@ -176,6 +200,11 @@
     align-items: center;
     flex-wrap: wrap;
     gap: var(--spacing-sm);
+    transition: background 0.2s ease;
+}
+
+.step:hover .step-footer {
+    background: linear-gradient(135deg, var(--c-bg-surface-hover), color-mix(in srgb, var(--c-primary) 5%, var(--c-bg-surface-hover)));
 }
 
 /**
@@ -191,7 +220,7 @@
 
 /**
  * Step Money Badge
- * Shows cost with gradient background
+ * Shows cost with brightness change
  */
 .step .step-footer .step-money {
     background: linear-gradient(135deg, var(--c-success), #22c55e);
@@ -201,10 +230,15 @@
     font-size: 0.8em;
     font-weight: 600;
     box-shadow: 0 2px 8px color-mix(in srgb, var(--c-success) 25%, transparent);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
+    transition: filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.step:hover .step-money {
+    filter: brightness(1.1);
+    box-shadow: 0 3px 12px color-mix(in srgb, var(--c-success) 35%, transparent);
 }
 
 /**
@@ -217,6 +251,11 @@
     text-align: right;
     flex: 1;
     min-width: 0;
+    transition: color 0.2s ease;
+}
+
+.step:hover .step-footer .step-items {
+    color: var(--c-text-primary);
 }
 
 .step .step-footer .step-items strong {

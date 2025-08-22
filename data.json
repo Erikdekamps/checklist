@@ -3,7 +3,6 @@
     "group_title": "Phase 1: Preparation",
     "steps": [
       {
-        "step_number": "1",
         "step_title": "Initial Setup",
         "step_instruction": "Prepare your workspace and gather all necessary tools.",
         "money": "$50",
@@ -13,21 +12,18 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "1.1",
             "sub_step_title": "Clear workspace area",
             "sub_step_instruction": "Remove any clutter and clean the work surface",
             "time_taken": 5,
             "completed": false
           },
           {
-            "sub_step_id": "1.2",
             "sub_step_title": "Check tool inventory",
             "sub_step_instruction": "Verify all tools are present and functional",
             "time_taken": 5,
             "completed": false
           },
           {
-            "sub_step_id": "1.3",
             "sub_step_title": "Set up lighting",
             "sub_step_instruction": "Ensure adequate lighting for detailed work",
             "time_taken": 5,
@@ -36,7 +32,6 @@
         ]
       },
       {
-        "step_number": "2",
         "step_title": "Gather Materials",
         "step_instruction": "Collect all items required for assembly.",
         "money": "$100",
@@ -46,21 +41,18 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "2.1",
             "sub_step_title": "Inventory wood panels",
             "sub_step_instruction": "Count and inspect all wood panels for defects",
             "time_taken": 15,
             "completed": false
           },
           {
-            "sub_step_id": "2.2",
             "sub_step_title": "Sort hardware",
             "sub_step_instruction": "Organize screws, nails, and fasteners by type and size",
             "time_taken": 20,
             "completed": false
           },
           {
-            "sub_step_id": "2.3",
             "sub_step_title": "Prepare staging area",
             "sub_step_instruction": "Set up organized staging area for materials",
             "time_taken": 10,
@@ -69,7 +61,6 @@
         ]
       },
       {
-        "step_number": "3",
         "step_title": "Safety Check",
         "step_instruction": "Ensure all safety equipment is available and in good condition.",
         "money": "$10",
@@ -79,21 +70,18 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "3.1",
             "sub_step_title": "Inspect safety glasses",
             "sub_step_instruction": "Check for scratches, cracks, or damage",
             "time_taken": 3,
             "completed": false
           },
           {
-            "sub_step_id": "3.2",
             "sub_step_title": "Test glove integrity",
             "sub_step_instruction": "Check gloves for tears, holes, or wear",
             "time_taken": 4,
             "completed": false
           },
           {
-            "sub_step_id": "3.3",
             "sub_step_title": "Review safety procedures",
             "sub_step_instruction": "Read through safety guidelines and emergency procedures",
             "time_taken": 3,
@@ -102,7 +90,6 @@
         ]
       },
       {
-        "step_number": "4",
         "step_title": "Workspace Inspection",
         "step_instruction": "Inspect the workspace for any hazards or issues.",
         "money": "$0",
@@ -112,28 +99,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "4.1",
             "sub_step_title": "Check for trip hazards",
             "sub_step_instruction": "Identify and remove or mark any cables, cords, or obstacles",
             "time_taken": 3,
             "completed": false
           },
           {
-            "sub_step_id": "4.2",
             "sub_step_title": "Verify ventilation",
             "sub_step_instruction": "Ensure adequate airflow for dusty or chemical work",
             "time_taken": 2,
             "completed": false
           },
           {
-            "sub_step_id": "4.3",
             "sub_step_title": "Confirm emergency access",
             "sub_step_instruction": "Verify clear path to exits and first aid kit location",
             "time_taken": 3,
             "completed": false
           },
           {
-            "sub_step_id": "4.4",
             "sub_step_title": "Test power outlets",
             "sub_step_instruction": "Check that all electrical outlets are working and properly grounded",
             "time_taken": 2,
@@ -142,7 +125,6 @@
         ]
       },
       {
-        "step_number": "5",
         "step_title": "Tool Calibration",
         "step_instruction": "Calibrate all necessary tools for accurate measurements.",
         "money": "$0",
@@ -152,28 +134,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "5.1",
             "sub_step_title": "Calibrate measuring tape",
             "sub_step_instruction": "Verify accuracy against a known standard measurement",
             "time_taken": 3,
             "completed": false
           },
           {
-            "sub_step_id": "5.2",
             "sub_step_title": "Check square accuracy",
             "sub_step_instruction": "Test carpenter's square for 90-degree accuracy",
             "time_taken": 2,
             "completed": false
           },
           {
-            "sub_step_id": "5.3",
             "sub_step_title": "Verify level bubble",
             "sub_step_instruction": "Confirm level is reading true horizontal and vertical",
             "time_taken": 3,
             "completed": false
           },
           {
-            "sub_step_id": "5.4",
             "sub_step_title": "Test caliper precision",
             "sub_step_instruction": "Check caliper against known thickness standards",
             "time_taken": 2,
@@ -187,7 +165,6 @@
     "group_title": "Phase 2: Assembly & Finishing",
     "steps": [
       {
-        "step_number": "21",
         "step_title": "Base Frame Assembly",
         "step_instruction": "Assemble the main structure according to the blueprint.",
         "money": "$0",
@@ -197,35 +174,30 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "21.1",
             "sub_step_title": "Prepare base frame pieces",
             "sub_step_instruction": "Cut and prepare all base frame components to size",
             "time_taken": 20,
             "completed": false
           },
           {
-            "sub_step_id": "21.2",
             "sub_step_title": "Pre-drill holes",
             "sub_step_instruction": "Drill pilot holes to prevent wood splitting",
             "time_taken": 15,
             "completed": false
           },
           {
-            "sub_step_id": "21.3",
             "sub_step_title": "Assemble base frame",
             "sub_step_instruction": "Connect base frame pieces using screws and brackets",
             "time_taken": 30,
             "completed": false
           },
           {
-            "sub_step_id": "21.4",
             "sub_step_title": "Check frame square",
             "sub_step_instruction": "Measure diagonals to ensure frame is square",
             "time_taken": 10,
             "completed": false
           },
           {
-            "sub_step_id": "21.5",
             "sub_step_title": "Install corner braces",
             "sub_step_instruction": "Add corner braces for additional structural stability",
             "time_taken": 15,
@@ -234,7 +206,6 @@
         ]
       },
       {
-        "step_number": "22",
         "step_title": "Vertical Support Installation",
         "step_instruction": "Install vertical posts and supports according to design specifications.",
         "money": "$0",
@@ -244,35 +215,30 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "22.1",
             "sub_step_title": "Mark post positions",
             "sub_step_instruction": "Mark exact locations for vertical post installation",
             "time_taken": 10,
             "completed": false
           },
           {
-            "sub_step_id": "22.2",
             "sub_step_title": "Cut posts to length",
             "sub_step_instruction": "Cut all vertical posts to required measurements",
             "time_taken": 20,
             "completed": false
           },
           {
-            "sub_step_id": "22.3",
             "sub_step_title": "Install corner posts",
             "sub_step_instruction": "Install corner posts first for structural reference",
             "time_taken": 25,
             "completed": false
           },
           {
-            "sub_step_id": "22.4",
             "sub_step_title": "Install intermediate posts",
             "sub_step_instruction": "Install remaining vertical posts between corners",
             "time_taken": 15,
             "completed": false
           },
           {
-            "sub_step_id": "22.5",
             "sub_step_title": "Verify plumb and level",
             "sub_step_instruction": "Check all posts are plumb and properly aligned",
             "time_taken": 5,
@@ -281,7 +247,6 @@
         ]
       },
       {
-        "step_number": "23",
         "step_title": "Cross Bracing Installation",
         "step_instruction": "Add diagonal braces and cross supports for structural integrity.",
         "money": "$0",
@@ -291,28 +256,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "23.1",
             "sub_step_title": "Measure diagonal distances",
             "sub_step_instruction": "Calculate and mark diagonal brace lengths",
             "time_taken": 15,
             "completed": false
           },
           {
-            "sub_step_id": "23.2",
             "sub_step_title": "Cut diagonal braces",
             "sub_step_instruction": "Cut braces to proper angles and lengths",
             "time_taken": 20,
             "completed": false
           },
           {
-            "sub_step_id": "23.3",
             "sub_step_title": "Install X-braces",
             "sub_step_instruction": "Install diagonal X-pattern braces between posts",
             "time_taken": 20,
             "completed": false
           },
           {
-            "sub_step_id": "23.4",
             "sub_step_title": "Test structural stability",
             "sub_step_instruction": "Check for any flex or movement in the frame",
             "time_taken": 5,
@@ -321,7 +282,6 @@
         ]
       },
       {
-        "step_number": "24",
         "step_title": "Install Doors and Windows",
         "step_instruction": "Install doors and windows as per the design.",
         "money": "$0",
@@ -331,35 +291,30 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "24.1",
             "sub_step_title": "Check opening dimensions",
             "sub_step_instruction": "Verify door and window openings match specifications",
             "time_taken": 15,
             "completed": false
           },
           {
-            "sub_step_id": "24.2",
             "sub_step_title": "Install door frames",
             "sub_step_instruction": "Install and square all door frames using shims",
             "time_taken": 45,
             "completed": false
           },
           {
-            "sub_step_id": "24.3",
             "sub_step_title": "Install window frames",
             "sub_step_instruction": "Install and level all window frames",
             "time_taken": 35,
             "completed": false
           },
           {
-            "sub_step_id": "24.4",
             "sub_step_title": "Hang doors",
             "sub_step_instruction": "Install doors and adjust hinges for proper operation",
             "time_taken": 20,
             "completed": false
           },
           {
-            "sub_step_id": "24.5",
             "sub_step_title": "Test operation",
             "sub_step_instruction": "Test all doors and windows for smooth operation",
             "time_taken": 5,
@@ -368,7 +323,6 @@
         ]
       },
       {
-        "step_number": "25",
         "step_title": "Surface Preparation",
         "step_instruction": "Prepare all surfaces for finishing by sanding and cleaning.",
         "money": "$0",
@@ -378,28 +332,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "25.1",
             "sub_step_title": "Fill nail holes",
             "sub_step_instruction": "Fill all nail holes and imperfections with wood filler",
             "time_taken": 30,
             "completed": false
           },
           {
-            "sub_step_id": "25.2",
             "sub_step_title": "Rough sanding",
             "sub_step_instruction": "Sand all surfaces with 120-grit sandpaper",
             "time_taken": 35,
             "completed": false
           },
           {
-            "sub_step_id": "25.3",
             "sub_step_title": "Fine sanding",
             "sub_step_instruction": "Complete final sanding with 220-grit sandpaper",
             "time_taken": 20,
             "completed": false
           },
           {
-            "sub_step_id": "25.4",
             "sub_step_title": "Clean surfaces",
             "sub_step_instruction": "Remove all dust and debris with tack cloth",
             "time_taken": 5,
@@ -408,7 +358,6 @@
         ]
       },
       {
-        "step_number": "26",
         "step_title": "Apply Finish",
         "step_instruction": "Apply protective finish to all exposed surfaces.",
         "money": "$0",
@@ -418,42 +367,36 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "26.1",
             "sub_step_title": "Prepare work area",
             "sub_step_instruction": "Set up proper ventilation and lay drop cloths",
             "time_taken": 15,
             "completed": false
           },
           {
-            "sub_step_id": "26.2",
             "sub_step_title": "Apply wood stain",
             "sub_step_instruction": "Apply even coat of stain following wood grain",
             "time_taken": 45,
             "completed": false
           },
           {
-            "sub_step_id": "26.3",
             "sub_step_title": "Allow stain to cure",
             "sub_step_instruction": "Wait for stain to fully dry according to manufacturer specs",
             "time_taken": 30,
             "completed": false
           },
           {
-            "sub_step_id": "26.4",
             "sub_step_title": "Apply first polyurethane coat",
             "sub_step_instruction": "Apply thin, even coat of polyurethane finish",
             "time_taken": 30,
             "completed": false
           },
           {
-            "sub_step_id": "26.5",
             "sub_step_title": "Light sanding between coats",
             "sub_step_instruction": "Light sand with 320-grit paper after first coat dries",
             "time_taken": 15,
             "completed": false
           },
           {
-            "sub_step_id": "26.6",
             "sub_step_title": "Apply final coat",
             "sub_step_instruction": "Apply final coat of polyurethane for protection",
             "time_taken": 15,
@@ -467,7 +410,6 @@
     "group_title": "Phase 3: Quality Assurance",
     "steps": [
       {
-        "step_number": "41",
         "step_title": "Initial Inspection",
         "step_instruction": "Check for any visible defects or issues requiring correction.",
         "money": "$0",
@@ -477,28 +419,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "41.1",
             "sub_step_title": "Check all joints",
             "sub_step_instruction": "Inspect all joints for gaps, misalignment, or weakness",
             "time_taken": 10,
             "completed": false
           },
           {
-            "sub_step_id": "41.2",
             "sub_step_title": "Test structural integrity",
             "sub_step_instruction": "Apply gentle pressure to test for movement or flex",
             "time_taken": 8,
             "completed": false
           },
           {
-            "sub_step_id": "41.3",
             "sub_step_title": "Examine finish quality",
             "sub_step_instruction": "Check finish for runs, bubbles, or uneven coverage",
             "time_taken": 7,
             "completed": false
           },
           {
-            "sub_step_id": "41.4",
             "sub_step_title": "Document findings",
             "sub_step_instruction": "Record any defects or areas requiring touch-up",
             "time_taken": 5,
@@ -507,7 +445,6 @@
         ]
       },
       {
-        "step_number": "42",
         "step_title": "Functional Testing",
         "step_instruction": "Test all moving parts and functional elements.",
         "money": "$0",
@@ -517,28 +454,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "42.1",
             "sub_step_title": "Test door operation",
             "sub_step_instruction": "Open and close all doors multiple times to check smooth operation",
             "time_taken": 8,
             "completed": false
           },
           {
-            "sub_step_id": "42.2",
             "sub_step_title": "Test window operation",
             "sub_step_instruction": "Open and close all windows to verify proper function",
             "time_taken": 7,
             "completed": false
           },
           {
-            "sub_step_id": "42.3",
             "sub_step_title": "Check hardware tightness",
             "sub_step_instruction": "Verify all screws, bolts, and hardware are properly tightened",
             "time_taken": 8,
             "completed": false
           },
           {
-            "sub_step_id": "42.4",
             "sub_step_title": "Test load capacity",
             "sub_step_instruction": "Test any shelves or load-bearing elements within safe limits",
             "time_taken": 2,
@@ -547,7 +480,6 @@
         ]
       },
       {
-        "step_number": "43",
         "step_title": "Measurement Verification",
         "step_instruction": "Verify all dimensions match the original specifications.",
         "money": "$0",
@@ -557,28 +489,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "43.1",
             "sub_step_title": "Check overall dimensions",
             "sub_step_instruction": "Measure height, width, and depth against specifications",
             "time_taken": 8,
             "completed": false
           },
           {
-            "sub_step_id": "43.2",
             "sub_step_title": "Verify opening sizes",
             "sub_step_instruction": "Measure all door and window openings for accuracy",
             "time_taken": 6,
             "completed": false
           },
           {
-            "sub_step_id": "43.3",
             "sub_step_title": "Check squareness",
             "sub_step_instruction": "Verify all corners are square using diagonal measurements",
             "time_taken": 4,
             "completed": false
           },
           {
-            "sub_step_id": "43.4",
             "sub_step_title": "Document measurements",
             "sub_step_instruction": "Record all measurements for final documentation",
             "time_taken": 2,
@@ -587,7 +515,6 @@
         ]
       },
       {
-        "step_number": "44",
         "step_title": "Final Touch-ups",
         "step_instruction": "Complete any necessary corrections or improvements identified during inspection.",
         "money": "$0",
@@ -597,28 +524,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "44.1",
             "sub_step_title": "Address joint gaps",
             "sub_step_instruction": "Fill any minor gaps in joints with wood filler",
             "time_taken": 15,
             "completed": false
           },
           {
-            "sub_step_id": "44.2",
             "sub_step_title": "Touch up finish",
             "sub_step_instruction": "Apply touch-up stain or finish to any imperfect areas",
             "time_taken": 20,
             "completed": false
           },
           {
-            "sub_step_id": "44.3",
             "sub_step_title": "Final hardware adjustment",
             "sub_step_instruction": "Make final adjustments to hinges and hardware",
             "time_taken": 8,
             "completed": false
           },
           {
-            "sub_step_id": "44.4",
             "sub_step_title": "Clean and polish",
             "sub_step_instruction": "Final cleaning and polishing of all surfaces",
             "time_taken": 2,
@@ -627,7 +550,6 @@
         ]
       },
       {
-        "step_number": "45",
         "step_title": "Final Documentation",
         "step_instruction": "Complete all project documentation and create maintenance guide.",
         "money": "$0",
@@ -637,28 +559,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "45.1",
             "sub_step_title": "Take final photos",
             "sub_step_instruction": "Photograph completed project from multiple angles",
             "time_taken": 10,
             "completed": false
           },
           {
-            "sub_step_id": "45.2",
             "sub_step_title": "Complete inspection report",
             "sub_step_instruction": "Fill out final inspection report with all measurements and notes",
             "time_taken": 12,
             "completed": false
           },
           {
-            "sub_step_id": "45.3",
             "sub_step_title": "Create maintenance guide",
             "sub_step_instruction": "Write maintenance instructions and care recommendations",
             "time_taken": 6,
             "completed": false
           },
           {
-            "sub_step_id": "45.4",
             "sub_step_title": "Archive project files",
             "sub_step_instruction": "Organize and file all project documentation for future reference",
             "time_taken": 2,
@@ -672,7 +590,6 @@
     "group_title": "Phase 4: Cleanup & Delivery",
     "steps": [
       {
-        "step_number": "61",
         "step_title": "Workspace Cleanup",
         "step_instruction": "Clean and organize the workspace, disposing of waste properly.",
         "money": "$0",
@@ -682,35 +599,30 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "61.1",
             "sub_step_title": "Collect waste materials",
             "sub_step_instruction": "Gather all wood scraps, packaging, and debris",
             "time_taken": 10,
             "completed": false
           },
           {
-            "sub_step_id": "61.2",
             "sub_step_title": "Sort recyclables",
             "sub_step_instruction": "Separate recyclable materials from general waste",
             "time_taken": 8,
             "completed": false
           },
           {
-            "sub_step_id": "61.3",
             "sub_step_title": "Clean work surfaces",
             "sub_step_instruction": "Wipe down all work surfaces and remove dust",
             "time_taken": 12,
             "completed": false
           },
           {
-            "sub_step_id": "61.4",
             "sub_step_title": "Organize tools",
             "sub_step_instruction": "Clean and return all tools to proper storage",
             "time_taken": 8,
             "completed": false
           },
           {
-            "sub_step_id": "61.5",
             "sub_step_title": "Vacuum work area",
             "sub_step_instruction": "Thoroughly vacuum the entire workspace",
             "time_taken": 2,
@@ -719,7 +631,6 @@
         ]
       },
       {
-        "step_number": "62",
         "step_title": "Tool Maintenance",
         "step_instruction": "Clean, maintain, and properly store all tools used in the project.",
         "money": "$0",
@@ -729,28 +640,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "62.1",
             "sub_step_title": "Clean cutting tools",
             "sub_step_instruction": "Remove residue and apply protective oil to saw blades and bits",
             "time_taken": 12,
             "completed": false
           },
           {
-            "sub_step_id": "62.2",
             "sub_step_title": "Lubricate moving parts",
             "sub_step_instruction": "Oil hinges, pivots, and adjustment mechanisms",
             "time_taken": 8,
             "completed": false
           },
           {
-            "sub_step_id": "62.3",
             "sub_step_title": "Check tool condition",
             "sub_step_instruction": "Inspect tools for damage or excessive wear",
             "time_taken": 10,
             "completed": false
           },
           {
-            "sub_step_id": "62.4",
             "sub_step_title": "Store tools properly",
             "sub_step_instruction": "Return tools to designated storage locations",
             "time_taken": 5,
@@ -759,7 +666,6 @@
         ]
       },
       {
-        "step_number": "63",
         "step_title": "Final Project Review",
         "step_instruction": "Conduct a comprehensive final review with stakeholder approval.",
         "money": "$0",
@@ -769,28 +675,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "63.1",
             "sub_step_title": "Stakeholder walkthrough",
             "sub_step_instruction": "Conduct final walkthrough with project stakeholder",
             "time_taken": 15,
             "completed": false
           },
           {
-            "sub_step_id": "63.2",
             "sub_step_title": "Address final concerns",
             "sub_step_instruction": "Resolve any last-minute issues or concerns raised",
             "time_taken": 5,
             "completed": false
           },
           {
-            "sub_step_id": "63.3",
             "sub_step_title": "Obtain sign-off",
             "sub_step_instruction": "Get formal approval and sign-off on completed project",
             "time_taken": 3,
             "completed": false
           },
           {
-            "sub_step_id": "63.4",
             "sub_step_title": "Schedule follow-up",
             "sub_step_instruction": "Schedule any necessary follow-up visits or maintenance",
             "time_taken": 2,
@@ -799,7 +701,6 @@
         ]
       },
       {
-        "step_number": "64",
         "step_title": "Project Handover",
         "step_instruction": "Complete the formal handover process and provide all documentation.",
         "money": "$0",
@@ -809,28 +710,24 @@
         "notes": "",
         "sub_steps": [
           {
-            "sub_step_id": "64.1",
             "sub_step_title": "Prepare handover package",
             "sub_step_instruction": "Compile all documentation, warranties, and maintenance guides",
             "time_taken": 8,
             "completed": false
           },
           {
-            "sub_step_id": "64.2",
             "sub_step_title": "Explain maintenance requirements",
             "sub_step_instruction": "Review maintenance schedule and care instructions with owner",
             "time_taken": 7,
             "completed": false
           },
           {
-            "sub_step_id": "64.3",
             "sub_step_title": "Provide contact information",
             "sub_step_instruction": "Give contact details for future support or warranty claims",
             "time_taken": 3,
             "completed": false
           },
           {
-            "sub_step_id": "64.4",
             "sub_step_title": "Close project officially",
             "sub_step_instruction": "Complete final paperwork and mark project as completed",
             "time_taken": 2,

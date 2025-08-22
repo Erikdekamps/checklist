@@ -1,4 +1,3 @@
-/* filepath: /workspaces/checklist/js/eventHandlers.js */
 /**
  * Event Handlers Module - Enhanced with Sub-Steps
  * ================================================
@@ -7,32 +6,42 @@
  */
 
 import { saveProgress } from './storage.js';
+import { recomputeAllProgress } from './dataManager.js';
 
 /**
  * Handles step completion toggle
- * @param {string|number} stepNumber - Identifier of the step to toggle
+ * @param {number} stepNumber - Step number to toggle
  * @param {Array<Object>} dataWithComputedValues - Current data state
  * @param {Function} onUpdate - Callback function after update
  */
 export function handleStepToggle(stepNumber, dataWithComputedValues, onUpdate) {
+    console.log('Toggling step:', stepNumber);
+    
     dataWithComputedValues.forEach(group => {
         const step = group.steps.find(s => s.step_number === stepNumber);
         if (step) {
+            const wasCompleted = step.completed;
             step.completed = !step.completed;
             
-            // If step is being completed, mark all sub-steps as completed
-            if (step.completed && step.sub_steps) {
+            console.log(`Step ${stepNumber} completion changed: ${wasCompleted} -> ${step.completed}`);
+            
+            // If step has sub-steps, update them to match the parent step
+            if (step.sub_steps && Array.isArray(step.sub_steps)) {
                 step.sub_steps.forEach(subStep => {
-                    subStep.completed = true;
+                    subStep.completed = step.completed;
                 });
-            }
-            // If step is being uncompleted, mark all sub-steps as uncompleted
-            else if (!step.completed && step.sub_steps) {
-                step.sub_steps.forEach(subStep => {
-                    subStep.completed = false;
-                });
+                
+                console.log(`Updated ${step.sub_steps.length} sub-steps to match parent completion: ${step.completed}`);
             }
         }
+    });
+    
+    // Recompute all progress data to ensure consistency
+    const updatedData = recomputeAllProgress(dataWithComputedValues);
+    
+    // Copy the updated progress back to the original data
+    updatedData.forEach((updatedGroup, groupIndex) => {
+        dataWithComputedValues[groupIndex] = updatedGroup;
     });
     
     saveProgress(dataWithComputedValues);
@@ -41,30 +50,48 @@ export function handleStepToggle(stepNumber, dataWithComputedValues, onUpdate) {
 
 /**
  * Handles sub-step completion toggle
- * @param {string} subStepId - Identifier of the sub-step to toggle
+ * @param {string} subStepId - Sub-step ID to toggle (format: "stepNumber.subStepIndex")
  * @param {Array<Object>} dataWithComputedValues - Current data state
  * @param {Function} onUpdate - Callback function after update
  */
 export function handleSubStepToggle(subStepId, dataWithComputedValues, onUpdate) {
+    console.log('Toggling sub-step:', subStepId);
+    
     dataWithComputedValues.forEach(group => {
         group.steps.forEach(step => {
             if (step.sub_steps) {
                 const subStep = step.sub_steps.find(sub => sub.sub_step_id === subStepId);
                 if (subStep) {
+                    const wasCompleted = subStep.completed;
                     subStep.completed = !subStep.completed;
                     
-                    // Auto-complete parent step if all sub-steps are completed
+                    console.log(`Sub-step ${subStepId} completion changed: ${wasCompleted} -> ${subStep.completed}`);
+                    
+                    // Check if we should auto-complete or auto-uncomplete the parent step
                     const allSubStepsCompleted = step.sub_steps.every(sub => sub.completed);
+                    const anySubStepCompleted = step.sub_steps.some(sub => sub.completed);
+                    
+                    // Auto-complete parent step if all sub-steps are completed
                     if (allSubStepsCompleted && !step.completed) {
                         step.completed = true;
+                        console.log(`Auto-completed parent step ${step.step_number} because all sub-steps are done`);
                     }
-                    // Auto-uncomplete parent step if any sub-step is uncompleted
-                    else if (!subStep.completed && step.completed) {
+                    // Auto-uncomplete parent step if any sub-step is uncompleted and parent was completed
+                    else if (!allSubStepsCompleted && step.completed) {
                         step.completed = false;
+                        console.log(`Auto-uncompleted parent step ${step.step_number} because not all sub-steps are done`);
                     }
                 }
             }
         });
+    });
+    
+    // Recompute all progress data to ensure consistency
+    const updatedData = recomputeAllProgress(dataWithComputedValues);
+    
+    // Copy the updated progress back to the original data
+    updatedData.forEach((updatedGroup, groupIndex) => {
+        dataWithComputedValues[groupIndex] = updatedGroup;
     });
     
     saveProgress(dataWithComputedValues);
@@ -73,7 +100,7 @@ export function handleSubStepToggle(subStepId, dataWithComputedValues, onUpdate)
 
 /**
  * Handles sub-steps container toggle
- * @param {string} stepNumber - Parent step number
+ * @param {number} stepNumber - Parent step number
  * @param {Function} onUpdate - Callback function after update
  */
 export function handleSubStepsToggle(stepNumber, onUpdate) {
@@ -97,7 +124,8 @@ export function handleSubStepsToggle(stepNumber, onUpdate) {
         }
     }
     
-    // Don't call onUpdate() here to prevent re-rendering which would lose the animation
+    // Call onUpdate to refresh the progress display without full re-render
+    if (onUpdate) onUpdate();
 }
 
 /**

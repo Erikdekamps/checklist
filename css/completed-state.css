@@ -111,7 +111,6 @@
  * Reduced hover effects for completed steps
  */
 .step.completed:hover {
-    transform: translateY(-2px); /* Less dramatic than incomplete steps */
     box-shadow: 0 6px 24px color-mix(in srgb, var(--c-success) 20%, var(--c-shadow));
     border-color: var(--c-success);
 }
