@@ -118,62 +118,13 @@
 
     <!-- Enhanced Collapsible Progress Footer -->
     <footer id="progress-footer">
-        <button class="footer-toggle" id="footer-toggle" type="button" aria-label="Toggle footer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="18 15 12 9 6 15"></polyline>
-            </svg>
-        </button>
-        
         <div class="progress-container">
             <div class="footer-content">
-                <div class="progress-stats">
-                    <div class="stat-group">
-                        <div class="stat-item primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M9 11l3 3L22 4"></path>
-                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                            </svg>
-                            <div class="stat-content">
-                                <span class="stat-label">Progress</span>
-                                <span id="progress-stat" class="stat-value">0/0</span>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                            <div class="stat-content">
-                                <span class="stat-label">Total Time</span>
-                                <span id="total-time" class="stat-value">0m</span>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-item value-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="1" x2="12" y2="23"></line>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
-                            <div class="stat-content">
-                                <span class="stat-label">Total Value</span>
-                                <span id="total-money" class="stat-value">$0</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-summary">
-                        <div id="progress-text" class="progress-text">Ready to start your checklist</div>
-                        <div id="progress-percentage" class="progress-percentage">0%</div>
-                    </div>
-                </div>
-                
+                <div id="progress-text">Ready to start your checklist</div>
                 <div class="progress-bar-container">
-                    <div id="progress-bar" class="progress-bar">
-                        <div class="progress-fill"></div>
-                        <div class="progress-glow"></div>
-                    </div>
+                    <div class="progress-fill"></div>
                 </div>
+                <div id="progress-percentage">0%</div>
             </div>
         </div>
     </footer>

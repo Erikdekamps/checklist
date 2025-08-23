@@ -371,21 +371,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateProgressUI() {
         const stats = computeStats();
         
-        // Update stats display
-        if (el.progressStat) el.progressStat.textContent = `${stats.completedSteps}/${stats.totalSteps}`;
-        if (el.totalTime) el.totalTime.textContent = formatTime(stats.totalTime);
-        if (el.totalMoney) el.totalMoney.textContent = formatMoney(stats.totalMoney);
+        // Update progress percentage display
         if (el.progressPercentage) el.progressPercentage.textContent = `${stats.percentage}%`;
-        if (el.progressBar) el.progressBar.style.width = `${stats.percentage}%`;
+        
+        // Update progress bar with proper animation
+        if (el.progressBar) {
+            // Use requestAnimationFrame for smoother transition
+            requestAnimationFrame(() => {
+                el.progressBar.style.width = `${stats.percentage}%`;
+            });
+        }
         
         // Update progress message
         if (el.progressText) {
             if (stats.totalSteps === 0) {
-                el.progressText.textContent = "No steps available";
+                el.progressText.textContent = "No tasks available";
             } else if (stats.completedSteps === stats.totalSteps) {
-                el.progressText.textContent = "All steps completed! 🎉";
+                el.progressText.textContent = "All tasks completed! 🎉";
             } else {
-                el.progressText.textContent = `${stats.completedSteps} of ${stats.totalSteps} steps completed`;
+                el.progressText.textContent = `${stats.completedSteps} of ${stats.totalSteps} tasks completed`;
             }
         }
 
@@ -718,11 +722,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                     step.required_items_completed = step.items.map(() => step.completed);
                 }
                 
-                // Update UI without full re-render
+                // Save progress immediately
+                debounceSaveProgress();
+                
+                // If we're in "todo" filter mode and the step is now completed,
+                // we need to re-render the entire list to hide the completed task
+                if (filter === 'todo' && step.completed) {
+                    render(); // Full re-render to apply filters
+                    updateProgressUI(); // Add this line to update progress after rendering
+                    return;
+                }
+                
+                // For other cases, just update the UI without full re-render
                 updateStepUI(stepNumber, step.completed);
                 updateProgressUI();
                 
-                debounceSaveProgress();
                 return;
             }
         }
@@ -1087,18 +1101,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Load saved states
             groupCollapsed = store.load('groupCollapseState') || {};
             subStepsCollapsed = store.load('subStepsCollapseState') || {};
-            footerCollapsed = store.load('footerCollapsed') || false;
             filter = store.load('checklistFilter') || 'all';
             searchTerm = store.load('checklistSearchTerm') || '';
 
             // Set search input value if saved
             if (searchTerm && el.searchInput) {
                 el.searchInput.value = searchTerm;
-            }
-
-            // Apply footer state
-            if (el.progressFooter) {
-                el.progressFooter.classList.toggle('collapsed', footerCollapsed);
             }
 
             // Load saved progress and merge with data
@@ -1109,6 +1117,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             bindEvents();
             render();
             
+            // Ensure progress is displayed properly on initial load
+            setTimeout(() => updateProgressUI(), 100);
+            
             console.log('Checklist initialization complete');
 
         } catch (error) {
@@ -1116,11 +1127,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             if (el.container) {
                 el.container.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: var(--c-danger);">
+                    <div style="text-align: center; padding: 2rem; color: var(--color-danger);">
                         <h2>Failed to load checklist</h2>
                         <p>${error.message}</p>
                         <button onclick="location.reload()" 
-                                style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--c-primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
                             Reload Page
                         </button>
                     </div>
