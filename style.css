@@ -1260,3 +1260,520 @@ body.dark-mode .theme-toggle .moon-icon {
 body.dark-mode .toast-notification {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
+
+/* Add these media queries and mobile optimizations at the end of the file */
+
+/* ======================================
+   MOBILE RESPONSIVENESS
+   ====================================== */
+
+/* Base responsive adjustments for all screen sizes */
+:root {
+    /* Add touch-friendly minimum sizes */
+    --min-touch-target: 44px;
+}
+
+/* Responsive breakpoints */
+@media screen and (max-width: 768px) {
+    /* Header adjustments */
+    .header-top {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .header-controls {
+        flex-direction: column;
+        gap: var(--space-sm);
+        padding: var(--space-md) var(--space-md);
+    }
+    
+    .filter-section {
+        width: 100%;
+    }
+    
+    .filter-group {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .action-section {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    
+    .action-btn {
+        flex: 1 1 calc(50% - var(--space-sm));
+        justify-content: center;
+    }
+
+    /* Container adjustments */
+    #group-container {
+        padding: var(--space-lg) var(--space-md) var(--space-lg);
+    }
+    
+    /* Step and group adjustments */
+    .step .step-header {
+        flex-direction: column;
+        gap: var(--space-sm);
+        align-items: flex-start;
+    }
+    
+    .step .step-header-right {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    /* Hide longer text on mobile */
+    .button-text {
+        display: none;
+    }
+    
+    .action-btn svg {
+        margin: 0 auto;
+    }
+}
+
+/* Small phones */
+@media screen and (max-width: 480px) {
+    /* Header optimization */
+    header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .brand-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    /* Make filter buttons stack on very small screens */
+    .filter-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .filter-btn {
+        width: 100%;
+        padding: var(--space-sm);
+        text-align: center;
+    }
+    
+    .step-value, .step-time {
+        min-width: auto;
+        padding: var(--space-xs) var(--space-sm);
+    }
+    
+    /* Simplify statistics display */
+    .header-stats {
+        flex-direction: column;
+        gap: var(--space-sm);
+        align-items: flex-start;
+    }
+    
+    /* Reduce padding for content */
+    .step-body {
+        padding: var(--space-sm);
+    }
+    
+    /* Enlarge checkboxes for touch */
+    input[type="checkbox"] {
+        min-width: 24px;
+        min-height: 24px;
+        transform: none;
+    }
+    
+    .step .step-header input[type="checkbox"], 
+    .sub-step-checkbox,
+    .required-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        min-width: initial;
+        min-height: initial;
+        transform: none;
+    }
+    
+    .sub-step {
+        padding: var(--space-md) var(--space-sm);
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) {
+    /* Increase touch targets */
+    .filter-btn, .action-btn, .search-clear, 
+    .close-modal-btn, .sub-steps-toggle-btn, .group-collapse-btn {
+        min-height: var(--min-touch-target);
+        min-width: var(--min-touch-target);
+    }
+    
+    /* Add more space between interactive elements */
+    .required-item {
+        padding: var(--space-sm);
+        margin-bottom: var(--space-xs);
+    }
+    
+    /* Better spacing for sub-step interactions */
+    .sub-step-checkbox {
+        margin-top: 8px;
+    }
+    
+    /* Add active state for touch feedback */
+    .action-btn:active,
+    .filter-btn:active,
+    .step:active .step-header,
+    .sub-step:active {
+        background-color: var(--color-bg-surface-hover);
+        transform: scale(0.98);
+    }
+}
+
+/* Fix mobile orientation changes */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    .header-top {
+        position: static;
+    }
+    
+    #progress-footer {
+        position: static;
+        margin-top: var(--space-lg);
+    }
+    
+    /* Adjust modal for landscape */
+    .modal-content {
+        max-height: 85vh;
+        width: 85%;
+    }
+}
+
+/* Make progress footer less obtrusive on mobile */
+@media screen and (max-width: 768px) {
+    #progress-footer {
+        padding: var(--space-sm);
+    }
+    
+    #progress-text {
+        font-size: 0.8em;
+    }
+    
+    #progress-percentage {
+        font-size: 0.7em;
+    }
+    
+    .progress-bar-container {
+        height: 8px;
+    }
+}
+
+/* Optimize modals for mobile */
+@media screen and (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-width: none;
+        max-height: 80vh;
+    }
+    
+    .modal-header {
+        padding: var(--space-sm) var(--space-md);
+    }
+    
+    .modal-body {
+        padding: var(--space-md);
+    }
+    
+    .source-tab {
+        padding: var(--space-sm);
+        flex: 1;
+        text-align: center;
+    }
+}
+
+/* Add these styles at the end of the file */
+
+/* Toggle button styling */
+.toggle-container-btn {
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xs) var(--space-sm);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    box-shadow: 0 1px 3px var(--color-shadow);
+}
+
+/* Hide toggle buttons on desktop */
+#header-toggle, #footer-toggle {
+    display: none;
+}
+
+/* Header toggle functionality */
+header.collapsed .header-controls {
+    display: none;
+}
+
+/* Footer toggle functionality */
+#progress-footer.collapsed {
+    height: 24px; /* Increased from 10px */
+    min-height: 24px;
+    padding: 4px 0;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+}
+
+#progress-footer.collapsed .footer-content {
+    opacity: 0;
+}
+
+/* Footer toggle indicator */
+#progress-footer::after {
+    content: '';
+    position: absolute;
+    top: 10px; /* Vertically centered in the 24px height */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: var(--color-text-muted);
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#progress-footer.collapsed::after {
+    opacity: 0.8;
+}
+
+/* Better positioning for footer toggle button */
+.footer-toggle-btn {
+    position: absolute;
+    right: var(--space-md);
+    top: 4px; /* Adjusted for new footer height */
+    z-index: 10;
+}
+
+/* Make it more obvious the footer is interactive when collapsed */
+#progress-footer.collapsed:hover::after {
+    background: var(--color-primary);
+    opacity: 1;
+}
+
+/* Add spacing at the bottom of the page when footer is collapsed */
+body.footer-collapsed {
+    padding-bottom: 24px; /* Match the new footer height */
+}
+
+/* Add these styles at the end of the file */
+
+/* Make sure header and footer are always visible */
+header, #progress-footer {
+    visibility: visible !important;
+    display: block !important;
+}
+
+/* Header collapsed state - make sure the top bar remains visible */
+header.collapsed {
+    border-bottom-width: 2px;
+}
+
+header.collapsed .header-top {
+    border-bottom: none;
+}
+
+/* Footer collapsed state - make sure it's always visible */
+#progress-footer.collapsed {
+    height: 30px;  /* Increased height for better touch target */
+    min-height: 30px;
+    border-top-width: 2px;
+    background-color: var(--color-bg-surface);
+}
+
+/* Better toggle button visibility */
+#header-toggle, #footer-toggle {
+    display: flex;
+    width: 36px;
+    height: 36px;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 11;
+}
+
+/* Make it obvious which elements can be toggled */
+@media screen and (max-width: 768px) {
+    /* Always show toggle buttons on mobile */
+    #header-toggle, #footer-toggle {
+        display: flex !important;
+    }
+    
+    /* Add visual indicator for collapsed header */
+    header.collapsed::after {
+        content: '';
+        display: block;
+        height: 4px;
+        background-color: var(--color-primary);
+        opacity: 0.5;
+        width: 40px;
+        border-radius: 2px;
+        margin: 0 auto 4px auto;
+    }
+    
+    /* Make the footer toggle more visible */
+    #progress-footer.collapsed::after {
+        content: '';
+        position: absolute;
+        top: 13px; /* Center in the 30px height footer */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 4px;
+        background: var(--color-primary);
+        border-radius: 2px;
+        opacity: 0.7;
+    }
+    
+    /* Better position for footer toggle button */
+    .footer-toggle-btn {
+        position: absolute;
+        right: var(--space-md);
+        top: 6px; /* Adjusted for taller collapsed footer */
+    }
+}
+
+/* Add these styles at the end of the file */
+
+/* Make footer always visible and properly positioned on mobile */
+#progress-footer {
+    visibility: visible !important;
+    display: block !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg-surface);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hide footer toggle button */
+.footer-toggle-btn {
+    display: none !important;
+}
+
+/* Mobile optimization for footer */
+@media screen and (max-width: 768px) {
+    #progress-footer {
+        padding: var(--space-sm);
+        height: auto;
+    }
+    
+    #progress-text {
+        font-size: 0.9em;
+    }
+    
+    #progress-percentage {
+        font-size: 0.9em;
+    }
+    
+    .progress-bar-container {
+        height: 8px;
+    }
+    
+    /* Add some bottom padding to main content to avoid footer overlap */
+    body {
+        padding-bottom: 60px;
+    }
+    
+    /* Remove any collapsed styles that might be applied */
+    #progress-footer.collapsed {
+        height: auto;
+        min-height: auto;
+    }
+}
+
+/* Mobile footer improvements - Add these at the end of the file */
+
+/* Better mobile footer layout */
+@media screen and (max-width: 768px) {
+    /* Improve footer layout for mobile */
+    #progress-footer {
+        padding: var(--space-md) var(--space-md);
+    }
+    
+    /* Create a more compact layout */
+    .footer-content {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-md);
+    }
+    
+    /* Better text display */
+    #progress-text {
+        font-size: 0.9em;
+        text-align: left;
+        margin-bottom: 0;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Better percentage display */
+    #progress-percentage {
+        font-size: 1em;
+        font-weight: 600;
+        color: var(--color-primary);
+        background-color: var(--color-bg);
+        border-radius: var(--radius-md);
+        padding: 2px 8px;
+        min-width: 45px;
+        text-align: center;
+        margin: 0;
+    }
+    
+    /* Progress bar improvements */
+    .progress-bar-container {
+        order: 2;
+        height: 8px;
+        margin-top: var(--space-xs);
+        width: 100%;
+    }
+    
+    /* Adjust overall layout */
+    .footer-content {
+        flex-wrap: wrap;
+    }
+    
+    /* Add spacing to the bottom of the page content */
+    body {
+        padding-bottom: 80px;
+    }
+}
+
+/* Even smaller screens need special handling */
+@media screen and (max-width: 360px) {
+    #progress-footer {
+        padding: var(--space-sm) var(--space-sm);
+    }
+    
+    .footer-content {
+        gap: var(--space-sm);
+    }
+    
+    #progress-text {
+        font-size: 0.85em;
+        max-width: 60%;
+    }
+    
+    #progress-percentage {
+        font-size: 0.9em;
+        min-width: 40px;
+    }
+}

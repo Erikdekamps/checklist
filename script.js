@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let groupCollapsed = {};
     let subStepsCollapsed = {};
     let footerCollapsed = false;
+    let headerCollapsed = false; // Add this line
     let filter = 'all';
     let searchTerm = '';
     let debounceSaveTimeout;
@@ -22,6 +23,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         container: document.getElementById('group-container'),
         progressFooter: document.getElementById('progress-footer'),
         footerToggle: document.getElementById('footer-toggle'),
+        headerToggle: document.getElementById('header-toggle'),
+        header: document.querySelector('header'),
         progressText: document.getElementById('progress-text'),
         progressPercentage: document.getElementById('progress-percentage'),
         progressBar: document.querySelector('.progress-fill'),
@@ -893,279 +896,53 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     /**
+     * Toggles header collapse state
+     */
+    function toggleHeader() {
+        headerCollapsed = !headerCollapsed;
+        if (el.header) {
+            el.header.classList.toggle('collapsed', headerCollapsed);
+        }
+        document.body.classList.toggle('header-collapsed', headerCollapsed);
+        
+        // Update toggle button icon
+        if (el.headerToggle) {
+            el.headerToggle.innerHTML = headerCollapsed ? 
+                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>' : // Down arrow when collapsed
+                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg>'; // Up arrow when expanded
+        }
+        
+        // Save state
+        store.save('headerCollapsed', headerCollapsed);
+    }
+
+    /**
      * Toggles footer collapse state
      */
     function toggleFooter() {
         footerCollapsed = !footerCollapsed;
-        el.progressFooter?.classList.toggle('collapsed', footerCollapsed);
+        if (el.progressFooter) {
+            el.progressFooter.classList.toggle('collapsed', footerCollapsed);
+        }
+        document.body.classList.toggle('footer-collapsed', footerCollapsed);
+        
+        // Update toggle button icon
+        if (el.footerToggle) {
+            el.footerToggle.innerHTML = footerCollapsed ? 
+                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>' : // Down arrow when collapsed
+                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg>'; // Up arrow when expanded
+        }
+        
+        // Save state
         store.save('footerCollapsed', footerCollapsed);
     }
 
-    /**
-     * Toggles all groups collapse state
-     */
-    function toggleAllGroups() {
-        const collapsed = data.filter(g => groupCollapsed[g.group_title]).length;
-        const shouldExpand = collapsed > data.length / 2;
-        
-        data.forEach(group => {
-            groupCollapsed[group.group_title] = !shouldExpand;
-        });
-        
-        store.save('groupCollapseState', groupCollapsed);
-        render();
-    }
-
-    /**
-     * Toggles all sub-steps collapse state
-     */
-    function toggleAllSubSteps() {
-        const containers = document.querySelectorAll('.sub-steps-container');
-        if (containers.length === 0) return;
-        
-        const collapsed = Array.from(containers).filter(c => c.classList.contains('collapsed')).length;
-        const shouldExpand = collapsed > containers.length / 2;
-        
-        data.forEach(group => {
-            group.steps.forEach(step => {
-                if (step.sub_steps?.length) {
-                    subStepsCollapsed[step.step_number] = !shouldExpand;
-                }
-            });
-        });
-        
-        store.save('subStepsCollapseState', subStepsCollapsed);
-        render();
-    }
-
-    /**
-     * Sets the current filter
-     * @param {string} newFilter - Filter to set ('all', 'todo', 'completed')
-     */
-    function setFilter(newFilter) {
-        filter = newFilter;
-        store.save('checklistFilter', filter);
-        render();
-    }
-
-    /**
-     * Updates search term
-     * @param {string} term - Search term
-     */
-    function setSearchTerm(term) {
-        searchTerm = term;
-        store.save('checklistSearchTerm', searchTerm);
-        render();
-    }
-
-    /**
-     * Toggles theme between light and dark
-     */
-    function toggleTheme() {
-        const isDark = document.body.classList.toggle('dark-mode');
-        store.save('checklistTheme', isDark ? 'dark' : 'light');
-    }
-
-    /**
-     * Resets all progress data
-     */
-    function resetProgress() {
-        if (confirm('Reset all progress? This cannot be undone.')) {
-            store.clear();
-            location.reload();
-        }
-    }
-
-    /**
-     * Opens the settings modal
-     */
-    function openSettingsModal() {
-        if (el.settingsModal) {
-            el.settingsModal.classList.add('visible');
-        }
-    }
-
-    /**
-     * Closes the settings modal
-     */
-    function closeSettingsModal() {
-        if (el.settingsModal) {
-            el.settingsModal.classList.remove('visible');
-        }
-    }
-
-    /**
-     * Switches between URL and JSON paste tabs
-     * @param {string} tab - Tab to switch to ('url' or 'paste')
-     */
-    function switchSourceTab(tab) {
-        if (tab === 'url') {
-            el.urlTab.classList.add('active');
-            el.pasteTab.classList.remove('active');
-            el.urlInputContainer.style.display = 'block';
-            el.pasteInputContainer.style.display = 'none';
-        } else {
-            el.urlTab.classList.remove('active');
-            el.pasteTab.classList.add('active');
-            el.urlInputContainer.style.display = 'none';
-            el.pasteInputContainer.style.display = 'block';
-        }
-    }
-
-    /**
-     * Resets the JSON input to empty
-     */
-    function resetJsonInput() {
-        if (el.dataJsonInput) {
-            el.dataJsonInput.value = '';
-        }
-    }
-
-    /**
-     * Parses and loads JSON data from text
-     * @param {string} jsonText - JSON text to parse
-     * @returns {Promise<Array>} Processed data array
-     */
-    async function loadJsonFromText(jsonText) {
-        try {
-            if (!jsonText.trim()) {
-                throw new Error("JSON data is empty");
-            }
-            
-            // Parse the JSON text
-            const rawData = JSON.parse(jsonText);
-            
-            if (!Array.isArray(rawData)) {
-                throw new Error("JSON data must be an array of group objects");
-            }
-            
-            // Process the data the same way as loadData does
-            let stepNum = 1;
-            
-            return rawData.map(group => {
-                if (!group.group_title || !Array.isArray(group.steps)) {
-                    throw new Error("Each group must have a 'group_title' and 'steps' array");
-                }
-                
-                return {
-                    ...group,
-                    steps: group.steps.map(step => {
-                        if (!step.step_title) {
-                            throw new Error("Each step must have a 'step_title'");
-                        }
-                        
-                        return {
-                            ...step,
-                            step_number: stepNum++,
-                            sub_steps: step.sub_steps ? step.sub_steps.map((sub, i) => ({
-                                ...sub,
-                                sub_step_id: `${stepNum - 1}.${i + 1}`,
-                                completed: sub.completed || false
-                            })) : [],
-                            required_items_completed: step.items ? new Array(step.items.length).fill(false) : []
-                        };
-                    })
-                };
-            });
-        } catch (error) {
-            console.error("Failed to parse JSON data:", error);
-            throw error;
-        }
-    }
-
-    /**
-     * Saves the data source (URL or JSON) and reloads data
-     */
-    async function saveDataSource() {
-        try {
-            // Show loading indicator
-            el.container.innerHTML = `
-                <div style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">
-                    <h2>Loading data...</h2>
-                    <p>Processing checklist data...</p>
-                </div>
-            `;
-            
-            let rawData;
-            let sourceType;
-            
-            // Check which tab is active
-            if (el.urlTab.classList.contains('active')) {
-                // URL mode
-                const newUrl = el.dataUrlInput.value.trim();
-                
-                if (newUrl === dataUrl && newUrl !== '') {
-                    closeSettingsModal();
-                    return; // No changes to apply
-                }
-                
-                // Try loading data from the new URL
-                rawData = await loadData(newUrl);
-                dataUrl = newUrl;
-                store.save('checklistDataUrl', dataUrl);
-                store.remove('checklistJsonData'); // Clear any stored JSON data
-                sourceType = 'url';
-                
-            } else {
-                // JSON paste mode
-                const jsonText = el.dataJsonInput.value.trim();
-                
-                if (!jsonText) {
-                    throw new Error("Please paste valid JSON data");
-                }
-                
-                // Try parsing and loading from JSON text
-                rawData = await loadJsonFromText(jsonText);
-                store.save('checklistJsonData', jsonText);
-                store.remove('checklistDataUrl'); // Clear any stored URL
-                dataUrl = ''; // Clear URL
-                sourceType = 'json';
-            }
-            
-            // Clear existing progress when data source changes
-            store.remove('checklistProgress');
-            
-            // Set the data and render
-            data = rawData;
-            render();
-            updateProgressUI();
-            
-            // Show success message
-            el.container.innerHTML = `
-                <div style="text-align: center; padding: 2rem; color: var(--color-success);">
-                    <h2>Data Loaded Successfully!</h2>
-                    <p>Your checklist has been updated with the new data.</p>
-                    <p>Source: ${sourceType === 'url' ? 'URL' : 'Pasted JSON'}</p>
-                </div>
-            `;
-            
-            // Reload the page after a brief delay to ensure everything is fresh
-            setTimeout(() => location.reload(), 1500);
-            
-        } catch (error) {
-            // Show error message if loading fails
-            el.container.innerHTML = `
-                <div style="text-align: center; padding: 2rem; color: var(--color-danger);">
-                    <h2>Failed to load data</h2>
-                    <p>Error: ${error.message}</p>
-                    <p class="settings-help-text">Please check that your data follows the required format.</p>
-                    <button onclick="location.reload()" 
-                            style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
-                        Reload with Previous Data
-                    </button>
-                </div>
-            `;
-        }
-        
-        closeSettingsModal();
-    }
-
     // ==========================================
-    //  EVENT BINDING
+    //  BIND EVENTS
     // ==========================================
-
+    
     /**
-     * Binds event listeners to elements
+     * Binds all event listeners
      */
     function bindEvents() {
         if (!el.container) return;
@@ -1209,8 +986,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
+        // Header toggle
+        el.headerToggle?.addEventListener('click', toggleHeader);
+        
         // Footer toggle
         el.footerToggle?.addEventListener('click', toggleFooter);
+        
+        // Also allow toggling footer by clicking the collapsed version
+        el.progressFooter?.addEventListener('click', e => {
+            if (footerCollapsed && e.target === el.progressFooter) {
+                toggleFooter();
+            }
+        });
 
         // Search input
         el.searchInput?.addEventListener('input', e => {
@@ -1267,9 +1054,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ==========================================
     //  INITIALIZATION
     // ==========================================
-
+    
     /**
-     * Initializes the application
+     * Initialize the application
      */
     async function init() {
         try {
@@ -1326,7 +1113,41 @@ document.addEventListener('DOMContentLoaded', async () => {
             const savedProgress = store.load('checklistProgress');
             data = savedProgress ? mergeProgress(rawData, savedProgress) : rawData;
             
-            // Bind events and render
+            // Load header and footer collapsed state
+            headerCollapsed = store.load('headerCollapsed') || false;
+            footerCollapsed = store.load('footerCollapsed') || false;
+            
+            // Set initial state for header and footer
+            if (el.header) {
+                el.header.classList.toggle('collapsed', headerCollapsed);
+            }
+            if (el.progressFooter) {
+                el.progressFooter.classList.toggle('collapsed', footerCollapsed);
+            }
+            
+            document.body.classList.toggle('header-collapsed', headerCollapsed);
+            document.body.classList.toggle('footer-collapsed', footerCollapsed);
+            
+            // Set initial icon state for toggle buttons
+            if (el.headerToggle) {
+                el.headerToggle.innerHTML = headerCollapsed ? 
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>' : 
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg>';
+                
+                // Make sure toggle button is visible
+                el.headerToggle.style.display = 'flex';
+            }
+
+            if (el.footerToggle) {
+                el.footerToggle.innerHTML = footerCollapsed ? 
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>' : 
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg>';
+                
+                // Make sure toggle button is visible
+                el.footerToggle.style.display = 'flex';
+            }
+            
+            // Bind all events
             bindEvents();
             render();
             
@@ -1361,7 +1182,221 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     }
-
+    
     // Start the application
     init();
+
+    // Add these functions before the bindEvents function
+
+    /**
+     * Toggles all groups between expanded and collapsed states
+     */
+    function toggleAllGroups() {
+        const action = el.toggleAllBtn?.getAttribute('data-action') || 'expand';
+        const shouldExpand = action === 'expand';
+        
+        // Update all groups
+        data.forEach(group => {
+            groupCollapsed[group.group_title] = !shouldExpand;
+        });
+        
+        // Update all DOM elements
+        document.querySelectorAll('.step-group').forEach(group => {
+            group.classList.toggle('collapsed', !shouldExpand);
+        });
+        
+        // Save state
+        store.save('groupCollapseState', groupCollapsed);
+        updateButtonStates();
+    }
+
+    /**
+     * Toggles all sub-steps between expanded and collapsed states
+     */
+    function toggleAllSubSteps() {
+        const action = el.toggleSubStepsBtn?.getAttribute('data-action') || 'expand';
+        const shouldExpand = action === 'expand';
+        
+        // Get all steps with sub-steps
+        const stepsWithSubSteps = data.flatMap(group => 
+            group.steps.filter(step => step.sub_steps?.length > 0)
+        );
+        
+        // Update all sub-steps collapse state
+        stepsWithSubSteps.forEach(step => {
+            subStepsCollapsed[step.step_number] = !shouldExpand;
+        });
+        
+        // Update all DOM elements
+        document.querySelectorAll('.sub-steps-container').forEach(container => {
+            container.classList.toggle('collapsed', !shouldExpand);
+        });
+        
+        // Save state
+        store.save('subStepsCollapseState', subStepsCollapsed);
+        updateButtonStates();
+    }
+
+    /**
+     * Loads JSON data from a text string
+     * @param {string} jsonText - The JSON text to parse
+     * @returns {Promise<Array>} Processed data array
+     */
+    function loadJsonFromText(jsonText) {
+        try {
+            const rawData = JSON.parse(jsonText);
+            let stepNum = 1;
+            
+            return rawData.map(group => ({
+                ...group,
+                steps: group.steps.map(step => ({
+                    ...step,
+                    step_number: stepNum++,
+                    sub_steps: step.sub_steps ? step.sub_steps.map((sub, i) => ({
+                        ...sub,
+                        sub_step_id: `${stepNum - 1}.${i + 1}`,
+                        completed: sub.completed || false
+                    })) : [],
+                    required_items_completed: step.items ? new Array(step.items.length).fill(false) : []
+                }))
+            }));
+        } catch (error) {
+            console.error('Failed to parse JSON text:', error);
+            throw new Error('Invalid JSON data format');
+        }
+    }
+
+    /**
+     * Toggles theme between light and dark mode
+     */
+    function toggleTheme() {
+        const isDark = document.body.classList.toggle('dark-mode');
+        store.save('checklistTheme', isDark ? 'dark' : 'light');
+    }
+
+    /**
+     * Resets all progress
+     */
+    function resetProgress() {
+        if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+            // Reset completed state for all steps and sub-steps
+            data.forEach(group => {
+                group.steps.forEach(step => {
+                    step.completed = false;
+                    
+                    // Reset sub-steps
+                    if (step.sub_steps) {
+                        step.sub_steps.forEach(sub => sub.completed = false);
+                    }
+                    
+                    // Reset required items
+                    if (step.items) {
+                        step.required_items_completed = new Array(step.items.length).fill(false);
+                    }
+                });
+            });
+            
+            // Save changes
+            store.save('checklistProgress', data);
+            
+            // Re-render everything
+            render();
+            updateProgressUI();
+            
+            // Show confirmation
+            showToast('Progress reset successfully', 3000);
+        }
+    }
+
+    /**
+     * Opens the settings modal
+     */
+    function openSettingsModal() {
+        if (el.settingsModal) {
+            el.settingsModal.classList.add('visible');
+        }
+    }
+
+    /**
+     * Closes the settings modal
+     */
+    function closeSettingsModal() {
+        if (el.settingsModal) {
+            el.settingsModal.classList.remove('visible');
+        }
+    }
+
+    /**
+     * Switches between URL and paste tabs in settings
+     * @param {string} tabName - Tab to switch to ('url' or 'paste')
+     */
+    function switchSourceTab(tabName) {
+        if (!el.urlTab || !el.pasteTab || !el.urlInputContainer || !el.pasteInputContainer) return;
+        
+        if (tabName === 'url') {
+            el.urlTab.classList.add('active');
+            el.pasteTab.classList.remove('active');
+            el.urlInputContainer.style.display = 'block';
+            el.pasteInputContainer.style.display = 'none';
+        } else {
+            el.urlTab.classList.remove('active');
+            el.pasteTab.classList.add('active');
+            el.urlInputContainer.style.display = 'none';
+            el.pasteInputContainer.style.display = 'block';
+        }
+    }
+
+    /**
+     * Resets JSON input to default
+     */
+    function resetJsonInput() {
+        if (confirm('Reset to default JSON data? This will remove any custom data you\'ve entered.')) {
+            if (el.dataJsonInput) el.dataJsonInput.value = '';
+            store.remove('checklistJsonData');
+        }
+    }
+
+    /**
+     * Sets filter mode
+     * @param {string} newFilter - Filter mode to set
+     */
+    function setFilter(newFilter) {
+        filter = newFilter;
+        store.save('checklistFilter', filter);
+        render();
+        updateProgressUI();
+    }
+
+    /**
+     * Sets search term
+     * @param {string} term - Search term
+     */
+    function setSearchTerm(term) {
+        searchTerm = term.trim();
+        store.save('checklistSearchTerm', searchTerm);
+        render();
+    }
+
+    /**
+     * Saves data source (URL or pasted JSON)
+     */
+    function saveDataSource() {
+        const activeTab = el.urlTab?.classList.contains('active') ? 'url' : 'paste';
+        
+        if (activeTab === 'url') {
+            // Save URL
+            const newUrl = el.dataUrlInput?.value.trim() || '';
+            dataUrl = newUrl;
+            store.save('checklistDataUrl', dataUrl);
+            store.remove('checklistJsonData'); // Clear any stored JSON data
+        } else {
+            // Save JSON data
+            const jsonData = el.dataJsonInput?.value.trim() || '';
+            store.save('checklistJsonData', jsonData);
+            store.remove('checklistDataUrl'); // Clear any stored URL
+        }
+        
+        // Reload the page to apply changes
+        location.reload();
+    }
 });
