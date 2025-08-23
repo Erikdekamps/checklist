@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update toggle sub-steps button
         if (elements.toggleSubStepsBtn) {
+            // Get actual sub-steps containers from DOM
             const subStepsContainers = document.querySelectorAll('.sub-steps-container');
             const totalSubStepsContainers = subStepsContainers.length;
             
@@ -380,6 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderStep(step, subStepsCollapseState) {
         const hasSubSteps = step.sub_steps && step.sub_steps.length > 0;
+        // Default to collapsed (true) if not explicitly set to false
         const subStepsCollapsed = hasSubSteps ? (subStepsCollapseState[step.step_number] !== false) : false;
         
         return `
@@ -502,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                     </div>
-                    <button class="sub-steps-toggle-btn" type="button">
+                    <button class="sub-steps-toggle-btn" type="button" aria-label="Toggle sub-steps">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
@@ -520,8 +522,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="sub-step ${subStep.completed ? 'completed' : ''}" data-sub-step="${subStep.sub_step_id}">
                 <input type="checkbox" class="sub-step-checkbox" ${subStep.completed ? 'checked' : ''} />
                 <div class="sub-step-content">
-                    <h5 class="sub-step-title">${escapeHtml(subStep.step_title)}</h5>
-                    <p class="sub-step-instruction">${escapeHtml(subStep.step_instruction)}</p>
+                    <h5 class="sub-step-title">${escapeHtml(subStep.sub_step_title || subStep.step_title || subStep.title || 'Untitled Sub-step')}</h5>
+                    <p class="sub-step-instruction">${escapeHtml(subStep.sub_step_instruction || subStep.step_instruction || subStep.instruction || '')}</p>
                     <div class="sub-step-time">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10"></circle>
@@ -633,8 +635,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSubStepsToggle(stepNumber) {
+        // Get current state - if undefined, treat as collapsed (true)
         const currentState = subStepsCollapseState[stepNumber];
-        subStepsCollapseState[stepNumber] = currentState === false ? true : false;
+        
+        if (currentState === undefined) {
+            // First time clicking - set to expanded (false)
+            subStepsCollapseState[stepNumber] = false;
+        } else {
+            // Toggle existing state
+            subStepsCollapseState[stepNumber] = !currentState;
+        }
         
         saveSubStepsCollapseState();
         renderApp();
@@ -666,6 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleToggleAllSubSteps() {
+        // Get current DOM state for sub-steps containers
         const subStepsContainers = document.querySelectorAll('.sub-steps-container');
         const totalSubStepsContainers = subStepsContainers.length;
         
@@ -678,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // If more than half are collapsed, expand all; otherwise collapse all
         const shouldExpand = collapsedContainers > totalSubStepsContainers / 2;
         
-        // Update collapse state for all sub-steps
+        // Update collapse state for all sub-steps containers
         dataWithComputedValues.forEach(group => {
             group.steps.forEach(step => {
                 if (step.sub_steps && step.sub_steps.length > 0) {
@@ -758,6 +769,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.groupContainer.addEventListener('click', (e) => {
             // Step completion toggle
             if (e.target.type === 'checkbox' && e.target.closest('.step') && !e.target.closest('.sub-step') && !e.target.closest('.required-item')) {
+                e.preventDefault();
                 const stepEl = e.target.closest('.step');
                 const stepNumber = parseInt(stepEl.dataset.step);
                 handleStepToggle(stepNumber);
@@ -766,6 +778,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Sub-step completion toggle
             if (e.target.classList.contains('sub-step-checkbox')) {
+                e.preventDefault();
                 const subStepEl = e.target.closest('.sub-step');
                 const subStepId = subStepEl.dataset.subStep;
                 handleSubStepToggle(subStepId);
@@ -774,6 +787,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Required item toggle
             if (e.target.type === 'checkbox' && e.target.closest('.required-item')) {
+                e.preventDefault();
                 const itemEl = e.target.closest('.required-item');
                 const stepNumber = parseInt(itemEl.dataset.step);
                 const itemIndex = parseInt(itemEl.dataset.itemIndex);
@@ -789,11 +803,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Sub-steps toggle
-            if (e.target.closest('.sub-steps-toggle-btn') || e.target.closest('.sub-steps-header')) {
+            // Sub-steps toggle - Updated event handling
+            if (e.target.closest('.sub-steps-toggle-btn') || (e.target.closest('.sub-steps-header') && !e.target.closest('.sub-steps-toggle-btn'))) {
+                e.preventDefault();
+                e.stopPropagation();
+                
                 const subStepsContainer = e.target.closest('.sub-steps-container');
-                const stepNumber = parseInt(subStepsContainer.dataset.step);
-                handleSubStepsToggle(stepNumber);
+                if (subStepsContainer) {
+                    const stepNumber = parseInt(subStepsContainer.dataset.step);
+                    handleSubStepsToggle(stepNumber);
+                }
                 return;
             }
             
@@ -814,7 +833,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Note editing
+        // Note editing - handle both blur and Enter key
         elements.groupContainer.addEventListener('blur', (e) => {
             if (e.target.classList.contains('step-notes')) {
                 const step = e.target.closest('.step');
@@ -824,6 +843,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 handleNoteEdit(stepNumber, noteValue);
             }
         }, true);
+
+        elements.groupContainer.addEventListener('keydown', (e) => {
+            if (e.target.classList.contains('step-notes') && e.key === 'Enter' && e.ctrlKey) {
+                e.target.blur(); // Trigger blur event to save note
+            }
+        });
 
         // Footer toggle
         if (elements.footerToggle) {

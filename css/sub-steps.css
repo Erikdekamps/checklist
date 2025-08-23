@@ -1,63 +1,58 @@
 /**
- * Sub-Steps Container and Layout
- * ==============================
+ * Sub-Steps Component Styling
+ * ===========================
  * 
- * Enhanced sub-steps styling with opacity-based animations
+ * Enhanced styling for sub-steps with better visual hierarchy and spacing
  */
 
 /**
  * Sub-Steps Container
- * Main container for sub-steps with opacity animations
  */
 .sub-steps-container {
-    margin-top: var(--spacing-md);
-    border: 1px solid var(--c-border);
-    border-radius: var(--border-radius-md);
-    background: var(--c-bg-surface-2);
+    margin-top: var(--spacing-lg);
+    border: 1px solid var(--c-border-subtle);
+    border-radius: var(--border-radius-lg);
+    background: var(--c-bg-secondary);
     overflow: hidden;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .sub-steps-container:hover {
-    border-color: color-mix(in srgb, var(--c-primary) 20%, var(--c-border));
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--c-primary) 15%, var(--c-shadow));
+    border-color: var(--c-border-hover);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /**
- * Sub-Steps Container Collapsed State
+ * Collapsed State
  */
 .sub-steps-container.collapsed .sub-steps-list {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
+    display: none;
 }
 
 .sub-steps-container:not(.collapsed) .sub-steps-list {
-    max-height: 1000px;
-    opacity: 1;
+    display: block;
 }
 
 /**
  * Sub-Steps Header
- * Clickable header to toggle sub-steps visibility
  */
 .sub-steps-header {
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: linear-gradient(135deg, var(--c-bg-surface-2), var(--c-bg-surface-hover));
-    border-bottom: 1px solid var(--c-border);
-    cursor: pointer;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    transition: background-color 0.2s ease;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--c-bg-tertiary);
+    border-bottom: 1px solid var(--c-border-subtle);
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .sub-steps-header:hover {
-    background: linear-gradient(135deg, var(--c-bg-surface-hover), color-mix(in srgb, var(--c-primary) 8%, var(--c-bg-surface-hover)));
+    background: var(--c-bg-hover);
 }
 
 .sub-steps-header:active {
-    opacity: 0.9;
+    background: var(--c-bg-active);
 }
 
 /**
@@ -65,46 +60,76 @@
  */
 .sub-steps-header-left {
     display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 0.9em;
-    font-weight: 600;
-    color: var(--c-text-primary);
-    transition: color 0.2s ease;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    flex: 1;
 }
 
 .sub-steps-header:hover .sub-steps-header-left {
-    color: var(--c-primary);
+    transform: translateX(2px);
+}
+
+.sub-steps-header h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--c-text-secondary);
+    letter-spacing: 0.025em;
+}
+
+/**
+ * Sub-Steps Progress Bar
+ */
+.sub-steps-progress {
+    width: 100%;
+    max-width: 200px;
+}
+
+.sub-steps-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--c-bg-quaternary);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.sub-steps-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--c-success), var(--c-success-hover));
+    border-radius: 2px;
+    transition: width 0.3s ease;
 }
 
 /**
  * Sub-Steps Toggle Button
  */
 .sub-steps-toggle-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--c-text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--c-text-tertiary);
     border-radius: var(--border-radius-sm);
-    transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 .sub-steps-toggle-btn:hover {
-    color: var(--c-primary);
-    background: color-mix(in srgb, var(--c-primary) 10%, transparent);
+    background: var(--c-bg-quaternary);
+    color: var(--c-text-secondary);
+    transform: scale(1.1);
 }
 
 .sub-steps-toggle-btn:active {
-    opacity: 0.8;
+    transform: scale(0.95);
 }
 
 /**
- * Toggle Button Rotation for Collapsed State
+ * Toggle Button Icon Rotation
  */
 .sub-steps-container.collapsed .sub-steps-toggle-btn svg {
     transform: rotate(-90deg);
@@ -114,67 +139,28 @@
     transform: rotate(0deg);
 }
 
-/**
- * Sub-Steps Progress Display
- */
-.sub-steps-progress {
-    font-size: 0.85em;
-    font-weight: 600;
-    background: rgba(255, 255, 255, 0.2);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--border-radius-md);
-    backdrop-filter: blur(4px);
-    margin-right: var(--spacing-sm);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    transition: background 0.2s ease;
-}
-
-.sub-steps-header:hover .sub-steps-progress {
-    background: rgba(255, 255, 255, 0.3);
+.sub-steps-toggle-btn svg {
+    transition: transform 0.3s ease;
 }
 
 /**
- * Sub-Steps Progress Bar
- */
-.sub-steps-progress-bar {
-    width: 40px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: var(--border-radius-sm);
-    overflow: hidden;
-}
-
-.sub-steps-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--c-primary), var(--c-primary-light));
-    border-radius: var(--border-radius-sm);
-    transition: width 0.3s ease, filter 0.2s ease;
-}
-
-.sub-steps-header:hover .sub-steps-progress-fill {
-    filter: brightness(1.1);
-}
-
-/**
- * Sub-Steps List Container
+ * Sub-Steps List
  */
 .sub-steps-list {
-    transition: max-height 0.2s ease, opacity 0.2s ease;
+    padding: 0;
 }
 
 /**
- * Individual Sub-Step
+ * Individual Sub-Step Styling
  */
 .sub-step {
     display: flex;
     align-items: flex-start;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-bottom: 1px solid var(--c-border);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--c-border-subtle);
+    background: var(--c-bg-body);
+    transition: all 0.2s ease;
     position: relative;
 }
 
@@ -183,34 +169,28 @@
 }
 
 .sub-step:hover {
-    background: color-mix(in srgb, var(--c-primary) 8%, transparent);
+    background: var(--c-bg-secondary);
+    transform: translateX(4px);
 }
 
 .sub-step:active {
-    opacity: 0.9;
+    transform: translateX(2px);
 }
 
 /**
  * Sub-Step Checkbox
  */
 .sub-step-checkbox {
-    margin: 0;
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    accent-color: var(--c-primary);
+    width: 18px;
+    height: 18px;
+    margin: 2px 0 0 0;
     cursor: pointer;
-    pointer-events: none;
-    margin-top: 2px;
-    transition: filter 0.2s ease;
+    accent-color: var(--c-primary);
+    flex-shrink: 0;
 }
 
 .sub-step:hover .sub-step-checkbox {
-    filter: brightness(1.1) drop-shadow(0 1px 3px color-mix(in srgb, var(--c-primary) 20%, transparent));
-}
-
-.sub-step:active .sub-step-checkbox {
-    filter: brightness(0.95);
+    transform: scale(1.1);
 }
 
 /**
@@ -218,19 +198,22 @@
  */
 .sub-step-content {
     flex: 1;
-    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    min-width: 0; /* Prevents flex item from overflowing */
 }
 
 /**
  * Sub-Step Title
  */
 .sub-step-title {
+    margin: 0;
+    font-size: 0.95rem;
     font-weight: 600;
-    font-size: 0.9em;
     color: var(--c-text-primary);
-    margin-bottom: var(--spacing-xs);
     line-height: 1.4;
-    transition: color 0.2s ease;
+    word-wrap: break-word;
 }
 
 .sub-step:hover .sub-step-title {
@@ -241,11 +224,11 @@
  * Sub-Step Instruction
  */
 .sub-step-instruction {
-    font-size: 0.85em;
-    color: var(--c-text-secondary);
+    margin: 0;
+    font-size: 0.85rem;
     line-height: 1.5;
-    margin-bottom: var(--spacing-xs);
-    transition: color 0.2s ease;
+    color: var(--c-text-secondary);
+    word-wrap: break-word;
 }
 
 .sub-step:hover .sub-step-instruction {
@@ -256,94 +239,216 @@
  * Sub-Step Time
  */
 .sub-step-time {
-    font-size: 0.75em;
-    font-weight: 600;
-    color: var(--c-primary);
-    background: color-mix(in srgb, var(--c-primary) 10%, transparent);
-    padding: 2px 6px;
-    border-radius: var(--border-radius-sm);
-    display: inline-block;
-    transition: filter 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.8rem;
+    color: var(--c-text-tertiary);
+    margin-top: var(--spacing-xs);
+}
+
+.sub-step-time svg {
+    flex-shrink: 0;
+    opacity: 0.7;
 }
 
 .sub-step:hover .sub-step-time {
-    filter: brightness(1.1);
+    color: var(--c-text-secondary);
+}
+
+.sub-step:hover .sub-step-time svg {
+    opacity: 1;
 }
 
 /**
- * Sub-Step Completed State
+ * Completed Sub-Step Styling
  */
 .sub-step.completed {
-    background: color-mix(in srgb, var(--c-success) 8%, transparent);
+    opacity: 0.7;
+    background: var(--c-bg-subtle);
 }
 
 .sub-step.completed .sub-step-title {
     text-decoration: line-through;
-    color: var(--c-text-secondary);
+    color: var(--c-text-tertiary);
 }
 
 .sub-step.completed .sub-step-instruction {
-    color: color-mix(in srgb, var(--c-text-secondary) 70%, transparent);
     text-decoration: line-through;
+    color: var(--c-text-quaternary);
+}
+
+.sub-step.completed .sub-step-time {
+    color: var(--c-text-quaternary);
+}
+
+.sub-step.completed:hover {
+    opacity: 0.9;
+    background: var(--c-bg-secondary);
 }
 
 /**
- * Mobile Responsive Design
+ * Sub-Step Status Indicator
+ */
+.sub-step::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: transparent;
+    transition: background 0.2s ease;
+}
+
+.sub-step:hover::before {
+    background: var(--c-primary);
+}
+
+.sub-step.completed::before {
+    background: var(--c-success);
+}
+
+/**
+ * Empty State
+ */
+.sub-steps-list:empty::after {
+    content: 'No sub-tasks available';
+    display: block;
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--c-text-quaternary);
+    font-style: italic;
+}
+
+/**
+ * Responsive Design for Sub-Steps
  */
 @media (max-width: 768px) {
     .sub-steps-header {
-        padding: var(--spacing-xs) var(--spacing-sm);
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .sub-steps-header h4 {
+        font-size: 0.85rem;
     }
     
     .sub-steps-progress {
-        font-size: 0.8em;
-        padding: 2px 6px;
-        margin-right: var(--spacing-xs);
-    }
-    
-    .sub-steps-progress-bar {
-        width: 30px;
-        height: 3px;
+        max-width: 150px;
     }
     
     .sub-step {
-        padding: var(--spacing-xs) var(--spacing-sm);
-        gap: var(--spacing-xs);
-    }
-    
-    .sub-step-checkbox {
-        width: 14px;
-        height: 14px;
+        padding: var(--spacing-md);
+        gap: var(--spacing-sm);
     }
     
     .sub-step-title {
-        font-size: 0.85em;
+        font-size: 0.9rem;
     }
     
     .sub-step-instruction {
-        font-size: 0.8em;
+        font-size: 0.8rem;
     }
     
     .sub-step-time {
-        font-size: 0.7em;
-        padding: 1px 4px;
+        font-size: 0.75rem;
     }
 }
 
 @media (max-width: 480px) {
+    .sub-steps-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+    
     .sub-steps-header-left {
-        font-size: 0.85em;
+        width: 100%;
+    }
+    
+    .sub-steps-toggle-btn {
+        align-self: flex-end;
+        margin-top: calc(-32px - var(--spacing-sm));
     }
     
     .sub-steps-progress {
-        font-size: 0.75em;
+        max-width: none;
+        width: 100%;
     }
     
-    .sub-step-title {
-        font-size: 0.8em;
+    .sub-step {
+        flex-direction: column;
+        gap: var(--spacing-sm);
     }
     
-    .sub-step-instruction {
-        font-size: 0.75em;
+    .sub-step-checkbox {
+        align-self: flex-start;
     }
+    
+    .sub-step-content {
+        margin-left: calc(18px + var(--spacing-sm));
+    }
+}
+
+/**
+ * Animation for expanding/collapsing
+ */
+.sub-steps-list {
+    animation: slideDown 0.3s ease-out;
+}
+
+.sub-steps-container.collapsed .sub-steps-list {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        max-height: 1000px;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 1;
+        max-height: 1000px;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/**
+ * Dark Mode Adjustments
+ */
+body.dark-mode .sub-steps-container {
+    border-color: var(--c-border-subtle);
+    background: var(--c-bg-secondary);
+}
+
+body.dark-mode .sub-steps-header {
+    background: var(--c-bg-tertiary);
+    border-bottom-color: var(--c-border-subtle);
+}
+
+body.dark-mode .sub-step {
+    background: var(--c-bg-body);
+    border-bottom-color: var(--c-border-subtle);
+}
+
+body.dark-mode .sub-step:hover {
+    background: var(--c-bg-secondary);
+}
+
+body.dark-mode .sub-step.completed {
+    background: var(--c-bg-subtle);
 }
