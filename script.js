@@ -386,9 +386,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         return `
             <div class="step ${step.completed ? 'completed' : ''}" data-step="${step.step_number}">
-                <div class="step-header">
+                <div class="step-header" data-step="${step.step_number}">
                     <div class="step-header-left">
-                        <input type="checkbox" ${step.completed ? 'checked' : ''} />
+                        <input type="checkbox" class="step-checkbox" data-step="${step.step_number}" ${step.completed ? 'checked' : ''} />
                         <h3 class="step-title">${escapeHtml(step.step_title)}</h3>
                     </div>
                     <div class="step-header-right">
@@ -452,8 +452,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isCompleted = requiredItemsCompleted[index] || false;
                         return `
                             <div class="required-item ${isCompleted ? 'completed' : ''}" data-step="${step.step_number}" data-item-index="${index}">
-                                <input type="checkbox" ${isCompleted ? 'checked' : ''} />
-                                <label>${escapeHtml(item)}</label>
+                                <input type="checkbox" class="required-item-checkbox" data-step="${step.step_number}" data-item-index="${index}" ${isCompleted ? 'checked' : ''} />
+                                <label class="required-item-label">${escapeHtml(item)}</label>
                             </div>
                         `;
                     }).join('')}
@@ -469,20 +469,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
                 <div class="notes-section">
                     <div class="note-display">${escapeHtml(step.notes)}</div>
-                    <textarea class="step-notes" placeholder="Add notes for this step..." style="display: none;">${escapeHtml(step.notes)}</textarea>
+                    <textarea class="step-notes" placeholder="Add notes for this step..." style="display: none;" data-step="${step.step_number}">${escapeHtml(step.notes)}</textarea>
                 </div>
             `;
         } else {
             return `
                 <div class="notes-section">
-                    <button class="add-note-btn" type="button">
+                    <button class="add-note-btn" type="button" data-step="${step.step_number}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 5v14"></path>
                             <path d="M5 12h14"></path>
                         </svg>
                         Add Note
                     </button>
-                    <textarea class="step-notes" placeholder="Add notes for this step..." style="display: none;">${escapeHtml(step.notes || '')}</textarea>
+                    <textarea class="step-notes" placeholder="Add notes for this step..." style="display: none;" data-step="${step.step_number}">${escapeHtml(step.notes || '')}</textarea>
                 </div>
             `;
         }
@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSubStep(subStep) {
         return `
             <div class="sub-step ${subStep.completed ? 'completed' : ''}" data-sub-step="${subStep.sub_step_id}">
-                <input type="checkbox" class="sub-step-checkbox" ${subStep.completed ? 'checked' : ''} />
+                <input type="checkbox" class="sub-step-checkbox" data-sub-step="${subStep.sub_step_id}" ${subStep.completed ? 'checked' : ''} />
                 <div class="sub-step-content">
                     <h5 class="sub-step-title">${escapeHtml(subStep.sub_step_title || subStep.step_title || subStep.title || 'Untitled Sub-step')}</h5>
                     <p class="sub-step-instruction">${escapeHtml(subStep.sub_step_instruction || subStep.step_instruction || subStep.instruction || '')}</p>
@@ -561,6 +561,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
 
     function handleStepToggle(stepNumber) {
+        console.log('Toggling step:', stepNumber);
+        
         for (const group of dataWithComputedValues) {
             const step = group.steps.find(s => s.step_number === stepNumber);
             if (step) {
@@ -587,9 +589,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleRequiredItemToggle(stepNumber, itemIndex) {
+        console.log('Toggling required item:', stepNumber, itemIndex);
+        
         for (const group of dataWithComputedValues) {
             const step = group.steps.find(s => s.step_number === stepNumber);
-            if (step && step.items && step.items[itemIndex]) {
+            if (step && step.items && step.items[itemIndex] !== undefined) {
                 if (!step.required_items_completed) {
                     step.required_items_completed = new Array(step.items.length).fill(false);
                 }
@@ -612,6 +616,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSubStepToggle(subStepId) {
+        console.log('Toggling sub-step:', subStepId);
+        
         const [stepNumber, subStepIndex] = subStepId.split('.').map(num => parseInt(num));
         
         for (const group of dataWithComputedValues) {
@@ -767,27 +773,24 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Main container event delegation
         elements.groupContainer.addEventListener('click', (e) => {
-            // Step completion toggle
-            if (e.target.type === 'checkbox' && e.target.closest('.step') && !e.target.closest('.sub-step') && !e.target.closest('.required-item')) {
-                e.preventDefault();
-                const stepEl = e.target.closest('.step');
-                const stepNumber = parseInt(stepEl.dataset.step);
+            // Step header click (make whole header clickable)
+            if (e.target.closest('.step-header') && !e.target.closest('.step-time') && !e.target.closest('.step-value')) {
+                const stepHeader = e.target.closest('.step-header');
+                const stepNumber = parseInt(stepHeader.dataset.step);
                 handleStepToggle(stepNumber);
                 return;
             }
             
-            // Sub-step completion toggle
-            if (e.target.classList.contains('sub-step-checkbox')) {
-                e.preventDefault();
+            // Sub-step click (make whole sub-step clickable)
+            if (e.target.closest('.sub-step') && !e.target.closest('.sub-step-time')) {
                 const subStepEl = e.target.closest('.sub-step');
                 const subStepId = subStepEl.dataset.subStep;
                 handleSubStepToggle(subStepId);
                 return;
             }
             
-            // Required item toggle
-            if (e.target.type === 'checkbox' && e.target.closest('.required-item')) {
-                e.preventDefault();
+            // Required item click (make whole item clickable)
+            if (e.target.closest('.required-item')) {
                 const itemEl = e.target.closest('.required-item');
                 const stepNumber = parseInt(itemEl.dataset.step);
                 const itemIndex = parseInt(itemEl.dataset.itemIndex);
@@ -795,7 +798,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Group header toggle
+            // Group header toggle (only if not clicking on checkbox)
             if (e.target.closest('.group-header')) {
                 const groupHeader = e.target.closest('.group-header');
                 const groupTitle = groupHeader.dataset.group;
@@ -803,9 +806,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Sub-steps toggle - Updated event handling
+            // Sub-steps toggle
             if (e.target.closest('.sub-steps-toggle-btn') || (e.target.closest('.sub-steps-header') && !e.target.closest('.sub-steps-toggle-btn'))) {
-                e.preventDefault();
                 e.stopPropagation();
                 
                 const subStepsContainer = e.target.closest('.sub-steps-container');
@@ -818,6 +820,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Add note button
             if (e.target.closest('.add-note-btn')) {
+                const stepNumber = parseInt(e.target.closest('.add-note-btn').dataset.step);
                 const step = e.target.closest('.step');
                 const noteDisplay = step.querySelector('.note-display');
                 const textarea = step.querySelector('.step-notes');
@@ -831,13 +834,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 return;
             }
+            
+            // Note display click to edit
+            if (e.target.classList.contains('note-display')) {
+                const step = e.target.closest('.step');
+                const noteDisplay = step.querySelector('.note-display');
+                const textarea = step.querySelector('.step-notes');
+                
+                if (noteDisplay) noteDisplay.style.display = 'none';
+                if (textarea) {
+                    textarea.style.display = 'block';
+                    textarea.focus();
+                }
+                return;
+            }
         });
 
         // Note editing - handle both blur and Enter key
         elements.groupContainer.addEventListener('blur', (e) => {
             if (e.target.classList.contains('step-notes')) {
-                const step = e.target.closest('.step');
-                const stepNumber = parseInt(step.dataset.step);
+                const stepNumber = parseInt(e.target.dataset.step);
                 const noteValue = e.target.value.trim();
                 
                 handleNoteEdit(stepNumber, noteValue);
