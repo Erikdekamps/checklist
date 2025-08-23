@@ -536,7 +536,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Check main step content
                 const titleMatch = step.step_title?.toLowerCase().includes(search);
                 const instructionMatch = step.step_instruction?.toLowerCase().includes(search);
-                const notesMatch = step.notes?.toLowerCase().includes(search);
                 
                 // Check required items
                 const itemsMatch = step.items?.some(item => 
@@ -552,7 +551,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                            (subInstruction && subInstruction.toLowerCase().includes(search));
                 });
                 
-                return titleMatch || instructionMatch || notesMatch || itemsMatch || subStepsMatch;
+                return titleMatch || instructionMatch || itemsMatch || subStepsMatch;
             }
             return true;
         });
@@ -595,9 +594,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </div>
                 <div class="step-body">
-                    <p class="step-instruction">${escapeHtml(step.step_instruction)}</p>
                     ${renderRequiredItems(step, requiredItems)}
-                    ${renderNotes(step)}
+                    <p class="step-instruction">${escapeHtml(step.step_instruction)}</p>
                     ${hasSubSteps ? renderSubSteps(step, subCollapsed) : ''}
                 </div>
             </div>
@@ -629,31 +627,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </div>
                     `).join('')}
                 </div>
-            </div>
-        `;
-    }
-    
-    /**
-     * Renders notes section
-     * @param {Object} step - Step data
-     * @returns {string} HTML for notes section
-     */
-    function renderNotes(step) {
-        return `
-            <div class="notes-section">
-                ${step.notes?.trim() ? `
-                    <div class="note-display">${escapeHtml(step.notes)}</div>
-                    <textarea class="step-notes" style="display: none;" 
-                              data-step="${step.step_number}">${escapeHtml(step.notes)}</textarea>
-                ` : `
-                    <button class="add-note-btn" data-step="${step.step_number}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 5v14"></path><path d="M5 12h14"></path>
-                        </svg>
-                        Add Note
-                    </button>
-                    <textarea class="step-notes" style="display: none;" data-step="${step.step_number}"></textarea>
-                `}
             </div>
         `;
     }
@@ -917,23 +890,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         store.save('groupCollapseState', groupCollapsed);
         updateButtonStates();
-    }
-
-    /**
-     * Updates note content for a step
-     * @param {number} stepNumber - Step number
-     * @param {string} noteValue - New note content
-     */
-    function editNote(stepNumber, noteValue) {
-        for (const group of data) {
-            const step = group.steps.find(s => s.step_number === stepNumber);
-            if (step) {
-                step.notes = noteValue;
-                break;
-            }
-        }
-        debounceSaveProgress();
-        render(); // Full render to properly display updated notes
     }
 
     /**
@@ -1250,43 +1206,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const stepNumber = parseInt(e.target.closest('.sub-steps-container').dataset.step);
                 toggleSubSteps(stepNumber);
                 return;
-            }
-
-            // Add note - show textarea
-            if (e.target.closest('.add-note-btn')) {
-                const step = e.target.closest('.step');
-                const textarea = step.querySelector('.step-notes');
-                const addBtn = step.querySelector('.add-note-btn');
-                addBtn.style.display = 'none';
-                textarea.style.display = 'block';
-                textarea.focus();
-                return;
-            }
-
-            // Edit note - show textarea
-            if (e.target.classList.contains('note-display')) {
-                const step = e.target.closest('.step');
-                const noteDisplay = step.querySelector('.note-display');
-                const textarea = step.querySelector('.step-notes');
-                noteDisplay.style.display = 'none';
-                textarea.style.display = 'block';
-                textarea.focus();
-                return;
-            }
-        });
-
-        // Note editing - handle blur event
-        el.container.addEventListener('blur', e => {
-            if (e.target.classList.contains('step-notes')) {
-                const stepNumber = parseInt(e.target.dataset.step);
-                editNote(stepNumber, e.target.value.trim());
-            }
-        }, true);
-
-        // Note editing - handle keyboard shortcuts
-        el.container.addEventListener('keydown', e => {
-            if (e.target.classList.contains('step-notes') && e.key === 'Enter' && e.ctrlKey) {
-                e.target.blur(); // Save on Ctrl+Enter
             }
         });
 
