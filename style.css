@@ -1273,3 +1273,47 @@ body.dark-mode .theme-toggle .moon-icon {
     color: var(--color-danger);
     border-color: var(--color-danger);
 }
+
+/* ======================================
+   TOAST NOTIFICATION
+   ====================================== */
+.toast-notification {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background-color: var(--color-success);
+    color: white;
+    padding: 0;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 8px;
+}
+
+.toast-content svg {
+    flex-shrink: 0;
+}
+
+#toast-message {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+body.dark-mode .toast-notification {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}

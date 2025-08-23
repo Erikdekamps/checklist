@@ -49,10 +49,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         pasteInputContainer: document.getElementById('paste-input-container'),
         dataJsonInput: document.getElementById('data-json-input'),
         dataJsonReset: document.getElementById('data-json-reset'),
-        dataSourceSave: document.getElementById('data-source-save')
+        dataSourceSave: document.getElementById('data-source-save'),
+        // Add toast notification element
+        toastNotification: document.getElementById('toast-notification'),
+        toastMessage: document.getElementById('toast-message')
     };
 
     let dataUrl = '';  // The custom data URL if provided
+    let toastTimeout; // To track the toast timeout
 
     // ==========================================
     //  UTILITIES
@@ -108,6 +112,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             timeoutId = setTimeout(() => func.apply(null, args), delay);
         };
     };
+
+    /**
+     * Shows a toast notification
+     * @param {string} message - Message to show in the toast
+     * @param {number} duration - How long to show the toast in ms
+     */
+    function showToast(message = 'Progress saved', duration = 2000) {
+        if (!el.toastNotification) return;
+        
+        // Clear any existing timeout
+        if (toastTimeout) {
+            clearTimeout(toastTimeout);
+        }
+        
+        // Set message
+        if (el.toastMessage) {
+            el.toastMessage.textContent = message;
+        }
+        
+        // Show the toast
+        el.toastNotification.classList.add('show');
+        
+        // Hide after duration
+        toastTimeout = setTimeout(() => {
+            el.toastNotification.classList.remove('show');
+        }, duration);
+    }
 
     // ==========================================
     //  STORAGE FUNCTIONS
@@ -169,6 +200,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Debounced function for saving progress data
     const debounceSaveProgress = debounce(() => {
         store.save('checklistProgress', data);
+        showToast('Progress saved');
     }, 500);
 
     // ==========================================
