@@ -75,15 +75,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     /**
-     * Formats number as US currency
-     * @param {number} amount - Money amount
-     * @returns {string} Formatted currency string
+     * Formats number as US currency without the currency symbol
+     * @param {number|string} amount - Money amount
+     * @returns {string} Formatted number string
      */
     const formatMoney = amount => {
+        // Handle string inputs (remove any existing dollar signs or formatting)
+        if (typeof amount === 'string') {
+            // Extract just the numeric part
+            amount = parseFloat(amount.replace(/[^0-9.]/g, '') || 0);
+        }
+        
+        // Format as number with thousand separators but no currency symbol
         return new Intl.NumberFormat('en-US', {
-            style: 'currency', 
-            currency: 'USD', 
-            minimumFractionDigits: 0
+            style: 'decimal', 
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
         }).format(amount);
     };
     
