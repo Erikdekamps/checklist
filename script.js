@@ -36,8 +36,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         toggleAllBtn: document.getElementById('toggle-all-btn'),
         toggleSubStepsBtn: document.getElementById('toggle-substeps-btn'),
         themeToggle: document.getElementById('theme-toggle'),
-        resetBtn: document.getElementById('reset-btn')
+        resetBtn: document.getElementById('reset-btn'),
+        settingsBtn: document.getElementById('settings-btn'),
+        settingsModal: document.getElementById('settings-modal'),
+        closeModalBtn: document.querySelector('.close-modal-btn'),
+        dataUrlInput: document.getElementById('data-url-input'),
+        dataUrlReset: document.getElementById('data-url-reset'),
+        dataUrlSave: document.getElementById('data-url-save'),
+        urlTab: document.getElementById('url-tab'),
+        pasteTab: document.getElementById('paste-tab'),
+        urlInputContainer: document.getElementById('url-input-container'),
+        pasteInputContainer: document.getElementById('paste-input-container'),
+        dataJsonInput: document.getElementById('data-json-input'),
+        dataJsonReset: document.getElementById('data-json-reset'),
+        dataSourceSave: document.getElementById('data-source-save')
     };
+
+    let dataUrl = '';  // The custom data URL if provided
 
     // ==========================================
     //  UTILITIES
@@ -161,31 +176,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ==========================================
 
     /**
-     * Loads data from JSON file and structures it
+     * Loads data from JSON file (local or remote)
+     * @param {string} [dataUrl] - Optional URL to fetch data from
      * @returns {Promise<Array>} Processed data array
      */
-    async function loadData() {
-        const response = await fetch('./data.json');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    async function loadData(dataUrl) {
+        let url = dataUrl || './data.json'; // Default to local file if no URL provided
+        
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const rawData = await response.json();
+            let stepNum = 1;
+            
+            return rawData.map(group => ({
+                ...group,
+                steps: group.steps.map(step => ({
+                    ...step,
+                    step_number: stepNum++,
+                    sub_steps: step.sub_steps ? step.sub_steps.map((sub, i) => ({
+                        ...sub,
+                        sub_step_id: `${stepNum - 1}.${i + 1}`,
+                        completed: sub.completed || false
+                    })) : [],
+                    required_items_completed: step.items ? new Array(step.items.length).fill(false) : []
+                }))
+            }));
+        } catch (error) {
+            console.error(`Failed to load data from ${url}:`, error);
+            throw error;
         }
-        
-        const rawData = await response.json();
-        let stepNum = 1;
-        
-        return rawData.map(group => ({
-            ...group,
-            steps: group.steps.map(step => ({
-                ...step,
-                step_number: stepNum++,
-                sub_steps: step.sub_steps ? step.sub_steps.map((sub, i) => ({
-                    ...sub,
-                    sub_step_id: `${stepNum - 1}.${i + 1}`,
-                    completed: sub.completed || false
-                })) : [],
-                required_items_completed: step.items ? new Array(step.items.length).fill(false) : []
-            }))
-        }));
     }
 
     /**
@@ -958,6 +981,190 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    /**
+     * Opens the settings modal
+     */
+    function openSettingsModal() {
+        if (el.settingsModal) {
+            el.settingsModal.classList.add('visible');
+        }
+    }
+
+    /**
+     * Closes the settings modal
+     */
+    function closeSettingsModal() {
+        if (el.settingsModal) {
+            el.settingsModal.classList.remove('visible');
+        }
+    }
+
+    /**
+     * Switches between URL and JSON paste tabs
+     * @param {string} tab - Tab to switch to ('url' or 'paste')
+     */
+    function switchSourceTab(tab) {
+        if (tab === 'url') {
+            el.urlTab.classList.add('active');
+            el.pasteTab.classList.remove('active');
+            el.urlInputContainer.style.display = 'block';
+            el.pasteInputContainer.style.display = 'none';
+        } else {
+            el.urlTab.classList.remove('active');
+            el.pasteTab.classList.add('active');
+            el.urlInputContainer.style.display = 'none';
+            el.pasteInputContainer.style.display = 'block';
+        }
+    }
+
+    /**
+     * Resets the JSON input to empty
+     */
+    function resetJsonInput() {
+        if (el.dataJsonInput) {
+            el.dataJsonInput.value = '';
+        }
+    }
+
+    /**
+     * Parses and loads JSON data from text
+     * @param {string} jsonText - JSON text to parse
+     * @returns {Promise<Array>} Processed data array
+     */
+    async function loadJsonFromText(jsonText) {
+        try {
+            if (!jsonText.trim()) {
+                throw new Error("JSON data is empty");
+            }
+            
+            // Parse the JSON text
+            const rawData = JSON.parse(jsonText);
+            
+            if (!Array.isArray(rawData)) {
+                throw new Error("JSON data must be an array of group objects");
+            }
+            
+            // Process the data the same way as loadData does
+            let stepNum = 1;
+            
+            return rawData.map(group => {
+                if (!group.group_title || !Array.isArray(group.steps)) {
+                    throw new Error("Each group must have a 'group_title' and 'steps' array");
+                }
+                
+                return {
+                    ...group,
+                    steps: group.steps.map(step => {
+                        if (!step.step_title) {
+                            throw new Error("Each step must have a 'step_title'");
+                        }
+                        
+                        return {
+                            ...step,
+                            step_number: stepNum++,
+                            sub_steps: step.sub_steps ? step.sub_steps.map((sub, i) => ({
+                                ...sub,
+                                sub_step_id: `${stepNum - 1}.${i + 1}`,
+                                completed: sub.completed || false
+                            })) : [],
+                            required_items_completed: step.items ? new Array(step.items.length).fill(false) : []
+                        };
+                    })
+                };
+            });
+        } catch (error) {
+            console.error("Failed to parse JSON data:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * Saves the data source (URL or JSON) and reloads data
+     */
+    async function saveDataSource() {
+        try {
+            // Show loading indicator
+            el.container.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">
+                    <h2>Loading data...</h2>
+                    <p>Processing checklist data...</p>
+                </div>
+            `;
+            
+            let rawData;
+            let sourceType;
+            
+            // Check which tab is active
+            if (el.urlTab.classList.contains('active')) {
+                // URL mode
+                const newUrl = el.dataUrlInput.value.trim();
+                
+                if (newUrl === dataUrl && newUrl !== '') {
+                    closeSettingsModal();
+                    return; // No changes to apply
+                }
+                
+                // Try loading data from the new URL
+                rawData = await loadData(newUrl);
+                dataUrl = newUrl;
+                store.save('checklistDataUrl', dataUrl);
+                store.remove('checklistJsonData'); // Clear any stored JSON data
+                sourceType = 'url';
+                
+            } else {
+                // JSON paste mode
+                const jsonText = el.dataJsonInput.value.trim();
+                
+                if (!jsonText) {
+                    throw new Error("Please paste valid JSON data");
+                }
+                
+                // Try parsing and loading from JSON text
+                rawData = await loadJsonFromText(jsonText);
+                store.save('checklistJsonData', jsonText);
+                store.remove('checklistDataUrl'); // Clear any stored URL
+                dataUrl = ''; // Clear URL
+                sourceType = 'json';
+            }
+            
+            // Clear existing progress when data source changes
+            store.remove('checklistProgress');
+            
+            // Set the data and render
+            data = rawData;
+            render();
+            updateProgressUI();
+            
+            // Show success message
+            el.container.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--color-success);">
+                    <h2>Data Loaded Successfully!</h2>
+                    <p>Your checklist has been updated with the new data.</p>
+                    <p>Source: ${sourceType === 'url' ? 'URL' : 'Pasted JSON'}</p>
+                </div>
+            `;
+            
+            // Reload the page after a brief delay to ensure everything is fresh
+            setTimeout(() => location.reload(), 1500);
+            
+        } catch (error) {
+            // Show error message if loading fails
+            el.container.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--color-danger);">
+                    <h2>Failed to load data</h2>
+                    <p>Error: ${error.message}</p>
+                    <p class="settings-help-text">Please check that your data follows the required format.</p>
+                    <button onclick="location.reload()" 
+                            style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        Reload with Previous Data
+                    </button>
+                </div>
+            `;
+        }
+        
+        closeSettingsModal();
+    }
+
     // ==========================================
     //  EVENT BINDING
     // ==========================================
@@ -1074,6 +1281,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Reset button
         el.resetBtn?.addEventListener('click', resetProgress);
+
+        // Settings button
+        el.settingsBtn?.addEventListener('click', openSettingsModal);
+
+        // Close modal button
+        el.closeModalBtn?.addEventListener('click', closeSettingsModal);
+
+        // Close modal on outside click
+        el.settingsModal?.addEventListener('click', e => {
+            if (e.target === el.settingsModal) {
+                closeSettingsModal();
+            }
+        });
+
+        // Source tab buttons
+        el.urlTab?.addEventListener('click', () => switchSourceTab('url'));
+        el.pasteTab?.addEventListener('click', () => switchSourceTab('paste'));
+
+        // Data JSON reset button
+        el.dataJsonReset?.addEventListener('click', resetJsonInput);
+
+        // Data source save button (replaces data-url-save)
+        el.dataSourceSave?.addEventListener('click', saveDataSource);
     }
 
     // ==========================================
@@ -1094,9 +1324,34 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.body.classList.add('dark-mode');
             }
 
-            // Load data from JSON
-            const rawData = await loadData();
-            console.log(`Loaded ${rawData.length} groups from data.json`);
+            // Load data URL preference
+            dataUrl = store.load('checklistDataUrl') || '';
+            if (dataUrl && el.dataUrlInput) {
+                el.dataUrlInput.value = dataUrl;
+            }
+
+            // Check for stored JSON text data
+            const storedJsonData = store.load('checklistJsonData');
+            if (storedJsonData && el.dataJsonInput) {
+                el.dataJsonInput.value = storedJsonData;
+            }
+
+            // Load data from JSON (local or remote)
+            let rawData;
+            if (storedJsonData) {
+                try {
+                    rawData = await loadJsonFromText(storedJsonData);
+                    console.log(`Loaded ${rawData.length} groups from pasted JSON`);
+                } catch (error) {
+                    console.error('Failed to load from stored JSON data, falling back to URL or default');
+                    // Fall back to URL or default data.json
+                    rawData = await loadData(dataUrl);
+                }
+            } else {
+                // Load data from URL (local or remote)
+                rawData = await loadData(dataUrl);
+                console.log(`Loaded ${rawData.length} groups from ${dataUrl || 'data.json'}`);
+            }
 
             // Load saved states
             groupCollapsed = store.load('groupCollapseState') || {};
@@ -1130,10 +1385,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div style="text-align: center; padding: 2rem; color: var(--color-danger);">
                         <h2>Failed to load checklist</h2>
                         <p>${error.message}</p>
-                        <button onclick="location.reload()" 
-                                style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--color-primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
-                            Reload Page
-                        </button>
+                        ${dataUrl ? `<p>Failed to load from URL: ${dataUrl}</p>` : ''}
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                            <button onclick="location.reload()" 
+                                    style="padding: 0.5rem 1rem; background: var(--color-primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                Try Again
+                            </button>
+                            ${dataUrl ? `
+                            <button onclick="localStorage.removeItem('checklistDataUrl'); location.reload()" 
+                                    style="padding: 0.5rem 1rem; background: var(--color-warning); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                Use Default Data
+                            </button>
+                            ` : ''}
+                        </div>
                     </div>
                 `;
             }
