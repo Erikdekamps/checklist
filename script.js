@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const formatTime = minutes => minutes < 60 ? `${minutes}m` : `${Math.floor(minutes/60)}h${minutes%60 ? ` ${minutes%60}m` : ''}`;
     const formatMoney = amount => new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0}).format(amount);
     
-    // Fixed escapeHtml function
     const escapeHtml = text => {
         if (!text) return '';
         const div = document.createElement('div');
@@ -96,6 +95,148 @@ document.addEventListener('DOMContentLoaded', async () => {
             totalTime,
             totalMoney
         };
+    }
+
+    // ==========================================
+    //  TARGETED UPDATE FUNCTIONS
+    // ==========================================
+
+    function updateSubStepUI(subStepId, completed) {
+        const subStepElement = document.querySelector(`[data-sub-step="${subStepId}"]`);
+        if (subStepElement) {
+            const checkbox = subStepElement.querySelector('.sub-step-checkbox');
+            
+            // Update checkbox state
+            if (checkbox) checkbox.checked = completed;
+            
+            // Update completed class with smooth transition
+            if (completed) {
+                subStepElement.classList.add('completed');
+            } else {
+                subStepElement.classList.remove('completed');
+            }
+        }
+    }
+
+    function updateSubStepsProgress(stepNumber) {
+        const step = data.find(group => 
+            group.steps.find(s => s.step_number === stepNumber)
+        )?.steps.find(s => s.step_number === stepNumber);
+        
+        if (!step?.sub_steps) return;
+
+        const container = document.querySelector(`[data-step="${stepNumber}"] .sub-steps-container`);
+        if (!container) return;
+
+        const completed = step.sub_steps.filter(s => s.completed).length;
+        const total = step.sub_steps.length;
+        const percentage = total > 0 ? (completed / total * 100) : 0;
+
+        // Update progress bar
+        const progressFill = container.querySelector('.sub-steps-progress-fill');
+        if (progressFill) {
+            progressFill.style.width = `${percentage}%`;
+        }
+
+        // Update counter
+        const header = container.querySelector('.sub-steps-header h4');
+        if (header) {
+            header.textContent = `Sub-Tasks (${completed}/${total})`;
+        }
+    }
+
+    function updateStepUI(stepNumber, completed) {
+        const stepElement = document.querySelector(`[data-step="${stepNumber}"]`);
+        if (stepElement) {
+            const checkbox = stepElement.querySelector('.step-checkbox');
+            
+            // Update checkbox state
+            if (checkbox) checkbox.checked = completed;
+            
+            // Update completed class
+            if (completed) {
+                stepElement.classList.add('completed');
+            } else {
+                stepElement.classList.remove('completed');
+            }
+
+            // Update all sub-steps if they exist
+            const subSteps = stepElement.querySelectorAll('.sub-step');
+            subSteps.forEach(subStep => {
+                const subCheckbox = subStep.querySelector('.sub-step-checkbox');
+                if (subCheckbox) subCheckbox.checked = completed;
+                
+                if (completed) {
+                    subStep.classList.add('completed');
+                } else {
+                    subStep.classList.remove('completed');
+                }
+            });
+
+            // Update required items
+            const requiredItems = stepElement.querySelectorAll('.required-item');
+            requiredItems.forEach(item => {
+                const itemCheckbox = item.querySelector('.required-item-checkbox');
+                if (itemCheckbox) itemCheckbox.checked = completed;
+                
+                if (completed) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+
+            // Update sub-steps progress
+            updateSubStepsProgress(stepNumber);
+        }
+    }
+
+    function updateRequiredItemUI(stepNumber, itemIndex, completed) {
+        const itemElement = document.querySelector(`[data-step="${stepNumber}"][data-item-index="${itemIndex}"]`);
+        if (itemElement) {
+            const checkbox = itemElement.querySelector('.required-item-checkbox');
+            
+            // Update checkbox state
+            if (checkbox) checkbox.checked = completed;
+            
+            // Update completed class
+            if (completed) {
+                itemElement.classList.add('completed');
+            } else {
+                itemElement.classList.remove('completed');
+            }
+        }
+    }
+
+    function updateProgressUI() {
+        const stats = computeStats();
+        
+        if (el.progressStat) el.progressStat.textContent = `${stats.completedSteps}/${stats.totalSteps}`;
+        if (el.totalTime) el.totalTime.textContent = formatTime(stats.totalTime);
+        if (el.totalMoney) el.totalMoney.textContent = formatMoney(stats.totalMoney);
+        if (el.progressPercentage) el.progressPercentage.textContent = `${stats.percentage}%`;
+        if (el.progressBar) el.progressBar.style.width = `${stats.percentage}%`;
+        
+        if (el.progressText) {
+            el.progressText.textContent = stats.totalSteps === 0 ? "No steps available" :
+                stats.completedSteps === stats.totalSteps ? "All steps completed! 🎉" :
+                `${stats.completedSteps} of ${stats.totalSteps} steps completed`;
+        }
+
+        // Update group stats
+        data.forEach(group => {
+            const completed = group.steps.filter(s => s.completed).length;
+            const total = group.steps.length;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            const groupElement = document.querySelector(`[data-group="${group.group_title}"]`);
+            if (groupElement) {
+                const statsElement = groupElement.querySelector('.group-stats');
+                if (statsElement) {
+                    statsElement.textContent = `${completed}/${total} (${percentage}%)`;
+                }
+            }
+        });
     }
 
     // ==========================================
@@ -300,11 +441,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 step.completed = !step.completed;
                 if (step.sub_steps) step.sub_steps.forEach(sub => sub.completed = step.completed);
                 if (step.items) step.required_items_completed = step.items.map(() => step.completed);
-                break;
+                
+                // Update UI without full re-render
+                updateStepUI(stepNumber, step.completed);
+                updateProgressUI();
+                
+                store.save('checklistProgress', data);
+                return;
             }
         }
-        store.save('checklistProgress', data);
-        render();
     }
 
     function toggleSubStep(subStepId) {
@@ -312,12 +457,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         for (const group of data) {
             const step = group.steps.find(s => s.step_number === stepNumber);
             if (step?.sub_steps?.[subIndex - 1]) {
-                step.sub_steps[subIndex - 1].completed = !step.sub_steps[subIndex - 1].completed;
-                break;
+                const subStep = step.sub_steps[subIndex - 1];
+                subStep.completed = !subStep.completed;
+                
+                // Update UI without full re-render
+                updateSubStepUI(subStepId, subStep.completed);
+                updateSubStepsProgress(stepNumber);
+                updateProgressUI();
+                
+                store.save('checklistProgress', data);
+                return;
             }
         }
-        store.save('checklistProgress', data);
-        render();
     }
 
     function toggleRequiredItem(stepNumber, itemIndex) {
@@ -326,23 +477,40 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (step?.items?.[itemIndex] !== undefined) {
                 if (!step.required_items_completed) step.required_items_completed = new Array(step.items.length).fill(false);
                 step.required_items_completed[itemIndex] = !step.required_items_completed[itemIndex];
-                break;
+                
+                // Update UI without full re-render
+                updateRequiredItemUI(stepNumber, itemIndex, step.required_items_completed[itemIndex]);
+                updateProgressUI();
+                
+                store.save('checklistProgress', data);
+                return;
             }
         }
-        store.save('checklistProgress', data);
-        render();
     }
 
     function toggleSubSteps(stepNumber) {
         subStepsCollapsed[stepNumber] = subStepsCollapsed[stepNumber] === undefined ? false : !subStepsCollapsed[stepNumber];
+        
+        // Toggle the collapsed class with smooth animation
+        const container = document.querySelector(`[data-step="${stepNumber}"] .sub-steps-container`);
+        if (container) {
+            container.classList.toggle('collapsed', subStepsCollapsed[stepNumber]);
+        }
+        
         store.save('subStepsCollapseState', subStepsCollapsed);
-        render();
+        updateUI();
     }
 
     function toggleGroup(groupTitle) {
         groupCollapsed[groupTitle] = !groupCollapsed[groupTitle];
+        
+        // Toggle the collapsed class with smooth animation
+        const groupElement = document.querySelector(`[data-group="${groupTitle}"]`).closest('.step-group');
+        if (groupElement) {
+            groupElement.classList.toggle('collapsed', groupCollapsed[groupTitle]);
+        }
+        
         store.save('groupCollapseState', groupCollapsed);
-        render();
     }
 
     function editNote(stepNumber, noteValue) {
