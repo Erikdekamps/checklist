@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('./data.json');
             if (!response.ok) {
-                throw new Error(`Failed to load data: ${response.status} ${response.statusText}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
             return generateStepNumbers(data);
@@ -178,6 +178,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function saveGroupCollapseState() {
+        try {
+            localStorage.setItem('groupCollapseState', JSON.stringify(groupCollapseState));
+        } catch (error) {
+            console.error('Failed to save group collapse state:', error);
+        }
+    }
+
+    function loadGroupCollapseState() {
+        try {
+            const saved = localStorage.getItem('groupCollapseState');
+            return saved ? JSON.parse(saved) : {};
+        } catch (error) {
+            console.error('Failed to load group collapse state:', error);
+            return {};
+        }
+    }
+
+    function saveSubStepsCollapseState() {
+        try {
+            localStorage.setItem('subStepsCollapseState', JSON.stringify(subStepsCollapseState));
+        } catch (error) {
+            console.error('Failed to save sub-steps collapse state:', error);
+        }
+    }
+
+    function loadSubStepsCollapseState() {
+        try {
+            const saved = localStorage.getItem('subStepsCollapseState');
+            return saved ? JSON.parse(saved) : {};
+        } catch (error) {
+            console.error('Failed to load sub-steps collapse state:', error);
+            return {};
+        }
+    }
+
     // ==========================================
     //  UI STATE MANAGEMENT
     // ==========================================
@@ -206,29 +242,62 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update progress text
         if (elements.progressText) {
             if (globalStats.total_steps === 0) {
-                elements.progressText.textContent = 'Ready to start your checklist';
-            } else if (globalStats.completion_percentage === 100) {
-                elements.progressText.textContent = '🎉 Congratulations! All tasks completed!';
-                elements.progressFooter?.classList.add('progress-complete');
+                elements.progressText.textContent = "No steps available";
+            } else if (globalStats.completed_steps === globalStats.total_steps) {
+                elements.progressText.textContent = "All steps completed! 🎉";
             } else {
-                elements.progressFooter?.classList.remove('progress-complete');
-                if (globalStats.completion_percentage === 0) {
-                    elements.progressText.textContent = 'Let\'s get started on your tasks';
-                } else if (globalStats.completion_percentage < 25) {
-                    elements.progressText.textContent = 'Great start! Keep going strong';
-                } else if (globalStats.completion_percentage < 50) {
-                    elements.progressText.textContent = 'Making good progress!';
-                } else if (globalStats.completion_percentage < 75) {
-                    elements.progressText.textContent = 'More than halfway there!';
-                } else {
-                    elements.progressText.textContent = 'Almost finished! You\'re doing great!';
-                }
+                elements.progressText.textContent = `${globalStats.completed_steps} of ${globalStats.total_steps} steps completed`;
             }
         }
         
         // Update progress bar
         if (elements.progressBar) {
             elements.progressBar.style.width = `${globalStats.completion_percentage}%`;
+        }
+    }
+
+    function updateToggleButtonStates() {
+        // Update toggle all groups button
+        if (elements.toggleAllBtn) {
+            const totalGroups = dataWithComputedValues.length;
+            const collapsedGroups = dataWithComputedValues.filter(group => 
+                groupCollapseState[group.group_title]
+            ).length;
+            
+            const buttonText = elements.toggleAllBtn.querySelector('.button-text');
+            if (collapsedGroups > totalGroups / 2) {
+                elements.toggleAllBtn.setAttribute('data-state', 'expand');
+                if (buttonText) buttonText.textContent = 'Expand All';
+            } else {
+                elements.toggleAllBtn.setAttribute('data-state', 'collapse');
+                if (buttonText) buttonText.textContent = 'Collapse All';
+            }
+        }
+
+        // Update toggle sub-steps button
+        if (elements.toggleSubStepsBtn) {
+            const subStepsContainers = document.querySelectorAll('.sub-steps-container');
+            const totalSubStepsContainers = subStepsContainers.length;
+            
+            if (totalSubStepsContainers === 0) {
+                elements.toggleSubStepsBtn.style.display = 'none';
+                return;
+            }
+            
+            elements.toggleSubStepsBtn.style.display = 'flex';
+            
+            const collapsedContainers = Array.from(subStepsContainers).filter(container => 
+                container.classList.contains('collapsed')
+            ).length;
+            
+            const buttonText = elements.toggleSubStepsBtn.querySelector('.button-text');
+            if (collapsedContainers > totalSubStepsContainers / 2) {
+                elements.toggleSubStepsBtn.setAttribute('data-state', 'expand');
+                if (buttonText) buttonText.textContent = 'Expand Sub-Steps';
+            } else {
+                elements.toggleSubStepsBtn.setAttribute('data-state', 'collapse');
+                if (buttonText) buttonText.textContent = 'Collapse Sub-Steps';
+            }
         }
     }
 
@@ -240,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateUI() {
         updateFooterProgress();
+        updateToggleButtonStates();
         
         // Update search input value if needed
         if (elements.searchInput && elements.searchInput.value !== appState.searchTerm) {
@@ -257,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const filteredSteps = filterSteps(group.steps, appState);
             
             if (filteredSteps.length === 0 && appState.searchTerm) {
-                return ''; // Hide empty groups when searching
+                return '';
             }
 
             const completedSteps = group.steps.filter(step => step.completed).length;
@@ -265,17 +335,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const completionPercentage = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
             return `
-                <div class="step-group ${isCollapsed ? 'collapsed' : ''}" data-group="${escapeHtml(group.group_title)}">
+                <div class="step-group ${isCollapsed ? 'collapsed' : ''}">
                     <div class="group-header" data-group="${escapeHtml(group.group_title)}">
-                        <button class="group-collapse-btn" type="button">
-                            <svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
+                        <button class="group-collapse-btn" type="button" aria-label="Toggle group">
+                            <svg class="collapse-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"></polyline>
                             </svg>
                         </button>
-                        <h2 class="group-title">${escapeHtml(group.group_title)}</h2>
-                        <div class="group-stats">
-                            <span class="group-progress">${completedSteps}/${totalSteps} (${completionPercentage}%)</span>
-                        </div>
+                        <span class="group-title">${escapeHtml(group.group_title)}</span>
+                        <span class="group-stats">${completedSteps}/${totalSteps} (${completionPercentage}%)</span>
                     </div>
                     <div class="group-body">
                         ${filteredSteps.map(step => renderStep(step, subStepsCollapseState)).join('')}
@@ -294,11 +362,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // Filter by search term
             if (appState.searchTerm) {
                 const searchLower = appState.searchTerm.toLowerCase();
-                const titleMatch = step.step_title?.toLowerCase().includes(searchLower);
-                const instructionMatch = step.step_instruction?.toLowerCase().includes(searchLower);
-                const itemsMatch = step.items?.some(item => item.toLowerCase().includes(searchLower));
+                const matchesTitle = step.step_title?.toLowerCase().includes(searchLower);
+                const matchesInstruction = step.step_instruction?.toLowerCase().includes(searchLower);
+                const matchesItems = step.items?.some(item => 
+                    item.toLowerCase().includes(searchLower)
+                );
+                const matchesNotes = step.notes?.toLowerCase().includes(searchLower);
                 
-                if (!titleMatch && !instructionMatch && !itemsMatch) return false;
+                if (!matchesTitle && !matchesInstruction && !matchesItems && !matchesNotes) {
+                    return false;
+                }
             }
             
             return true;
@@ -344,21 +417,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isZero) {
             return `
                 <div class="step-value zero-value">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                     </svg>
-                    <span class="value-text">Free</span>
+                    ${formatMoney(money)}
                 </div>
             `;
         } else {
             return `
-                <div class="step-value money-value">
-                    <div class="money-badge">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                        </svg>
-                        <span class="money-amount">${formatMoney(money)}</span>
-                    </div>
+                <div class="step-value">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    ${formatMoney(money)}
                 </div>
             `;
         }
@@ -376,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${step.items.map((item, index) => {
                         const isCompleted = requiredItemsCompleted[index] || false;
                         return `
-                            <div class="required-item ${isCompleted ? 'completed' : ''}" data-item-index="${index}">
+                            <div class="required-item ${isCompleted ? 'completed' : ''}" data-step="${step.step_number}" data-item-index="${index}">
                                 <input type="checkbox" ${isCompleted ? 'checked' : ''} />
                                 <label>${escapeHtml(item)}</label>
                             </div>
@@ -394,20 +467,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
                 <div class="notes-section">
                     <div class="note-display">${escapeHtml(step.notes)}</div>
-                    <textarea class="step-notes" placeholder="Add your notes here...">${escapeHtml(step.notes)}</textarea>
+                    <textarea class="step-notes" placeholder="Add notes for this step..." style="display: none;">${escapeHtml(step.notes)}</textarea>
                 </div>
             `;
         } else {
             return `
                 <div class="notes-section">
                     <button class="add-note-btn" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 20h9"></path>
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 5v14"></path>
+                            <path d="M5 12h14"></path>
                         </svg>
                         Add Note
                     </button>
-                    <textarea class="step-notes" placeholder="Add your notes here..."></textarea>
+                    <textarea class="step-notes" placeholder="Add notes for this step..." style="display: none;">${escapeHtml(step.notes || '')}</textarea>
                 </div>
             `;
         }
@@ -469,13 +542,8 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.groupContainer.innerHTML = html;
             updateUI();
         } catch (error) {
-            console.error('Error rendering app:', error);
-            elements.groupContainer.innerHTML = `
-                <div class="error-message">
-                    <h3>Error loading checklist</h3>
-                    <p>${error.message}</p>
-                </div>
-            `;
+            console.error('Rendering error:', error);
+            elements.groupContainer.innerHTML = '<div class="error">Error rendering checklist</div>';
         }
     }
 
@@ -495,29 +563,50 @@ document.addEventListener('DOMContentLoaded', () => {
             const step = group.steps.find(s => s.step_number === stepNumber);
             if (step) {
                 step.completed = !step.completed;
-                saveProgress(dataWithComputedValues);
-                renderApp();
+                
+                // If step has sub-steps, update them to match
+                if (step.sub_steps && step.sub_steps.length > 0) {
+                    step.sub_steps.forEach(subStep => {
+                        subStep.completed = step.completed;
+                    });
+                }
+                
+                // If step has required items, update them to match
+                if (step.items && step.items.length > 0) {
+                    step.required_items_completed = step.items.map(() => step.completed);
+                }
+                
                 break;
             }
         }
+        
+        saveProgress(dataWithComputedValues);
+        renderApp();
     }
 
     function handleRequiredItemToggle(stepNumber, itemIndex) {
         for (const group of dataWithComputedValues) {
             const step = group.steps.find(s => s.step_number === stepNumber);
-            if (step) {
+            if (step && step.items && step.items[itemIndex]) {
                 if (!step.required_items_completed) {
-                    step.required_items_completed = new Array(step.items ? step.items.length : 0).fill(false);
+                    step.required_items_completed = new Array(step.items.length).fill(false);
                 }
                 
-                if (itemIndex >= 0 && itemIndex < step.required_items_completed.length) {
-                    step.required_items_completed[itemIndex] = !step.required_items_completed[itemIndex];
-                    saveProgress(dataWithComputedValues);
-                    renderApp();
+                step.required_items_completed[itemIndex] = !step.required_items_completed[itemIndex];
+                
+                // Check if all required items are completed
+                const allItemsCompleted = step.required_items_completed.every(completed => completed);
+                if (allItemsCompleted && !step.completed) {
+                    // Optionally auto-complete step when all items are done
+                    // step.completed = true;
                 }
+                
                 break;
             }
         }
+        
+        saveProgress(dataWithComputedValues);
+        renderApp();
     }
 
     function handleSubStepToggle(subStepId) {
@@ -525,31 +614,83 @@ document.addEventListener('DOMContentLoaded', () => {
         
         for (const group of dataWithComputedValues) {
             const step = group.steps.find(s => s.step_number === stepNumber);
-            if (step && step.sub_steps) {
-                const subStep = step.sub_steps.find(ss => ss.sub_step_id === subStepId);
-                if (subStep) {
-                    subStep.completed = !subStep.completed;
-                    saveProgress(dataWithComputedValues);
-                    renderApp();
-                    break;
+            if (step && step.sub_steps && step.sub_steps[subStepIndex - 1]) {
+                step.sub_steps[subStepIndex - 1].completed = !step.sub_steps[subStepIndex - 1].completed;
+                
+                // Check if all sub-steps are completed
+                const allSubStepsCompleted = step.sub_steps.every(subStep => subStep.completed);
+                if (allSubStepsCompleted && !step.completed) {
+                    // Optionally auto-complete step when all sub-steps are done
+                    // step.completed = true;
                 }
+                
+                break;
             }
         }
+        
+        saveProgress(dataWithComputedValues);
+        renderApp();
     }
 
     function handleSubStepsToggle(stepNumber) {
         const currentState = subStepsCollapseState[stepNumber];
         subStepsCollapseState[stepNumber] = currentState === false ? true : false;
         
-        const container = document.querySelector(`[data-step="${stepNumber}"].sub-steps-container`);
-        if (container) {
-            container.classList.toggle('collapsed', subStepsCollapseState[stepNumber]);
-        }
+        saveSubStepsCollapseState();
+        renderApp();
     }
 
     function handleGroupToggle(groupTitle) {
         groupCollapseState[groupTitle] = !groupCollapseState[groupTitle];
+        saveGroupCollapseState();
         renderApp();
+    }
+
+    function handleToggleAllGroups() {
+        const totalGroups = dataWithComputedValues.length;
+        const collapsedGroups = dataWithComputedValues.filter(group => 
+            groupCollapseState[group.group_title]
+        ).length;
+        
+        // If more than half are collapsed, expand all; otherwise collapse all
+        const shouldExpand = collapsedGroups > totalGroups / 2;
+        
+        dataWithComputedValues.forEach(group => {
+            groupCollapseState[group.group_title] = !shouldExpand;
+        });
+        
+        saveGroupCollapseState();
+        renderApp();
+        
+        console.log(`Groups ${shouldExpand ? 'expanded' : 'collapsed'}`);
+    }
+
+    function handleToggleAllSubSteps() {
+        const subStepsContainers = document.querySelectorAll('.sub-steps-container');
+        const totalSubStepsContainers = subStepsContainers.length;
+        
+        if (totalSubStepsContainers === 0) return;
+        
+        const collapsedContainers = Array.from(subStepsContainers).filter(container => 
+            container.classList.contains('collapsed')
+        ).length;
+        
+        // If more than half are collapsed, expand all; otherwise collapse all
+        const shouldExpand = collapsedContainers > totalSubStepsContainers / 2;
+        
+        // Update collapse state for all sub-steps
+        dataWithComputedValues.forEach(group => {
+            group.steps.forEach(step => {
+                if (step.sub_steps && step.sub_steps.length > 0) {
+                    subStepsCollapseState[step.step_number] = !shouldExpand;
+                }
+            });
+        });
+        
+        saveSubStepsCollapseState();
+        renderApp();
+        
+        console.log(`Sub-steps ${shouldExpand ? 'expanded' : 'collapsed'}`);
     }
 
     function handleSearch(searchTerm) {
@@ -578,10 +719,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const step = group.steps.find(s => s.step_number === stepNumber);
             if (step) {
                 step.notes = noteValue;
-                saveProgress(dataWithComputedValues);
                 break;
             }
         }
+        
+        saveProgress(dataWithComputedValues);
+        renderApp();
     }
 
     function handleThemeToggle() {
@@ -593,24 +736,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             localStorage.setItem('checklistTheme', newTheme);
         } catch (error) {
-            console.error('Failed to save theme:', error);
+            console.error('Failed to save theme preference:', error);
         }
     }
 
     function handleReset() {
         if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
-            localStorage.removeItem('checklistProgress');
-            localStorage.removeItem('footerCollapsed');
-            groupCollapseState = {};
-            subStepsCollapseState = {};
-            footerCollapsed = false;
-            appState = { currentFilter: 'all', searchTerm: '' };
-            
-            if (elements.searchInput) {
-                elements.searchInput.value = '';
-            }
-            
-            init();
+            localStorage.clear();
+            location.reload();
         }
     }
 
@@ -623,83 +756,72 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Main container event delegation
         elements.groupContainer.addEventListener('click', (e) => {
-            const stepElement = e.target.closest('.step');
-            const groupHeader = e.target.closest('.group-header');
-            const subStepElement = e.target.closest('.sub-step');
-            const subStepsHeader = e.target.closest('.sub-steps-header');
-            const requiredItemElement = e.target.closest('.required-item');
-
-            // Handle required item clicks
-            if (requiredItemElement && !subStepElement && !subStepsHeader) {
-                e.preventDefault();
-                e.stopPropagation();
-                const stepNumber = parseInt(stepElement.dataset.step);
-                const itemIndex = parseInt(requiredItemElement.dataset.itemIndex);
-                handleRequiredItemToggle(stepNumber, itemIndex);
+            // Step completion toggle
+            if (e.target.type === 'checkbox' && e.target.closest('.step') && !e.target.closest('.sub-step') && !e.target.closest('.required-item')) {
+                const stepEl = e.target.closest('.step');
+                const stepNumber = parseInt(stepEl.dataset.step);
+                handleStepToggle(stepNumber);
                 return;
             }
-
-            // Handle sub-step clicks
-            if (subStepElement && !subStepsHeader) {
-                e.preventDefault();
-                e.stopPropagation();
-                const subStepId = subStepElement.dataset.subStep;
+            
+            // Sub-step completion toggle
+            if (e.target.classList.contains('sub-step-checkbox')) {
+                const subStepEl = e.target.closest('.sub-step');
+                const subStepId = subStepEl.dataset.subStep;
                 handleSubStepToggle(subStepId);
                 return;
             }
-
-            // Handle sub-steps header clicks
-            if (subStepsHeader) {
-                e.preventDefault();
-                e.stopPropagation();
-                const stepNumber = parseInt(subStepsHeader.closest('.sub-steps-container').dataset.step);
-                handleSubStepsToggle(stepNumber);
+            
+            // Required item toggle
+            if (e.target.type === 'checkbox' && e.target.closest('.required-item')) {
+                const itemEl = e.target.closest('.required-item');
+                const stepNumber = parseInt(itemEl.dataset.step);
+                const itemIndex = parseInt(itemEl.dataset.itemIndex);
+                handleRequiredItemToggle(stepNumber, itemIndex);
                 return;
             }
-
-            // Handle group header clicks
-            if (groupHeader && !stepElement) {
-                e.preventDefault();
+            
+            // Group header toggle
+            if (e.target.closest('.group-header')) {
+                const groupHeader = e.target.closest('.group-header');
                 const groupTitle = groupHeader.dataset.group;
                 handleGroupToggle(groupTitle);
                 return;
             }
-
-            // Handle step clicks
-            if (stepElement && !subStepElement && !subStepsHeader && !requiredItemElement) {
-                e.preventDefault();
-                const stepNumber = parseInt(stepElement.dataset.step);
-                handleStepToggle(stepNumber);
+            
+            // Sub-steps toggle
+            if (e.target.closest('.sub-steps-toggle-btn') || e.target.closest('.sub-steps-header')) {
+                const subStepsContainer = e.target.closest('.sub-steps-container');
+                const stepNumber = parseInt(subStepsContainer.dataset.step);
+                handleSubStepsToggle(stepNumber);
+                return;
+            }
+            
+            // Add note button
+            if (e.target.closest('.add-note-btn')) {
+                const step = e.target.closest('.step');
+                const noteDisplay = step.querySelector('.note-display');
+                const textarea = step.querySelector('.step-notes');
+                const addBtn = step.querySelector('.add-note-btn');
+                
+                if (addBtn) addBtn.style.display = 'none';
+                if (noteDisplay) noteDisplay.style.display = 'none';
+                if (textarea) {
+                    textarea.style.display = 'block';
+                    textarea.focus();
+                }
+                return;
             }
         });
 
         // Note editing
-        elements.groupContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('note-display') || e.target.classList.contains('add-note-btn')) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const stepElement = e.target.closest('.step');
-                if (stepElement) {
-                    stepElement.classList.add('is-editing-note');
-                    const textarea = stepElement.querySelector('.step-notes');
-                    if (textarea) {
-                        textarea.focus();
-                    }
-                }
-            }
-        });
-
         elements.groupContainer.addEventListener('blur', (e) => {
             if (e.target.classList.contains('step-notes')) {
-                const stepElement = e.target.closest('.step');
-                if (stepElement) {
-                    stepElement.classList.remove('is-editing-note');
-                    const stepNumber = parseInt(stepElement.dataset.step);
-                    const noteValue = e.target.value.trim();
-                    handleNoteEdit(stepNumber, noteValue);
-                    renderApp();
-                }
+                const step = e.target.closest('.step');
+                const stepNumber = parseInt(step.dataset.step);
+                const noteValue = e.target.value.trim();
+                
+                handleNoteEdit(stepNumber, noteValue);
             }
         }, true);
 
@@ -712,13 +834,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elements.searchInput) {
             elements.searchInput.addEventListener('input', (e) => {
                 handleSearch(e.target.value);
+                
+                // Show/hide clear button
+                if (elements.searchClear) {
+                    elements.searchClear.style.opacity = e.target.value ? '1' : '0';
+                }
             });
         }
 
         if (elements.searchClear) {
             elements.searchClear.addEventListener('click', () => {
-                elements.searchInput.value = '';
-                handleSearch('');
+                if (elements.searchInput) {
+                    elements.searchInput.value = '';
+                    handleSearch('');
+                    elements.searchClear.style.opacity = '0';
+                }
             });
         }
 
@@ -731,6 +861,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (elements.filterCompleted) {
             elements.filterCompleted.addEventListener('click', () => handleFilterChange('completed'));
+        }
+
+        // Toggle all groups button
+        if (elements.toggleAllBtn) {
+            elements.toggleAllBtn.addEventListener('click', handleToggleAllGroups);
+        }
+
+        // Toggle all sub-steps button
+        if (elements.toggleSubStepsBtn) {
+            elements.toggleSubStepsBtn.addEventListener('click', handleToggleAllSubSteps);
         }
 
         // Theme toggle
@@ -751,11 +891,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function initializeTheme() {
         try {
             const savedTheme = localStorage.getItem('checklistTheme');
-            const userPrefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
-            if (savedTheme) {
-                document.body.classList.toggle('dark-mode', savedTheme === 'dark');
-            } else if (userPrefersDark) {
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
                 document.body.classList.add('dark-mode');
             }
         } catch (error) {
@@ -769,85 +907,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function init() {
         try {
-            console.log('🚀 Initializing Interactive Checklist Application v2.5.0...');
+            console.log('🚀 Initializing Interactive Checklist...');
             
-            // Initialize theme
+            // Initialize theme first
             initializeTheme();
-
-            // Load footer state
+            
+            // Load and process data
+            dataWithComputedValues = await loadAndProcessData();
+            
+            // Load saved states
+            groupCollapseState = loadGroupCollapseState();
+            subStepsCollapseState = loadSubStepsCollapseState();
             footerCollapsed = loadFooterState();
+            
+            // Apply footer state
             if (elements.progressFooter) {
                 elements.progressFooter.classList.toggle('collapsed', footerCollapsed);
             }
-
-            // Load data
-            const freshData = await loadAndProcessData();
+            
+            // Merge saved progress
             const savedProgress = loadProgress();
-            
-            // Merge saved progress with fresh data
             if (savedProgress) {
-                dataWithComputedValues = freshData.map(group => {
+                // Merge saved progress with loaded data
+                dataWithComputedValues.forEach(group => {
                     const savedGroup = savedProgress.find(sg => sg.group_title === group.group_title);
-                    
-                    return {
-                        ...group,
-                        steps: group.steps.map(step => {
-                            const savedStep = savedGroup?.steps?.find(ss => ss.step_number === step.step_number);
-                            
+                    if (savedGroup) {
+                        group.steps.forEach(step => {
+                            const savedStep = savedGroup.steps?.find(ss => ss.step_number === step.step_number);
                             if (savedStep) {
-                                return {
-                                    ...step,
-                                    completed: savedStep.completed || false,
-                                    notes: savedStep.notes || '',
-                                    required_items_completed: savedStep.required_items_completed || [],
-                                    sub_steps: step.sub_steps ? step.sub_steps.map(subStep => {
-                                        const savedSubStep = savedStep.sub_steps?.find(sss => sss.sub_step_id === subStep.sub_step_id);
-                                        return {
-                                            ...subStep,
-                                            completed: savedSubStep?.completed || false
-                                        };
-                                    }) : []
-                                };
+                                step.completed = savedStep.completed || false;
+                                step.notes = savedStep.notes || '';
+                                step.required_items_completed = savedStep.required_items_completed || [];
+                                
+                                if (step.sub_steps && savedStep.sub_steps) {
+                                    step.sub_steps.forEach(subStep => {
+                                        const savedSubStep = savedStep.sub_steps.find(sss => sss.sub_step_id === subStep.sub_step_id);
+                                        if (savedSubStep) {
+                                            subStep.completed = savedSubStep.completed || false;
+                                        }
+                                    });
+                                }
                             }
-                            
-                            return {
-                                ...step,
-                                completed: false,
-                                notes: '',
-                                required_items_completed: step.items ? new Array(step.items.length).fill(false) : []
-                            };
-                        })
-                    };
+                        });
+                    }
                 });
-            } else {
-                dataWithComputedValues = freshData.map(group => ({
-                    ...group,
-                    steps: group.steps.map(step => ({
-                        ...step,
-                        completed: false,
-                        notes: '',
-                        required_items_completed: step.items ? new Array(step.items.length).fill(false) : []
-                    }))
-                }));
             }
-
-            // Render UI
-            renderApp();
-
-            // Bind event listeners
-            bindEventListeners();
-
-            console.log('✅ Application initialized successfully');
-
-        } catch (error) {
-            console.error('❌ Critical error during initialization:', error);
             
+            // Bind events
+            bindEventListeners();
+            
+            // Initial render
+            renderApp();
+            
+            console.log('✅ Interactive Checklist initialized successfully');
+            
+        } catch (error) {
+            console.error('❌ Failed to initialize checklist:', error);
             if (elements.groupContainer) {
                 elements.groupContainer.innerHTML = `
-                    <div class="error-message">
-                        <h3>Failed to load checklist</h3>
+                    <div style="text-align: center; padding: 2rem; color: var(--c-danger);">
+                        <h2>Failed to load checklist</h2>
                         <p>${error.message}</p>
-                        <button onclick="location.reload()">Reload Page</button>
+                        <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--c-primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            Reload Page
+                        </button>
                     </div>
                 `;
             }
