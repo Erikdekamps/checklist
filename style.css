@@ -1062,11 +1062,20 @@ header.collapsed::after {
     line-height: 1.5;
 }
 
-.sub-step-footer {
+/* Sub-step header redesign */
+.sub-step-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: flex-end;
-    margin-top: var(--space-sm);
+    margin-bottom: var(--space-xs);
+}
+
+.sub-step-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    flex: 1;
 }
 
 .sub-step-time {
@@ -1079,6 +1088,11 @@ header.collapsed::after {
     align-items: center;
     gap: 4px;
     border: 1px solid rgba(49, 130, 206, 0.2);
+}
+
+/* Remove old footer styles since we no longer need them */
+.sub-step-footer {
+    display: none;
 }
 
 /* ======================================
@@ -2002,10 +2016,6 @@ body.has-toast-showing {
     flex-shrink: 0;
     width: 20px;
     height: 20px;
-}
-
-.button-text {
-    font-size: 0.95em;
 }
 
 /* ======================================

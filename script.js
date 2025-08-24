@@ -701,9 +701,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                            aria-label="${subStep.completed ? 'Mark as incomplete' : 'Mark as complete'}"/>
                 </div>
                 <div class="sub-step-content">
-                    <h5 class="sub-step-title">${escapeHtml(subStep.sub_step_title || subStep.step_title || subStep.title || 'Untitled')}</h5>
-                    <p class="sub-step-instruction">${escapeHtml(subStep.sub_step_instruction || subStep.step_instruction || subStep.instruction || '')}</p>
-                    <div class="sub-step-footer">
+                    <div class="sub-step-header">
+                        <h5 class="sub-step-title">${escapeHtml(subStep.sub_step_title || subStep.step_title || subStep.title || 'Untitled')}</h5>
                         <div class="sub-step-time">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10"></circle>
@@ -712,6 +711,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             ${formatTime(subStep.time_taken || 0)}
                         </div>
                     </div>
+                    <p class="sub-step-instruction">${escapeHtml(subStep.sub_step_instruction || subStep.step_instruction || subStep.instruction || '')}</p>
                 </div>
             </div>
         `;
@@ -978,8 +978,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Click handler for container - handles multiple interactions
         el.container.addEventListener('click', e => {
             // Step header - make whole header clickable except time/value
-            if (e.target.closest('.step-header') && !e.target.closest('.step-time, .step-value')) {
-                const stepNumber = parseInt(e.target.closest('.step-header').dataset.step);
+            if (e.target.closest('.step-card-header') && !e.target.closest('.step-time, .step-value')) {
+                const stepNumber = parseInt(e.target.closest('.step-card-header').dataset.step);
                 toggleStep(stepNumber);
                 return;
             }
