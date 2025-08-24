@@ -552,22 +552,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         return `
             <div class="step ${step.completed ? 'completed' : ''}" data-step="${step.step_number}">
-                <div class="step-header" data-step="${step.step_number}">
+                <!-- Card Header -->
+                <div class="step-card-header" data-step="${step.step_number}">
                     <div class="step-header-left">
-                        <input type="checkbox" class="step-checkbox" ${step.completed ? 'checked' : ''} 
-                               aria-label="${step.completed ? 'Mark as incomplete' : 'Mark as complete'}"/>
+                        <div class="step-checkbox-container">
+                            <input type="checkbox" class="step-checkbox" ${step.completed ? 'checked' : ''} 
+                                  aria-label="${step.completed ? 'Mark as incomplete' : 'Mark as complete'}"/>
+                        </div>
                         <h3 class="step-title">${escapeHtml(step.step_title)}</h3>
                     </div>
-                    <div class="step-header-right">
+                    <div class="step-metadata">
                         <div class="step-value ${money === 0 ? 'zero-value' : ''}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="12" y1="1" x2="12" y2="23"></line>
                                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                             </svg>
                             ${formatMoney(money)}
                         </div>
                         <div class="step-time">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <polyline points="12,6 12,12 16,14"></polyline>
                             </svg>
@@ -575,10 +578,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </div>
                     </div>
                 </div>
-                <div class="step-body">
+                
+                <!-- Card Content -->
+                <div class="step-card-content">
                     ${renderRequiredItems(step, requiredItems)}
                     <p class="step-instruction">${escapeHtml(step.step_instruction)}</p>
                     ${hasSubSteps ? renderSubSteps(step, subCollapsed) : ''}
+                </div>
+                
+                <!-- Card Footer -->
+                <div class="step-card-footer">
+                    <div class="step-tags">
+                        ${step.tags ? step.tags.map(tag => `<span class="step-tag">${escapeHtml(tag)}</span>`).join('') : ''}
+                    </div>
+                    <div class="step-actions">
+                        <button class="step-action-btn" aria-label="Add note" title="Add note">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -595,7 +615,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         return `
             <div class="required-items">
-                <h4>Required Items</h4>
+                <h4>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                    Required Items
+                </h4>
                 <div class="required-items-list">
                     ${step.items.map((item, i) => `
                         <div class="required-item ${completedItems[i] ? 'completed' : ''}" 
@@ -629,7 +659,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="sub-steps-container ${collapsed ? 'collapsed' : ''}" data-step="${step.step_number}">
                 <div class="sub-steps-header">
                     <div class="sub-steps-header-left">
-                        <h4>Sub-Tasks (${completedSubSteps}/${totalSubSteps})</h4>
+                        <h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            Sub-Tasks (${completedSubSteps}/${totalSubSteps})
+                        </h4>
                         <div class="sub-steps-progress">
                             <div class="sub-steps-progress-bar">
                                 <div class="sub-steps-progress-fill" style="width: ${percentage}%"></div>
@@ -637,8 +674,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </div>
                     </div>
                     <button class="sub-steps-toggle-btn" aria-label="${collapsed ? 'Expand' : 'Collapse'} sub-steps">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6 9 12 15 18 9"></polyline>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="18 15 12 9 6 15"></polyline>
                         </svg>
                     </button>
                 </div>
@@ -657,19 +694,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderSubStep(subStep) {
         return `
             <div class="sub-step ${subStep.completed ? 'completed' : ''}" data-sub-step="${subStep.sub_step_id}">
-                <input type="checkbox" 
-                       class="sub-step-checkbox" 
-                       ${subStep.completed ? 'checked' : ''} 
-                       aria-label="${subStep.completed ? 'Mark as incomplete' : 'Mark as complete'}"/>
+                <div class="sub-step-checkbox-wrapper">
+                    <input type="checkbox" 
+                           class="sub-step-checkbox" 
+                           ${subStep.completed ? 'checked' : ''} 
+                           aria-label="${subStep.completed ? 'Mark as incomplete' : 'Mark as complete'}"/>
+                </div>
                 <div class="sub-step-content">
                     <h5 class="sub-step-title">${escapeHtml(subStep.sub_step_title || subStep.step_title || subStep.title || 'Untitled')}</h5>
                     <p class="sub-step-instruction">${escapeHtml(subStep.sub_step_instruction || subStep.step_instruction || subStep.instruction || '')}</p>
-                    <div class="sub-step-time">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <polyline points="12,6 12,12 16,14"></polyline>
-                        </svg>
-                        ${formatTime(subStep.time_taken || 0)}
+                    <div class="sub-step-footer">
+                        <div class="sub-step-time">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                            ${formatTime(subStep.time_taken || 0)}
+                        </div>
                     </div>
                 </div>
             </div>
