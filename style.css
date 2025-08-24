@@ -1,5 +1,6 @@
 /**
  * Checklist Application Stylesheet
+ * Mobile-first design with responsive enhancements
  * ===============================
  */
 
@@ -30,16 +31,55 @@
     /* Typography System */
     --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
     
-    /* Spacing & Sizing Scale */
+    /* Spacing & Sizing Scale - Mobile First */
     --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
     
+    /* Base spacing scale */
     --space-xs: 4px;
     --space-sm: 8px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 32px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    
+    /* Responsive spacing - mobile first */
+    --page-padding: 12px;
+    --header-padding: 12px;
+    --content-padding: 16px;
+    --section-spacing: 16px;
+    --element-spacing: 8px;
+    --item-padding: 12px;
+    
+    /* Touch targets */
+    --min-touch-target: 44px;
+}
+
+/* Tablet spacing adjustments */
+@media screen and (min-width: 768px) {
+    :root {
+        --radius-lg: 12px;
+        --space-md: 16px;
+        --space-lg: 24px;
+        --space-xl: 32px;
+        
+        --page-padding: 24px;
+        --header-padding: 16px;
+        --content-padding: 24px;
+        --section-spacing: 24px;
+        --element-spacing: 12px;
+        --item-padding: 16px;
+    }
+}
+
+/* Desktop spacing adjustments */
+@media screen and (min-width: 1024px) {
+    :root {
+        --page-padding: 32px;
+        --header-padding: 20px;
+        --content-padding: 32px;
+        --section-spacing: 32px;
+    }
 }
 
 /* Dark Theme Color Overrides */
@@ -80,13 +120,13 @@ body {
 }
 
 #group-container {
-    padding: var(--space-xl) var(--space-lg) var(--space-lg);
+    padding: var(--content-padding) var(--page-padding);
     max-width: 1000px;
     margin: auto;
 }
 
 /* ======================================
-   HEADER & NAVIGATION
+   HEADER & NAVIGATION - MOBILE FIRST
    ====================================== */
 header {
     background: var(--color-bg-surface);
@@ -101,19 +141,19 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--space-md) var(--space-lg);
+    padding: var(--header-padding);
     border-bottom: 1px solid var(--color-border);
 }
 
 .brand-section {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
+    gap: var(--element-spacing);
 }
 
 .brand-icon {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     background: var(--color-primary);
     border-radius: var(--radius-md);
     display: flex;
@@ -124,32 +164,31 @@ header {
 
 header h1 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--color-text);
 }
 
-/* Header Controls */
+/* Header Controls - Mobile First */
 .header-controls {
-    padding: var(--space-md) var(--space-lg);
+    padding: var(--header-padding);
     display: flex;
-    gap: var(--space-lg);
-    align-items: flex-start;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--element-spacing);
     background: var(--color-bg-surface);
     border-bottom: 1px solid var(--color-border);
 }
 
-/* Search */
+/* Search - 100% width on mobile */
 .search-section {
-    flex: 1;
-    min-width: 280px;
+    width: 100%;
 }
 
 .search-input-container {
     position: relative;
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 .search-icon {
@@ -206,15 +245,17 @@ header h1 {
     opacity: 1;
 }
 
-/* Filter Section */
+/* Filter Section - Keep inline on all screen sizes */
 .filter-section {
+    width: 100%;
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: var(--element-spacing);
 }
 
 .filter-group {
     display: flex;
+    width: 100%;
     background: var(--color-bg-surface);
     border-radius: var(--radius-lg);
     padding: 2px;
@@ -222,7 +263,8 @@ header h1 {
 }
 
 .filter-btn {
-    padding: var(--space-sm) var(--space-md);
+    flex: 1;
+    padding: var(--space-sm) var(--space-xs);
     border: none;
     background: none;
     color: var(--color-text-secondary);
@@ -232,6 +274,7 @@ header h1 {
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
+    text-align: center;
 }
 
 .filter-btn:hover {
@@ -244,18 +287,22 @@ header h1 {
     color: white;
 }
 
-/* Action Buttons */
+/* Action Buttons - Mobile optimized */
 .action-section {
+    width: 100%;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-sm);
+    gap: var(--element-spacing);
 }
 
 .action-btn {
+    flex: 1 1 calc(50% - var(--element-spacing));
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: var(--space-xs);
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-sm);
     border: 1px solid var(--color-border);
     background: var(--color-bg-surface);
     color: var(--color-text);
@@ -264,6 +311,7 @@ header h1 {
     border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all 0.2s ease;
+    min-height: var(--min-touch-target);
     white-space: nowrap;
 }
 
@@ -277,571 +325,9 @@ header h1 {
     transition: opacity 0.2s ease;
 }
 
-/* Stats Section */
-.header-stats {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: var(--space-xl);
-    padding: var(--space-md) var(--space-lg);
-    background-color: var(--color-bg-surface);
-    border-top: 1px solid var(--color-border);
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    font-size: 0.9rem;
-}
-
-.stat-item svg {
-    color: var(--color-text-muted);
-}
-
-.stat-label {
-    color: var(--color-text-secondary);
-    font-weight: 500;
-}
-
-.stat-value {
-    color: var(--color-text);
-    font-weight: 700;
-    font-size: 1rem;
-}
-
-/* ======================================
-   STEP GROUPS
-   ====================================== */
-#group-container .step-group {
-    margin-bottom: var(--space-xl);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    background: var(--color-bg-surface);
-    border: 1px solid var(--color-border);
-    box-shadow: 0 2px 8px var(--color-shadow);
-    transition: all 0.3s ease;
-}
-
-#group-container .step-group:hover {
-    box-shadow: 0 4px 16px var(--color-shadow);
-}
-
-#group-container .step-group .group-header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-lg);
-    background: var(--color-bg-surface);
-    border-bottom: 1px solid var(--color-border);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    user-select: none;
-}
-
-#group-container .step-group .group-header:hover {
-    background: var(--color-bg-surface-hover);
-}
-
-.group-collapse-btn {
-    background: none;
-    border: none;
-    padding: var(--space-sm);
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    color: var(--color-text-secondary);
-    pointer-events: none;
-}
-
-.group-collapse-btn .collapse-icon {
-    transition: transform 0.3s ease;
-}
-
-#group-container .step-group .group-title {
-    font-size: 1.4em;
-    font-weight: 700;
-    color: var(--color-text);
-    flex: 1;
-}
-
-.group-stats {
-    font-size: 0.9em;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    background: var(--color-bg-surface);
-    padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-border);
-}
-
-#group-container .step-group .group-body {
-    padding: var(--space-lg);
-    background: var(--color-bg-surface);
-    transition: all 0.3s ease;
-}
-
-.step-group.collapsed .group-body {
-    max-height: 0;
-    padding: 0 var(--space-lg);
-    overflow: hidden;
-    opacity: 0;
-}
-
-.step-group.collapsed .group-collapse-btn .collapse-icon {
-    transform: rotate(-90deg);
-}
-
-.step-group.collapsed .group-header {
-    border-bottom: none;
-}
-
-/* ======================================
-   STEPS
-   ====================================== */
-.step {
-    margin-bottom: var(--space-md);
-    border-radius: var(--radius-lg);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    background: var(--color-bg-surface);
-    box-shadow: 0 1px 4px var(--color-shadow);
-}
-
-.step:last-child { 
-    margin-bottom: 0; 
-}
-
-.step:hover {
-    box-shadow: 0 2px 8px var(--color-shadow);
-    border-color: var(--color-primary);
-}
-
-.step .step-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-md);
-    background: var(--color-bg-surface);
-    border-bottom: 1px solid var(--color-border);
-    transition: background 0.2s ease;
-}
-
-.step:hover .step-header {
-    background: var(--color-bg-surface-hover);
-}
-
-.step .step-header .step-header-left { 
-    display: flex; 
-    align-items: center; 
-    gap: var(--space-md);
-    flex: 1;
-}
-
-.step .step-header input[type="checkbox"] { 
-    margin: 0; 
-    flex-shrink: 0; 
-    width: 20px;
-    height: 20px;
-    accent-color: var(--color-primary);
-    cursor: pointer;
-    pointer-events: none;
-}
-
-.step .step-header .step-title { 
-    font-weight: 700; 
-    font-size: 1.1em; 
-    color: var(--color-text);
-    line-height: 1.4;
-    transition: color 0.2s ease;
-    flex: 1;
-}
-
-.step:hover .step-title {
-    color: var(--color-primary);
-}
-
-.step .step-header .step-header-right {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    flex-shrink: 0;
-}
-
-.step .step-value {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    /* Change from green background to a more neutral design with border */
-    background: rgba(56, 161, 105, 0.15);
-    border: 1px solid var(--color-success);
-    color: var(--color-success);
-    padding: 8px 14px;
-    border-radius: var(--radius-lg);
-    font-size: 0.95em;
-    font-weight: 700;
-    min-width: 65px;
-    justify-content: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-body.dark-mode .step .step-value {
-    background: rgba(56, 161, 105, 0.2);
-    color: var(--color-success);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.step .step-value svg {
-    width: 12px;
-    height: 12px;
-    flex-shrink: 0;
-    opacity: 0.85;
-}
-
-.step .step-value.zero-value {
-    background: var(--color-bg-surface-hover);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-muted);
-    opacity: 0.7;
-}
-
-.step .step-header .step-time { 
-    font-size: 0.85em; 
-    font-weight: 600; 
-    color: white;
-    background: var(--color-primary);
-    padding: 6px 10px;
-    border-radius: var(--radius-lg);
-    min-width: 50px;
-    text-align: center;
-}
-
-.step .step-body {
-    padding: var(--space-md);
-    background: var(--color-bg-surface);
-    position: relative;
-}
-
-.step .required-items {
-    margin-bottom: var(--space-md);
-}
-
-.step .required-items h4 {
-    margin: 0 0 var(--space-sm) 0;
-    font-size: 0.9em;
-    font-weight: 600;
-    color: var(--color-text);
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-}
-
-.step .required-items h4::before {
-    content: '📋';
-    font-size: 1em;
-}
-
-.step .required-items-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-    background: var(--color-bg);
-    border-radius: var(--radius-md);
-    padding: var(--space-sm);
-    border: 1px solid var(--color-border);
-}
-
-.step .required-item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-xs);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.step .required-item:hover {
-    background: var(--color-bg-surface-hover);
-}
-
-.step .required-item input[type="checkbox"] {
-    margin: 0;
-    width: 16px;
-    height: 16px;
-    accent-color: var(--color-warning);
-    cursor: pointer;
-    pointer-events: none;
-}
-
-.step .required-item label {
-    flex: 1;
-    font-size: 0.85em;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    pointer-events: none;
-    transition: color 0.2s ease;
-}
-
-.step .required-item:hover label {
-    color: var(--color-text);
-}
-
-.step .required-item.completed {
-    background: rgba(214, 158, 46, 0.1);
-}
-
-.step .required-item.completed label {
-    text-decoration: line-through;
-    color: var(--color-text-muted);
-}
-
-.step .step-body .step-instruction { 
-    margin-bottom: var(--space-md);
-    color: var(--color-text-secondary);
-    line-height: 1.6;
-    font-size: 0.95rem;
-    padding: 0;
-    background: transparent;
-    border-radius: 0;
-}
-
-/* ======================================
-   SUB-STEPS
-   ====================================== */
-.sub-steps-container {
-    margin-top: var(--space-lg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-bg);
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.sub-steps-container.collapsed .sub-steps-list {
+/* Hide button text on mobile */
+.button-text {
     display: none;
-}
-
-.sub-steps-container:not(.collapsed) .sub-steps-list {
-    display: block;
-}
-
-.sub-steps-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-md) var(--space-lg);
-    background: var(--color-bg);
-    border-bottom: 1px solid var(--color-border);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.sub-steps-header:hover {
-    background: var(--color-bg-surface-hover);
-}
-
-.sub-steps-header-left {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-    flex: 1;
-}
-
-.sub-steps-header h4 {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    letter-spacing: 0.025em;
-}
-
-.sub-steps-progress {
-    width: 100%;
-    max-width: 200px;
-}
-
-.sub-steps-progress-bar {
-    width: 100%;
-    height: 4px;
-    background: var(--color-bg-surface-hover);
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.sub-steps-progress-fill {
-    height: 100%;
-    background: var(--color-success);
-    border-radius: 2px;
-    transition: width 0.3s ease;
-}
-
-.sub-steps-toggle-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: transparent;
-    color: var(--color-text-muted);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.sub-steps-toggle-btn:hover {
-    background: var(--color-bg-surface-hover);
-    color: var(--color-text-secondary);
-}
-
-.sub-steps-container.collapsed .sub-steps-toggle-btn svg {
-    transform: rotate(-90deg);
-}
-
-.sub-steps-container:not(.collapsed) .sub-steps-toggle-btn svg {
-    transform: rotate(0deg);
-}
-
-.sub-steps-toggle-btn svg {
-    transition: transform 0.3s ease;
-}
-
-.sub-steps-list {
-    padding: 0;
-}
-
-.sub-step {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-md);
-    padding: var(--space-lg);
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-bg-surface);
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.sub-step:last-child {
-    border-bottom: none;
-}
-
-.sub-step:hover {
-    background: var(--color-bg-surface-hover);
-}
-
-.sub-step-checkbox {
-    width: 18px;
-    height: 18px;
-    margin: 2px 0 0 0;
-    cursor: pointer;
-    accent-color: var(--color-primary);
-    flex-shrink: 0;
-}
-
-.sub-step-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    min-width: 0;
-}
-
-.sub-step-title {
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--color-text);
-    line-height: 1.4;
-    word-wrap: break-word;
-}
-
-.sub-step:hover .sub-step-title {
-    color: var(--color-primary);
-}
-
-.sub-step-instruction {
-    margin: 0;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: var(--color-text-secondary);
-    word-wrap: break-word;
-}
-
-.sub-step-time {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-    margin-top: var(--space-xs);
-}
-
-.sub-step-time svg {
-    flex-shrink: 0;
-    opacity: 0.7;
-}
-
-.sub-step.completed {
-    opacity: 0.7;
-    background: var(--color-bg);
-}
-
-.sub-step.completed .sub-step-title {
-    text-decoration: line-through;
-    color: var(--color-text-muted);
-}
-
-.sub-step.completed .sub-step-instruction {
-    text-decoration: line-through;
-    color: var(--color-text-muted);
-}
-
-/* ======================================
-   COMPLETED STATE
-   ====================================== */
-.step.completed {
-    opacity: 0.9;
-    background: var(--color-bg-surface);
-    border-color: var(--color-success);
-    border-width: 2px;
-    position: relative;
-}
-
-.step.completed::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 6px;
-    height: 100%;
-    background: var(--color-success);
-    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
-}
-
-.step.completed .step-header {
-    background: var(--color-bg-surface);
-}
-
-.step.completed input[type="checkbox"] {
-    accent-color: var(--color-success);
-}
-
-.step.completed .step-title { 
-    text-decoration: line-through;
-    text-decoration-color: var(--color-success);
-    text-decoration-thickness: 2px;
-    color: var(--color-text-secondary);
-    opacity: 0.85;
-}
-
-.step.completed .step-time {
-    background: var(--color-success);
 }
 
 /* ======================================
@@ -849,7 +335,7 @@ body.dark-mode .step .step-value {
    ====================================== */
 .header-progress {
     background: var(--color-bg-surface);
-    padding: var(--space-sm) var(--space-lg);
+    padding: var(--space-sm) var(--page-padding);
     border-bottom: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
@@ -903,28 +389,8 @@ body.dark-mode .step .step-value {
     transition: width 0.3s ease;
 }
 
-/* Mobile adjustments */
-@media screen and (max-width: 768px) {
-    .header-progress {
-        padding: var(--space-sm) var(--space-md);
-    }
-    
-    #progress-text {
-        font-size: 0.85em;
-    }
-    
-    .progress-bar-container {
-        height: 4px;
-    }
-    
-    /* Remove footer-related body padding */
-    body {
-        padding-bottom: 0;
-    }
-}
-
 /* ======================================
-   THEME TOGGLE
+   THEME TOGGLE & HEADER CONTROLS
    ====================================== */
 .theme-toggle {
     cursor: pointer;
@@ -933,6 +399,7 @@ body.dark-mode .step .step-value {
     padding: var(--space-xs);
     border-radius: var(--radius-md);
     margin-left: auto;
+    margin-right: var(--element-spacing);  /* Space between toggle and collapse button */
     transition: background-color 0.2s ease;
 }
 
@@ -994,523 +461,6 @@ body.dark-mode .theme-toggle .moon-icon {
     opacity: 1;
 }
 
-/* ======================================
-   MODAL DIALOG
-   ====================================== */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.modal.visible {
-    display: flex;
-    opacity: 1;
-}
-
-.modal-content {
-    background-color: var(--color-bg-surface);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 4px 16px var(--color-shadow);
-    width: 90%;
-    max-width: 500px;
-    overflow: hidden;
-    transform: translateY(-20px);
-    transition: transform 0.3s ease;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.modal.visible .modal-content {
-    transform: translateY(0);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-md) var(--space-lg);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-.close-modal-btn {
-    background: none;
-    border: none;
-    padding: var(--space-xs);
-    cursor: pointer;
-    color: var(--color-text-secondary);
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.close-modal-btn:hover {
-    background-color: var(--color-bg-surface-hover);
-    color: var(--color-text);
-}
-
-.modal-body {
-    padding: var(--space-lg);
-    overflow-y: auto;
-}
-
-.settings-group {
-    margin-bottom: var(--space-lg);
-}
-
-.settings-group h4 {
-    margin: 0 0 var(--space-md) 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-.settings-help-text {
-    margin: var(--space-xs) 0 var(--space-md);
-    font-size: 0.85rem;
-    color: var(--color-text-secondary);
-    line-height: 1.4;
-}
-
-.data-source-control {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-}
-
-.data-source-control label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--color-text);
-}
-
-.data-url-container {
-    display: flex;
-    gap: var(--space-xs);
-    align-items: center;
-}
-
-#data-url-input {
-    flex: 1;
-    padding: var(--space-sm);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-bg-surface);
-    color: var(--color-text);
-    font-size: 0.9rem;
-}
-
-#data-url-input:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
-}
-
-#data-url-reset {
-    background: none;
-    border: none;
-    padding: var(--space-xs);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    color: var(--color-text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#data-url-reset:hover {
-    background-color: var(--color-bg-surface-hover);
-    color: var(--color-danger);
-}
-
-.settings-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: var(--space-md);
-}
-
-.primary-btn {
-    padding: var(--space-sm) var(--space-md);
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.primary-btn:hover {
-    background-color: var(--color-primary-hover);
-}
-
-/* Add these styles to the MODAL DIALOG section */
-
-.source-type-tabs {
-    display: flex;
-    margin-bottom: var(--space-md);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.source-tab {
-    padding: var(--space-sm) var(--space-lg);
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--color-text-secondary);
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s ease;
-}
-
-.source-tab:hover {
-    color: var(--color-text);
-}
-
-.source-tab.active {
-    color: var(--color-primary);
-    border-bottom: 2px solid var(--color-primary);
-}
-
-.source-input-container {
-    margin-bottom: var(--space-md);
-}
-
-.data-json-container {
-    position: relative;
-}
-
-#data-json-input {
-    width: 100%;
-    min-height: 200px;
-    padding: var(--space-sm);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-bg-surface);
-    color: var(--color-text);
-    font-family: monospace;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    resize: vertical;
-}
-
-#data-json-input:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
-}
-
-#data-json-reset {
-    position: absolute;
-    top: var(--space-sm);
-    right: var(--space-sm);
-    background: var(--color-bg-surface);
-    border: 1px solid var(--color-border);
-    padding: var(--space-xs);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    color: var(--color-text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#data-json-reset:hover {
-    background-color: var(--color-bg-surface-hover);
-    color: var(--color-danger);
-    border-color: var(--color-danger);
-}
-
-/* ======================================
-   TOAST NOTIFICATION
-   ====================================== */
-.toast-notification {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    background-color: var(--color-success);
-    color: white;
-    padding: 0;
-    border-radius: var(--radius-lg);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    transition: all 0.3s ease;
-    opacity: 0;
-    transform: translateY(10px);
-    pointer-events: none;
-}
-
-.toast-notification.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.toast-content {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    gap: 8px;
-}
-
-.toast-content svg {
-    flex-shrink: 0;
-}
-
-#toast-message {
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-body.dark-mode .toast-notification {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Add these media queries and mobile optimizations at the end of the file */
-
-/* ======================================
-   MOBILE RESPONSIVENESS
-   ====================================== */
-
-/* Base responsive adjustments for all screen sizes */
-:root {
-    /* Add touch-friendly minimum sizes */
-    --min-touch-target: 44px;
-}
-
-/* Responsive breakpoints */
-@media screen and (max-width: 768px) {
-    /* Header adjustments */
-    .header-top {
-        padding: var(--space-sm) var(--space-md);
-    }
-
-    .header-controls {
-        flex-direction: column;
-        gap: var(--space-sm);
-        padding: var(--space-md) var(--space-md);
-    }
-    
-    .filter-section {
-        width: 100%;
-    }
-    
-    .filter-group {
-        flex: 1;
-        justify-content: center;
-    }
-    
-    .action-section {
-        width: 100%;
-        justify-content: space-between;
-        flex-wrap: wrap;
-    }
-    
-    .action-btn {
-        flex: 1 1 calc(50% - var(--space-sm));
-        justify-content: center;
-    }
-
-    /* Container adjustments */
-    #group-container {
-        padding: var(--space-lg) var(--space-md) var(--space-lg);
-    }
-    
-    /* Step and group adjustments */
-    .step .step-header {
-        flex-direction: column;
-        gap: var(--space-sm);
-        align-items: flex-start;
-    }
-    
-    .step .step-header-right {
-        width: 100%;
-        justify-content: flex-start;
-    }
-    
-    /* Hide longer text on mobile */
-    .button-text {
-        display: none;
-    }
-    
-    .action-btn svg {
-        margin: 0 auto;
-    }
-}
-
-/* Small phones */
-@media screen and (max-width: 480px) {
-    /* Header optimization */
-    header h1 {
-        font-size: 1.2rem;
-    }
-    
-    .brand-icon {
-        width: 32px;
-        height: 32px;
-    }
-    
-    /* Make filter buttons stack on very small screens */
-    .filter-group {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .filter-btn {
-        width: 100%;
-        padding: var(--space-sm);
-        text-align: center;
-    }
-    
-    .step-value, .step-time {
-        min-width: auto;
-        padding: var(--space-xs) var(--space-sm);
-    }
-    
-    /* Simplify statistics display */
-    .header-stats {
-        flex-direction: column;
-        gap: var(--space-sm);
-        align-items: flex-start;
-    }
-    
-    /* Reduce padding for content */
-    .step-body {
-        padding: var(--space-sm);
-    }
-    
-    /* Enlarge checkboxes for touch */
-    input[type="checkbox"] {
-        min-width: 24px;
-        min-height: 24px;
-        transform: none;
-    }
-    
-    .step .step-header input[type="checkbox"], 
-    .sub-step-checkbox,
-    .required-item input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        min-width: initial;
-        min-height: initial;
-        transform: none;
-    }
-    
-    .sub-step {
-        padding: var(--space-md) var(--space-sm);
-    }
-}
-
-/* Touch-friendly improvements */
-@media (hover: none) {
-    /* Increase touch targets */
-    .filter-btn, .action-btn, .search-clear, 
-    .close-modal-btn, .sub-steps-toggle-btn, .group-collapse-btn {
-        min-height: var(--min-touch-target);
-        min-width: var(--min-touch-target);
-    }
-    
-    /* Add more space between interactive elements */
-    .required-item {
-        padding: var(--space-sm);
-        margin-bottom: var(--space-xs);
-    }
-    
-    /* Better spacing for sub-step interactions */
-    .sub-step-checkbox {
-        margin-top: 8px;
-    }
-    
-    /* Add active state for touch feedback */
-    .action-btn:active,
-    .filter-btn:active,
-    .step:active .step-header,
-    .sub-step:active {
-        background-color: var(--color-bg-surface-hover);
-        transform: scale(0.98);
-    }
-}
-
-/* Fix mobile orientation changes */
-@media screen and (orientation: landscape) and (max-height: 500px) {
-    .header-top {
-        position: static;
-    }
-    
-    #progress-footer {
-        position: static;
-        margin-top: var(--space-lg);
-    }
-    
-    /* Adjust modal for landscape */
-    .modal-content {
-        max-height: 85vh;
-        width: 85%;
-    }
-}
-
-/* Make progress footer less obtrusive on mobile */
-@media screen and (max-width: 768px) {
-    #progress-footer {
-        padding: var(--space-sm);
-    }
-    
-    #progress-text {
-        font-size: 0.8em;
-    }
-    
-    #progress-percentage {
-        font-size: 0.7em;
-    }
-    
-    .progress-bar-container {
-        height: 8px;
-    }
-}
-
-/* Optimize modals for mobile */
-@media screen and (max-width: 768px) {
-    .modal-content {
-        width: 95%;
-        max-width: none;
-        max-height: 80vh;
-    }
-    
-    .modal-header {
-        padding: var(--space-sm) var(--space-md);
-    }
-    
-    .modal-body {
-        padding: var(--space-md);
-    }
-    
-    .source-tab {
-        padding: var(--space-sm);
-        flex: 1;
-        text-align: center;
-    }
-}
-
-/* Add these styles at the end of the file */
-
 /* Toggle button styling */
 .toggle-container-btn {
     background: var(--color-bg-surface);
@@ -1519,81 +469,23 @@ body.dark-mode .toast-notification {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-xs) var(--space-sm);
+    padding: var(--space-xs);
     cursor: pointer;
     color: var(--color-text-secondary);
     font-size: 0.8rem;
     box-shadow: 0 1px 3px var(--color-shadow);
+    min-height: var(--min-touch-target);
+    min-width: var(--min-touch-target);
 }
 
-/* Hide toggle buttons on desktop */
-#header-toggle, #footer-toggle {
-    display: none;
+/* Always show toggle button on mobile */
+#header-toggle {
+    display: flex !important;
 }
 
 /* Header toggle functionality */
 header.collapsed .header-controls {
     display: none;
-}
-
-/* Footer toggle functionality */
-#progress-footer.collapsed {
-    height: 24px; /* Increased from 10px */
-    min-height: 24px;
-    padding: 4px 0;
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-}
-
-#progress-footer.collapsed .footer-content {
-    opacity: 0;
-}
-
-/* Footer toggle indicator */
-#progress-footer::after {
-    content: '';
-    position: absolute;
-    top: 10px; /* Vertically centered in the 24px height */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    background: var(--color-text-muted);
-    border-radius: 2px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-#progress-footer.collapsed::after {
-    opacity: 0.8;
-}
-
-/* Better positioning for footer toggle button */
-.footer-toggle-btn {
-    position: absolute;
-    right: var(--space-md);
-    top: 4px; /* Adjusted for new footer height */
-    z-index: 10;
-}
-
-/* Make it more obvious the footer is interactive when collapsed */
-#progress-footer.collapsed:hover::after {
-    background: var(--color-primary);
-    opacity: 1;
-}
-
-/* Add spacing at the bottom of the page when footer is collapsed */
-body.footer-collapsed {
-    padding-bottom: 24px; /* Match the new footer height */
-}
-
-/* Add these styles at the end of the file */
-
-/* Make sure header and footer are always visible */
-header, #progress-footer {
-    visibility: visible !important;
-    display: block !important;
 }
 
 /* Header collapsed state - make sure the top bar remains visible */
@@ -1605,72 +497,237 @@ header.collapsed .header-top {
     border-bottom: none;
 }
 
-/* Footer collapsed state - make sure it's always visible */
-#progress-footer.collapsed {
-    height: 30px;  /* Increased height for better touch target */
-    min-height: 30px;
-    border-top-width: 2px;
-    background-color: var(--color-bg-surface);
+/* Make it obvious which elements can be toggled */
+header.collapsed::after {
+    content: '';
+    display: block;
+    height: 4px;
+    background-color: var(--color-primary);
+    opacity: 0.5;
+    width: 40px;
+    border-radius: 2px;
+    margin: 0 auto 4px auto;
 }
 
-/* Better toggle button visibility */
-#header-toggle, #footer-toggle {
-    display: flex;
-    width: 36px;
-    height: 36px;
-    background-color: var(--color-bg-surface);
+/* ======================================
+   STEP GROUPS
+   ====================================== */
+#group-container .step-group {
+    margin-bottom: var(--section-spacing);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-bg-surface);
     border: 1px solid var(--color-border);
+    box-shadow: 0 2px 8px var(--color-shadow);
+    transition: all 0.3s ease;
+}
+
+#group-container .step-group:hover {
+    box-shadow: 0 4px 16px var(--color-shadow);
+}
+
+#group-container .step-group .group-header {
+    display: flex;
+    align-items: center;
+    gap: var(--element-spacing);
+    padding: var(--item-padding);
+    background: var(--color-bg-surface);
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+#group-container .step-group .group-header:hover {
+    background: var(--color-bg-surface-hover);
+}
+
+.group-collapse-btn {
+    background: none;
+    border: none;
+    padding: var(--space-sm);
     border-radius: var(--radius-md);
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    z-index: 11;
+    transition: all 0.3s ease;
+    color: var(--color-text-secondary);
+    pointer-events: none;
 }
 
-/* Make it obvious which elements can be toggled */
-@media screen and (max-width: 768px) {
-    /* Always show toggle buttons on mobile */
-    #header-toggle, #footer-toggle {
-        display: flex !important;
-    }
-    
-    /* Add visual indicator for collapsed header */
-    header.collapsed::after {
-        content: '';
-        display: block;
-        height: 4px;
-        background-color: var(--color-primary);
-        opacity: 0.5;
-        width: 40px;
-        border-radius: 2px;
-        margin: 0 auto 4px auto;
-    }
-    
-    /* Make the footer toggle more visible */
-    #progress-footer.collapsed::after {
-        content: '';
-        position: absolute;
-        top: 13px; /* Center in the 30px height footer */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 40px;
-        height: 4px;
-        background: var(--color-primary);
-        border-radius: 2px;
-        opacity: 0.7;
-    }
-    
-    /* Better position for footer toggle button */
-    .footer-toggle-btn {
-        position: absolute;
-        right: var(--space-md);
-        top: 6px; /* Adjusted for taller collapsed footer */
-    }
+.group-collapse-btn .collapse-icon {
+    transition: transform 0.3s ease;
 }
 
-/* Add these styles at the end of the file */
+#group-container .step-group .group-title {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--color-text);
+    flex: 1;
+}
 
-/* Make footer always visible and properly positioned on mobile */
+.group-stats {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    background: var(--color-bg-surface);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+#group-container .step-group .group-body {
+    padding: var(--item-padding);
+    background: var(--color-bg-surface);
+    transition: all 0.3s ease;
+}
+
+.step-group.collapsed .group-body {
+    max-height: 0;
+    padding: 0 var(--item-padding);
+    overflow: hidden;
+    opacity: 0;
+}
+
+.step-group.collapsed .group-collapse-btn .collapse-icon {
+    transform: rotate(-90deg);
+}
+
+.step-group.collapsed .group-header {
+    border-bottom: none;
+}
+
+/* ======================================
+   STEPS
+   ====================================== */
+.step {
+    margin-bottom: var(--element-spacing);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-surface);
+    box-shadow: 0 1px 4px var(--color-shadow);
+}
+
+.step:last-child { 
+    margin-bottom: 0; 
+}
+
+.step:hover {
+    box-shadow: 0 2px 8px var(--color-shadow);
+    border-color: var(--color-primary);
+}
+
+.step .step-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--element-spacing);
+    padding: var(--item-padding);
+    background: var(--color-bg-surface);
+    border-bottom: 1px solid var(--color-border);
+    transition: background 0.2s ease;
+}
+
+.step:hover .step-header {
+    background: var(--color-bg-surface-hover);
+}
+
+.step .step-header .step-header-left { 
+    display: flex; 
+    align-items: center; 
+    gap: var(--element-spacing);
+    width: 100%;
+}
+
+.step .step-header input[type="checkbox"] { 
+    margin: 0; 
+    flex-shrink: 0; 
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.step .step-header .step-title { 
+    font-weight: 700; 
+    font-size: 1.1em; 
+    color: var(--color-text);
+    line-height: 1.4;
+    transition: color 0.2s ease;
+    flex: 1;
+}
+
+.step:hover .step-title {
+    color: var(--color-primary);
+}
+
+.step .step-header .step-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--element-spacing);
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.step .step-value {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background: rgba(56, 161, 105, 0.15);
+    border: 1px solid var(--color-success);
+    color: var(--color-success);
+    padding: 6px 12px;
+    border-radius: var(--radius-lg);
+    font-size: 0.95em;
+    font-weight: 700;
+    min-width: 60px;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .step .step-value {
+    background: rgba(56, 161, 105, 0.2);
+    color: var(--color-success);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.step .step-value svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+
+.step .step-value.zero-value {
+    background: var(--color-bg-surface-hover);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    opacity: 0.7;
+}
+
+.step .step-header .step-time { 
+    font-size: 0.85em; 
+    font-weight: 600; 
+    color: white;
+    background: var(--color-primary);
+    padding: 6px 10px;
+    border-radius: var(--radius-lg);
+    min-width: 50px;
+    text-align: center;
+}
+
+.step .step-body {
+    padding: var(--item-padding);
+    background: var(--color-bg-surface);
+    position: relative;
+}
+
+/* ======================================
+   MOBILE FOOTER IMPROVEMENTS
+   ====================================== */
 #progress-footer {
     visibility: visible !important;
     display: block !important;
@@ -1682,112 +739,170 @@ header.collapsed .header-top {
     border-top: 1px solid var(--color-border);
     background-color: var(--color-bg-surface);
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    padding: var(--space-md) var(--page-padding);
 }
 
-/* Hide footer toggle button */
-.footer-toggle-btn {
-    display: none !important;
+.footer-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--element-spacing);
 }
 
-/* Mobile optimization for footer */
-@media screen and (max-width: 768px) {
+#progress-text {
+    font-size: 0.9em;
+    text-align: left;
+    margin-bottom: 0;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#progress-percentage {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--color-primary);
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    padding: 2px 8px;
+    min-width: 45px;
+    text-align: center;
+    margin: 0;
+}
+
+.progress-bar-container {
+    order: 2;
+    height: 8px;
+    margin-top: var(--space-xs);
+    width: 100%;
+}
+
+/* Add spacing to the bottom of the page content to avoid footer overlap */
+body {
+    padding-bottom: 80px;
+}
+
+/* ======================================
+   RESPONSIVE ADJUSTMENTS
+   ====================================== */
+
+/* Tablet and above */
+@media screen and (min-width: 768px) {
+    .header-controls {
+        flex-direction: row;
+        gap: var(--space-lg);
+        align-items: flex-start;
+        flex-wrap: wrap;
+        padding: var(--header-padding) var(--page-padding);
+    }
+    
+    .search-section {
+        flex: 1;
+        min-width: 280px;
+    }
+    
+    .filter-section {
+        width: auto;
+    }
+    
+    .filter-group {
+        width: auto;
+    }
+    
+    .filter-btn {
+        padding: var(--space-sm) var(--space-md);
+    }
+    
+    .action-section {
+        width: auto;
+        flex-wrap: nowrap;
+    }
+    
+    .action-btn {
+        flex: 0 1 auto;
+        padding: var(--space-sm) var(--space-md);
+    }
+    
+    .button-text {
+        display: inline;
+    }
+    
+    .brand-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .header-top {
+        padding: var(--header-padding) var(--page-padding);
+    }
+    
+    .step .step-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .step .step-header-left {
+        width: auto;
+    }
+    
+    .step .step-header-right {
+        width: auto;
+        justify-content: flex-end;
+    }
+    
+    .header-progress {
+        padding: var(--space-sm) var(--page-padding);
+    }
+    
+    #group-container .step-group .group-title {
+        font-size: 1.4em;
+    }
+    
+    .group-stats {
+        font-size: 0.9em;
+    }
+}
+
+/* Desktop and above */
+@media screen and (min-width: 1024px) {
+    .header-controls {
+        padding: var(--space-md) var(--page-padding);
+    }
+    
+    #group-container {
+        padding: var(--space-xl) var(--content-padding) var(--space-lg);
+    }
+}
+
+/* Very small screens */
+@media screen and (max-width: 360px) {
+    .header-top {
+        padding: var(--space-sm);
+    }
+    
+    header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .brand-icon {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .step-value, .step-time {
+        min-width: auto;
+        padding: 4px 8px;
+        font-size: 0.8em;
+    }
+    
     #progress-footer {
         padding: var(--space-sm);
-        height: auto;
-    }
-    
-    #progress-text {
-        font-size: 0.9em;
-    }
-    
-    #progress-percentage {
-        font-size: 0.9em;
-    }
-    
-    .progress-bar-container {
-        height: 8px;
-    }
-    
-    /* Add some bottom padding to main content to avoid footer overlap */
-    body {
-        padding-bottom: 60px;
-    }
-    
-    /* Remove any collapsed styles that might be applied */
-    #progress-footer.collapsed {
-        height: auto;
-        min-height: auto;
-    }
-}
-
-/* Mobile footer improvements - Add these at the end of the file */
-
-/* Better mobile footer layout */
-@media screen and (max-width: 768px) {
-    /* Improve footer layout for mobile */
-    #progress-footer {
-        padding: var(--space-md) var(--space-md);
-    }
-    
-    /* Create a more compact layout */
-    .footer-content {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: var(--space-md);
-    }
-    
-    /* Better text display */
-    #progress-text {
-        font-size: 0.9em;
-        text-align: left;
-        margin-bottom: 0;
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    /* Better percentage display */
-    #progress-percentage {
-        font-size: 1em;
-        font-weight: 600;
-        color: var(--color-primary);
-        background-color: var(--color-bg);
-        border-radius: var(--radius-md);
-        padding: 2px 8px;
-        min-width: 45px;
-        text-align: center;
-        margin: 0;
-    }
-    
-    /* Progress bar improvements */
-    .progress-bar-container {
-        order: 2;
-        height: 8px;
-        margin-top: var(--space-xs);
-        width: 100%;
-    }
-    
-    /* Adjust overall layout */
-    .footer-content {
-        flex-wrap: wrap;
-    }
-    
-    /* Add spacing to the bottom of the page content */
-    body {
-        padding-bottom: 80px;
-    }
-}
-
-/* Even smaller screens need special handling */
-@media screen and (max-width: 360px) {
-    #progress-footer {
-        padding: var(--space-sm) var(--space-sm);
-    }
-    
-    .footer-content {
-        gap: var(--space-sm);
     }
     
     #progress-text {
