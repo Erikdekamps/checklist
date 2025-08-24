@@ -13,21 +13,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     let data = [];
     let groupCollapsed = {};
     let subStepsCollapsed = {};
-    let footerCollapsed = false;
-    let headerCollapsed = false; // Add this line
+    let headerCollapsed = false;
     let filter = 'all';
     let searchTerm = '';
     let debounceSaveTimeout;
 
     const el = {
         container: document.getElementById('group-container'),
-        progressFooter: document.getElementById('progress-footer'),
-        footerToggle: document.getElementById('footer-toggle'),
-        headerToggle: document.getElementById('header-toggle'),
-        header: document.querySelector('header'),
+        progressBar: document.querySelector('.progress-fill'),
         progressText: document.getElementById('progress-text'),
         progressPercentage: document.getElementById('progress-percentage'),
-        progressBar: document.querySelector('.progress-fill'),
+        headerToggle: document.getElementById('header-toggle'),
+        header: document.querySelector('header'),
         progressStat: document.getElementById('progress-stat'),
         totalTime: document.getElementById('total-time'),
         totalMoney: document.getElementById('total-money'),
@@ -53,7 +50,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         dataJsonInput: document.getElementById('data-json-input'),
         dataJsonReset: document.getElementById('data-json-reset'),
         dataSourceSave: document.getElementById('data-source-save'),
-        // Add toast notification element
         toastNotification: document.getElementById('toast-notification'),
         toastMessage: document.getElementById('toast-message')
     };
@@ -436,42 +432,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateProgressUI() {
         const stats = computeStats();
         
-        // Update progress percentage display
-        if (el.progressPercentage) el.progressPercentage.textContent = `${stats.percentage}%`;
-        
-        // Update progress bar with proper animation
         if (el.progressBar) {
-            // Use requestAnimationFrame for smoother transition
-            requestAnimationFrame(() => {
-                el.progressBar.style.width = `${stats.percentage}%`;
-            });
+            el.progressBar.style.width = `${stats.percentage}%`;
         }
         
-        // Update progress message
-        if (el.progressText) {
-            if (stats.totalSteps === 0) {
-                el.progressText.textContent = "No tasks available";
-            } else if (stats.completedSteps === stats.totalSteps) {
-                el.progressText.textContent = "All tasks completed! 🎉";
-            } else {
-                el.progressText.textContent = `${stats.completedSteps} of ${stats.totalSteps} tasks completed`;
-            }
+        if (el.progressPercentage) {
+            el.progressPercentage.textContent = `${stats.percentage}%`;
         }
-
-        // Update group stats
-        data.forEach(group => {
-            const completed = group.steps.filter(s => s.completed).length;
-            const total = group.steps.length;
-            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-            
-            const groupElement = document.querySelector(`[data-group="${group.group_title}"]`);
-            if (groupElement) {
-                const statsElement = groupElement.querySelector('.group-stats');
-                if (statsElement) {
-                    statsElement.textContent = `${completed}/${total} (${percentage}%)`;
-                }
-            }
-        });
+        
+        if (el.progressText) {
+            el.progressText.textContent = `${stats.completedSteps} of ${stats.totalSteps} tasks completed`;
+        }
+        
+        if (el.totalTime) {
+            el.totalTime.textContent = formatTime(stats.totalTime);
+        }
+        
+        if (el.totalMoney) {
+            el.totalMoney.textContent = formatMoney(stats.totalMoney);
+        }
     }
 
     /**
@@ -945,27 +924,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         store.save('headerCollapsed', headerCollapsed);
     }
 
-    /**
-     * Toggles footer collapse state
-     */
-    function toggleFooter() {
-        footerCollapsed = !footerCollapsed;
-        if (el.progressFooter) {
-            el.progressFooter.classList.toggle('collapsed', footerCollapsed);
-        }
-        document.body.classList.toggle('footer-collapsed', footerCollapsed);
-        
-        // Update toggle button icon
-        if (el.footerToggle) {
-            el.footerToggle.innerHTML = footerCollapsed ? 
-                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>' : // Down arrow when collapsed
-                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg>'; // Up arrow when expanded
-        }
-        
-        // Save state
-        store.save('footerCollapsed', footerCollapsed);
-    }
-
     // ==========================================
     //  BIND EVENTS
     // ==========================================
@@ -1018,16 +976,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Header toggle
         el.headerToggle?.addEventListener('click', toggleHeader);
         
-        // Footer toggle
-        el.footerToggle?.addEventListener('click', toggleFooter);
-        
-        // Also allow toggling footer by clicking the collapsed version
-        el.progressFooter?.addEventListener('click', e => {
-            if (footerCollapsed && e.target === el.progressFooter) {
-                toggleFooter();
-            }
-        });
-
         // Search input
         el.searchInput?.addEventListener('input', e => {
             setSearchTerm(e.target.value);
@@ -1142,22 +1090,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             const savedProgress = store.load('checklistProgress');
             data = savedProgress ? mergeProgress(rawData, savedProgress) : rawData;
             
-            // Load header and footer collapsed state
+            // Load header collapsed state
             headerCollapsed = store.load('headerCollapsed') || false;
-            footerCollapsed = store.load('footerCollapsed') || false;
             
-            // Set initial state for header and footer
+            // Set initial state for header
             if (el.header) {
                 el.header.classList.toggle('collapsed', headerCollapsed);
             }
-            if (el.progressFooter) {
-                el.progressFooter.classList.toggle('collapsed', footerCollapsed);
-            }
             
             document.body.classList.toggle('header-collapsed', headerCollapsed);
-            document.body.classList.toggle('footer-collapsed', footerCollapsed);
             
-            // Set initial icon state for toggle buttons
+            // Set initial icon state for toggle button
             if (el.headerToggle) {
                 el.headerToggle.innerHTML = headerCollapsed ? 
                     '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>' : 
@@ -1167,15 +1110,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 el.headerToggle.style.display = 'flex';
             }
 
-            if (el.footerToggle) {
-                el.footerToggle.innerHTML = footerCollapsed ? 
-                    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>' : 
-                    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"></polyline></svg>';
-                
-                // Make sure toggle button is visible
-                el.footerToggle.style.display = 'flex';
-            }
-            
             // Bind all events
             bindEvents();
             render();

@@ -132,25 +132,20 @@
         </div>
     </header>
 
-    <main id="group-container"></main>
-
-    <!-- Enhanced Collapsible Progress Footer -->
-    <footer id="progress-footer">
-        <button id="footer-toggle" class="toggle-container-btn footer-toggle-btn" aria-label="Toggle footer visibility">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="18 15 12 9 6 15"></polyline>
-            </svg>
-        </button>
+    <!-- Add this right after the header section -->
+    <div class="header-progress">
         <div class="progress-container">
-            <div class="footer-content">
-                <div id="progress-text">Ready to start your checklist</div>
-                <div class="progress-bar-container">
-                    <div class="progress-fill"></div>
-                </div>
-                <div id="progress-percentage">0%</div>
+            <div class="progress-top">
+                <p id="progress-text">0 of 0 tasks completed</p>
+                <p id="progress-percentage">0%</p>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-fill" style="width: 0%;"></div>
             </div>
         </div>
-    </footer>
+    </div>
+
+    <main id="group-container"></main>
 
     <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
