@@ -152,56 +152,33 @@
 
     <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
+        <div class="modal-overlay"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Settings</h3>
+                <div class="modal-handle"></div>
+                <h2 class="modal-title">Checklist Data</h2>
                 <button class="close-modal-btn" aria-label="Close settings">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                 </button>
             </div>
+
             <div class="modal-body">
-                <div class="settings-group">
-                    <h4>Data Source</h4>
-                    <div class="data-source-control">
-                        <div class="source-type-tabs">
-                            <button id="url-tab" class="source-tab active" type="button">URL</button>
-                            <button id="paste-tab" class="source-tab" type="button">Paste JSON</button>
-                        </div>
-                        
-                        <div id="url-input-container" class="source-input-container">
-                            <label for="data-url-input">Data URL:</label>
-                            <div class="data-url-container">
-                                <input type="text" id="data-url-input" placeholder="https://example.com/data.json" />
-                                <button id="data-url-reset" aria-label="Reset to default">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-                                        <path d="M21 3v5h-5"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                            <p class="settings-help-text">Enter a URL to a JSON file containing your checklist data.</p>
-                        </div>
-                        
-                        <div id="paste-input-container" class="source-input-container" style="display: none;">
-                            <label for="data-json-input">Paste JSON Data:</label>
-                            <div class="data-json-container">
-                                <textarea id="data-json-input" placeholder='[{"group_title": "Example Group", "steps": [...]}]' rows="10"></textarea>
-                                <button id="data-json-reset" aria-label="Reset to default">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-                                        <path d="M21 3v5h-5"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                            <p class="settings-help-text">Paste valid JSON data following the required structure for the checklist.</p>
-                        </div>
+                <div class="settings-section">
+                    <div class="settings-field">
+                        <label for="data-json-input">JSON Data</label>
+                        <textarea id="data-json-input" placeholder='{ "groups": [...] }' spellcheck="false"></textarea>
+                        <p class="settings-help">Paste valid JSON data in the expected format</p>
                     </div>
-                    <div class="settings-actions">
-                        <button id="data-source-save" class="primary-btn">Apply Changes</button>
-                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="settings-buttons">
+                    <button id="settings-cancel" class="settings-btn settings-btn-secondary">Cancel</button>
+                    <button id="settings-save" class="settings-btn settings-btn-primary">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -211,7 +188,8 @@
     <div id="toast-notification" class="toast-notification">
         <div class="toast-content">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 6L9 17l-5-5"></path>
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
             <span id="toast-message">Progress saved</span>
         </div>

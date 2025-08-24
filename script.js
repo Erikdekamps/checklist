@@ -1023,9 +1023,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Data JSON reset button
         el.dataJsonReset?.addEventListener('click', resetJsonInput);
+    }
 
-        // Data source save button (replaces data-url-save)
-        el.dataSourceSave?.addEventListener('click', saveDataSource);
+    /**
+     * Bind additional event listeners for the settings modal
+     */
+    function bindSettingsEvents() {
+        // Save button in settings modal
+        document.getElementById('settings-save')?.addEventListener('click', saveDataSource);
+        
+        // Cancel button in settings modal
+        document.getElementById('settings-cancel')?.addEventListener('click', closeSettingsModal);
     }
 
     // ==========================================
@@ -1064,6 +1072,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 try {
                     rawData = await loadJsonFromText(storedJsonData);
                     console.log(`Loaded ${rawData.length} groups from pasted JSON`);
+                    // Add this line to show toast:
+                    showToast(`Successfully loaded ${rawData.length} task groups`, 2000);
                 } catch (error) {
                     console.error('Failed to load from stored JSON data, falling back to URL or default');
                     // Fall back to URL or default data.json
@@ -1112,6 +1122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Bind all events
             bindEvents();
+            bindSettingsEvents();
             render();
             
             // Ensure progress is displayed properly on initial load
@@ -1276,7 +1287,13 @@ document.addEventListener('DOMContentLoaded', async () => {
      */
     function openSettingsModal() {
         if (el.settingsModal) {
-            el.settingsModal.classList.add('active'); // Changed from 'visible' to 'active'
+            el.settingsModal.classList.add('active');
+            
+            // Load any saved JSON data
+            const storedJsonData = store.load('checklistJsonData');
+            if (storedJsonData && el.dataJsonInput) {
+                el.dataJsonInput.value = storedJsonData;
+            }
         }
     }
 
@@ -1285,7 +1302,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      */
     function closeSettingsModal() {
         if (el.settingsModal) {
-            el.settingsModal.classList.remove('active'); // Changed from 'visible' to 'active'
+            el.settingsModal.classList.remove('active');
         }
     }
 
@@ -1341,25 +1358,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     /**
-     * Saves data source (URL or pasted JSON)
+     * Saves data source (only JSON data now)
      */
     function saveDataSource() {
-        const activeTab = el.urlTab?.classList.contains('active') ? 'url' : 'paste';
+        // Save JSON data
+        const jsonData = el.dataJsonInput?.value.trim() || '';
         
-        if (activeTab === 'url') {
-            // Save URL
-            const newUrl = el.dataUrlInput?.value.trim() || '';
-            dataUrl = newUrl;
-            store.save('checklistDataUrl', dataUrl);
-            store.remove('checklistJsonData'); // Clear any stored JSON data
-        } else {
-            // Save JSON data
-            const jsonData = el.dataJsonInput?.value.trim() || '';
-            store.save('checklistJsonData', jsonData);
-            store.remove('checklistDataUrl'); // Clear any stored URL
+        if (!jsonData) {
+            showToast('Please enter valid JSON data', 3000);
+            return;
         }
         
-        // Reload the page to apply changes
-        location.reload();
+        try {
+            // Try to parse the JSON to validate it
+            JSON.parse(jsonData);
+            
+            // Save to localStorage
+            store.save('checklistJsonData', jsonData);
+            store.remove('checklistDataUrl'); // Clear any stored URL
+            
+            // Show success message before reload
+            showToast('JSON data saved! Loading new data...', 1500);
+            
+            // Wait a moment to show the message before reloading
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+            
+        } catch (error) {
+            // Show error if invalid JSON
+            showToast('Invalid JSON format. Please check your data.', 4000);
+            console.error('Invalid JSON:', error);
+        }
     }
 });
