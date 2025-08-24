@@ -179,9 +179,14 @@ header h1 {
     border-bottom: 1px solid var(--color-border);
 }
 
-/* Search - 100% width on mobile */
+/* ======================================
+   IMPROVED HEADER SEARCH & BUTTONS
+   ====================================== */
+
+/* Search - Refined design */
 .search-section {
     width: 100%;
+    max-width: 100%;
 }
 
 .search-input-container {
@@ -189,44 +194,50 @@ header h1 {
     display: flex;
     align-items: center;
     width: 100%;
+    height: 44px;
 }
 
 .search-icon {
     position: absolute;
-    left: var(--space-sm);
+    left: 12px;
     z-index: 2;
-    color: var(--color-text-muted);
+    color: var(--color-text-secondary);
     pointer-events: none;
+    width: 18px;
+    height: 18px;
 }
 
 #search-input {
     width: 100%;
-    padding: var(--space-sm) var(--space-xl) var(--space-sm) calc(var(--space-xl) + 4px);
+    height: 44px;
+    padding: 0 40px 0 38px;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    background: var(--color-bg-surface);
+    background: var(--color-bg);
     color: var(--color-text);
-    font-size: 0.9em;
+    font-size: 0.95rem;
     transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 #search-input:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
 }
 
 #search-input::placeholder {
     color: var(--color-text-muted);
+    font-size: 0.9rem;
 }
 
 .search-clear {
     position: absolute;
-    right: var(--space-sm);
+    right: 8px;
     background: none;
     border: none;
-    padding: var(--space-xs);
-    border-radius: var(--radius-md);
+    padding: 8px;
+    border-radius: 50%;
     cursor: pointer;
     color: var(--color-text-secondary);
     opacity: 0;
@@ -234,6 +245,8 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 28px;
+    width: 28px;
 }
 
 .search-clear:hover {
@@ -245,38 +258,32 @@ header h1 {
     opacity: 1;
 }
 
-/* Filter Section - Keep inline on all screen sizes */
-.filter-section {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: var(--element-spacing);
-}
-
+/* Filter buttons - Consistent with search bar */
 .filter-group {
-    height: 40px;
+    height: 44px;
     display: flex;
     width: 100%;
     border-radius: var(--radius-lg);
     padding: 2px;
     border: 1px solid var(--color-border);
-    background: var(--color-bg-surface);
+    background: var(--color-bg);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .filter-btn {
     flex: 1;
-    padding: var(--space-md) var(--space-sm);  /* Increased padding */
+    padding: 0 12px;
     border: none;
     background: none;
     color: var(--color-text-secondary);
-    font-size: 0.95em;  /* Slightly larger font */
+    font-size: 0.95rem;
     font-weight: 500;
     border-radius: calc(var(--radius-lg) - 2px);
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
     text-align: center;
-    min-height: 38px;  /* Ensure minimum height */
+    height: 40px;
 }
 
 .filter-btn:hover {
@@ -287,40 +294,44 @@ header h1 {
 .filter-btn.active {
     background: var(--color-primary);
     color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Action Buttons - Redesigned to fit the overall design */
+/* Action buttons - Clean consistent design */
 .action-section {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: 8px;
     width: 100%;
 }
 
 .action-btn {
     display: flex;
     align-items: center;
-    padding: var(--space-md);
-    border-radius: var(--radius-md);
+    height: 44px;
+    padding: 0 16px;
+    border-radius: var(--radius-lg);
     background-color: var(--color-bg);
     border: 1px solid var(--color-border);
     color: var(--color-text);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
-    height: 48px;
     transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .action-btn:hover {
     background-color: var(--color-bg-surface-hover);
     border-color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
 }
 
 .action-btn .btn-icon {
     width: 18px;
     height: 18px;
-    margin-right: var(--space-sm);
+    margin-right: 12px;
     flex-shrink: 0;
     color: var(--color-text-secondary);
 }
@@ -331,18 +342,7 @@ header h1 {
 
 .action-btn .button-text {
     display: block;
-    margin-left: var(--space-xs);
-}
-
-/* Show/hide icons based on state */
-.action-btn[data-state="expand"] .collapse-icon,
-.action-btn[data-state="expand"] .collapse-substeps-icon {
-    display: none;
-}
-
-.action-btn[data-state="collapse"] .expand-icon,
-.action-btn[data-state="collapse"] .expand-substeps-icon {
-    display: none;
+    font-weight: 500;
 }
 
 /* Special styling for the reset button */
@@ -359,30 +359,44 @@ header h1 {
     color: var(--color-danger);
 }
 
-/* Tablet and desktop styles */
+/* Tablet and desktop improvements */
 @media screen and (min-width: 768px) {
     .action-section {
         flex-direction: row;
         flex-wrap: wrap;
+        gap: 10px;
     }
     
     .action-btn {
         flex: 1;
-        min-width: 140px;
+        min-width: 120px;
         justify-content: center;
     }
 }
 
 @media screen and (min-width: 1024px) {
-    .action-btn {
-        font-size: 0.85rem;
-        padding: var(--space-sm) var(--space-md);
-        height: 44px;
+    .header-top-controls {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 20px;
     }
     
-    .action-btn .btn-icon {
-        width: 16px;
-        height: 16px;
+    .search-section {
+        flex: 1;
+        max-width: 500px;
+    }
+    
+    .filter-section {
+        width: auto;
+        min-width: 300px;
+    }
+    
+    #search-input,
+    .filter-group,
+    .action-btn {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        height: 44px;
     }
 }
 
