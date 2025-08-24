@@ -1276,7 +1276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      */
     function openSettingsModal() {
         if (el.settingsModal) {
-            el.settingsModal.classList.add('visible');
+            el.settingsModal.classList.add('active'); // Changed from 'visible' to 'active'
         }
     }
 
@@ -1285,7 +1285,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      */
     function closeSettingsModal() {
         if (el.settingsModal) {
-            el.settingsModal.classList.remove('visible');
+            el.settingsModal.classList.remove('active'); // Changed from 'visible' to 'active'
         }
     }
 
