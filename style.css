@@ -889,7 +889,7 @@ header.collapsed::after {
 }
 
 /* ======================================
-   SUB-STEPS REDESIGN
+   SUB-STEPS REDESIGN - FIXED
    ====================================== */
 .sub-steps-container {
     margin-top: var(--space-md);
@@ -904,31 +904,38 @@ header.collapsed::after {
     padding: var(--space-md);
     display: flex;
     align-items: center;
-    justify-content: space-between;
     background: var(--color-bg);
     border-bottom: 1px solid var(--color-border);
 }
 
 .sub-steps-header-left {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-    flex: 1;
+    align-items: center;
+    gap: var(--space-md);
+    width: 100%;
 }
 
-.sub-steps-header h4 {
+.sub-steps-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
     margin: 0;
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--color-text-secondary);
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
+    white-space: nowrap;
+}
+
+.sub-steps-title svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
 }
 
 .sub-steps-progress {
-    width: 100%;
-    margin-top: var(--space-xs);
+    flex: 1;
+    max-width: 180px;
+    margin-left: var(--space-md);
 }
 
 .sub-steps-progress-bar {
@@ -949,8 +956,8 @@ header.collapsed::after {
 .sub-steps-toggle-btn {
     background: var(--color-bg-surface);
     border: 1px solid var(--color-border);
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -959,6 +966,8 @@ header.collapsed::after {
     color: var(--color-text-secondary);
     transition: all 0.2s ease;
     padding: 0;
+    margin-left: var(--space-sm);
+    flex-shrink: 0;
 }
 
 .sub-steps-toggle-btn:hover {
@@ -1048,21 +1057,7 @@ header.collapsed::after {
     color: var(--color-text-muted);
 }
 
-.sub-step-title {
-    margin: 0 0 var(--space-xs) 0;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-.sub-step-instruction {
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--color-text-secondary);
-    line-height: 1.5;
-}
-
-/* Sub-step header redesign */
+/* Sub-step header with time */
 .sub-step-header {
     display: flex;
     justify-content: space-between;
@@ -1090,9 +1085,18 @@ header.collapsed::after {
     border: 1px solid rgba(49, 130, 206, 0.2);
 }
 
-/* Remove old footer styles since we no longer need them */
-.sub-step-footer {
-    display: none;
+.sub-step-instruction {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+/* Tablet and larger screens */
+@media screen and (min-width: 768px) {
+    .sub-steps-progress {
+        max-width: 240px;
+    }
 }
 
 /* ======================================

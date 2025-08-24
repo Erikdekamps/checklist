@@ -659,7 +659,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="sub-steps-container ${collapsed ? 'collapsed' : ''}" data-step="${step.step_number}">
                 <div class="sub-steps-header">
                     <div class="sub-steps-header-left">
-                        <h4>
+                        <h4 class="sub-steps-title">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                 <polyline points="16 17 21 12 16 7"></polyline>
@@ -672,12 +672,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <div class="sub-steps-progress-fill" style="width: ${percentage}%"></div>
                             </div>
                         </div>
+                        <button class="sub-steps-toggle-btn" aria-label="${collapsed ? 'Expand' : 'Collapse'} sub-steps">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                        </button>
                     </div>
-                    <button class="sub-steps-toggle-btn" aria-label="${collapsed ? 'Expand' : 'Collapse'} sub-steps">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="18 15 12 9 6 15"></polyline>
-                        </svg>
-                    </button>
                 </div>
                 <div class="sub-steps-list">
                     ${step.sub_steps.map(renderSubStep).join('')}
