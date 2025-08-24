@@ -763,11 +763,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Save progress immediately
                 debounceSaveProgress();
                 
-                // If we're in "todo" filter mode and the step is now completed,
-                // we need to re-render the entire list to hide the completed task
-                if (filter === 'todo' && step.completed) {
+                // If filter is active and completion state changes, we need to re-render
+                // to hide tasks that no longer match the filter
+                if ((filter === 'todo' && step.completed) || 
+                    (filter === 'completed' && !step.completed)) {
                     render(); // Full re-render to apply filters
-                    updateProgressUI(); // Add this line to update progress after rendering
+                    updateProgressUI();
                     return;
                 }
                 
@@ -797,13 +798,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const allCompleted = step.sub_steps.every(s => s.completed);
                 const allIncomplete = step.sub_steps.every(s => !s.completed);
                 
+                // Track if parent step completion changed
+                let parentCompletionChanged = false;
+                
                 // Auto-update parent step if all sub-steps share the same state
                 if (allCompleted && !step.completed) {
                     step.completed = true;
                     updateStepUI(stepNumber, true);
+                    parentCompletionChanged = true;
                 } else if (allIncomplete && step.completed) {
                     step.completed = false;
                     updateStepUI(stepNumber, false);
+                    parentCompletionChanged = true;
+                }
+                
+                // If filter is active and parent completion changed, re-render
+                if ((filter === 'todo' && step.completed && parentCompletionChanged) || 
+                    (filter === 'completed' && !step.completed && parentCompletionChanged)) {
+                    render(); // Full re-render to apply filters
+                    updateProgressUI();
+                    debounceSaveProgress();
+                    return;
                 }
                 
                 // Update UI without full re-render
@@ -838,16 +853,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const allCompleted = step.required_items_completed.every(item => item);
                 const allIncomplete = step.required_items_completed.every(item => !item);
                 
+                // Track if parent step completion changed
+                let parentCompletionChanged = false;
+                
                 // Auto-update parent step if all items share the same state and no sub-steps
                 const hasSubSteps = step.sub_steps && step.sub_steps.length > 0;
                 if (!hasSubSteps) {
                     if (allCompleted && !step.completed) {
                         step.completed = true;
                         updateStepUI(stepNumber, true);
+                        parentCompletionChanged = true;
                     } else if (allIncomplete && step.completed) {
                         step.completed = false;
                         updateStepUI(stepNumber, false);
+                        parentCompletionChanged = true;
                     }
+                }
+                
+                // If filter is active and parent completion changed, re-render
+                if ((filter === 'todo' && step.completed && parentCompletionChanged) || 
+                    (filter === 'completed' && !step.completed && parentCompletionChanged)) {
+                    render(); // Full re-render to apply filters
+                    updateProgressUI();
+                    debounceSaveProgress();
+                    return;
                 }
                 
                 // Update UI without full re-render
