@@ -1290,36 +1290,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     /**
-     * Resets all progress
+     * Resets all progress and application data
      */
     function resetProgress() {
-        if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
-            // Reset completed state for all steps and sub-steps
-            data.forEach(group => {
-                group.steps.forEach(step => {
-                    step.completed = false;
-                    
-                    // Reset sub-steps
-                    if (step.sub_steps) {
-                        step.sub_steps.forEach(sub => sub.completed = false);
-                    }
-                    
-                    // Reset required items
-                    if (step.items) {
-                        step.required_items_completed = new Array(step.items.length).fill(false);
-                    }
-                });
-            });
-            
-            // Save changes
-            store.save('checklistProgress', data);
-            
-            // Re-render everything
-            render();
-            updateProgressUI();
+        if (confirm('Are you sure you want to reset ALL data? This will clear your progress, settings, filters, and custom data. This cannot be undone.')) {
+            // Clear all localStorage data
+            store.clear();
             
             // Show confirmation
-            showToast('Progress reset successfully', 3000);
+            showToast('All data reset successfully. Reloading...', 1500);
+            
+            // Wait a moment to show the message before reloading
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
         }
     }
 
