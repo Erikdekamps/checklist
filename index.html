@@ -86,7 +86,7 @@
                 </div>
             </div>
 
-            <!-- Action Section (3rd) with reordered buttons -->
+            <!-- Action Section with correct order -->
             <div class="action-section">
                 <!-- Collapse/Expand All (1st) -->
                 <button id="toggle-all-btn" class="action-btn mobile-friendly-btn" type="button" data-state="expand">
@@ -101,7 +101,18 @@
                     <span class="button-text">Groups</span>
                 </button>
                 
-                <!-- Settings (2nd) -->
+                <!-- Collapse/Expand Substeps (2nd) -->
+                <button id="toggle-substeps-btn" class="action-btn mobile-friendly-btn" type="button" data-state="expand">
+                    <svg class="btn-icon expand-substeps-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                    <svg class="btn-icon collapse-substeps-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                    <span class="button-text">Sub-Steps</span>
+                </button>
+                
+                <!-- Settings (3rd) -->
                 <button id="settings-btn" class="action-btn mobile-friendly-btn" type="button">
                     <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="3"></circle>
@@ -110,7 +121,7 @@
                     <span class="button-text">Settings</span>
                 </button>
 
-                <!-- Reset (3rd) -->
+                <!-- Reset (4th) -->
                 <button id="reset-btn" class="action-btn reset-btn mobile-friendly-btn" type="button">
                     <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
@@ -119,17 +130,6 @@
                         <path d="M3 21v-5h5"></path>
                     </svg>
                     <span class="button-text">Reset</span>
-                </button>
-                
-                <!-- Move toggle-substeps-btn to be accessible through the settings -->
-                <button id="toggle-substeps-btn" class="action-btn mobile-friendly-btn" type="button" data-state="expand" style="display: none;">
-                    <svg class="btn-icon expand-substeps-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                    <svg class="btn-icon collapse-substeps-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                    </svg>
-                    <span class="button-text">Sub-Steps</span>
                 </button>
             </div>
         </div>

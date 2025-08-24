@@ -287,22 +287,23 @@ header h1 {
     color: white;
 }
 
-/* Action Buttons - Mobile optimized */
+/* Action Buttons - Mobile optimized: vertical stack with full width */
 .action-section {
     width: 100%;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
     gap: var(--element-spacing);
 }
 
 .action-btn {
-    flex: 1 1 calc(50% - var(--element-spacing));
+    flex: 1 1 100%;
     display: flex;
+    flex-direction: row; /* Changed to row for inline icon + text */
     justify-content: center;
     align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-sm);
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-sm);
     border: 1px solid var(--color-border);
     background: var(--color-bg-surface);
     color: var(--color-text);
@@ -312,22 +313,40 @@ header h1 {
     cursor: pointer;
     transition: all 0.2s ease;
     min-height: var(--min-touch-target);
-    white-space: nowrap;
-}
-
-.action-btn:hover {
-    background: var(--color-bg-surface-hover);
-    border-color: var(--color-primary);
 }
 
 .action-btn svg {
     flex-shrink: 0;
-    transition: opacity 0.2s ease;
+    width: 18px;
+    height: 18px;
+    margin-bottom: 0; /* Remove bottom margin */
+    margin-right: var(--space-xs); /* Add right margin instead */
 }
 
-/* Hide button text on mobile */
+/* Show button text on mobile */
 .button-text {
-    display: none;
+    display: block;
+    font-size: 0.9em;
+    text-align: left; /* Align text left for inline format */
+}
+
+/* Update tablet and desktop styles to maintain horizontal layout */
+@media screen and (min-width: 768px) {
+    .action-section {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        width: auto;
+    }
+    
+    .action-btn {
+        flex: 0 1 auto;
+        padding: var(--space-sm) var(--space-md);
+    }
+    
+    .action-btn svg {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 /* ======================================
